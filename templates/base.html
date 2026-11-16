@@ -1,0 +1,70 @@
+{% from "_icons.html" import icon %}
+<!doctype html>
+<html lang="sw" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1117">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="{{ url_for('home') }}" aria-label="{{ app_name }}">
+      <span class="brand-mark">{{ app_name[:1] }}</span>
+      <span class="brand-name">{{ app_name }}</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Menyu kuu">
+      <a href="{{ url_for('home') }}" class="{{ 'on' if active == 'home' }}">{{ icon('home', 18) }} Nyumbani</a>
+      <a href="{{ url_for('jamvi') }}" class="{{ 'on' if active == 'jamvi' }}">{{ icon('ticket', 18) }} Jamvi</a>
+      <a href="{{ url_for('market') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 18) }} Market</a>
+      <a href="{{ url_for('pochi') }}" class="{{ 'on' if active == 'pochi' }}">{{ icon('wallet', 18) }} Pochi</a>
+      <a href="{{ url_for('wasifu') }}" class="{{ 'on' if active == 'wasifu' }}">{{ icon('user', 18) }} Wasifu</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <a class="coin-chip" href="{{ url_for('pochi') }}" title="Salio lako">
+        {{ icon('coin', 18) }}<span>{{ coin_balance }}</span>
+      </a>
+      <button class="icon-btn" type="button" aria-label="Arifa">{{ icon('bell', 20) }}</button>
+      <button class="icon-btn" type="button" id="theme-toggle" aria-label="Badilisha mandhari">
+        <span class="show-dark">{{ icon('sun', 20) }}</span>
+        <span class="show-light">{{ icon('moon', 20) }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  {% block content %}{% endblock %}
+
+  <footer class="site-footer">
+    <p>{{ icon('shield', 16) }} Umri wa miaka 18 na zaidi tu. Cheza kwa kiasi, usitumie pesa usizoweza kupoteza.</p>
+    {% if coin_mode == 'demo' %}
+    <p class="muted">Hali ya majaribio: coin zote ni bandia, hakuna pesa halisi.</p>
+    {% endif %}
+  </footer>
+</main>
+
+<nav class="nav-mobile" aria-label="Menyu ya simu">
+  <a href="{{ url_for('home') }}" class="{{ 'on' if active == 'home' }}">{{ icon('home', 22) }}<span>Nyumbani</span></a>
+  <a href="{{ url_for('jamvi') }}" class="{{ 'on' if active == 'jamvi' }}">{{ icon('ticket', 22) }}<span>Jamvi</span></a>
+  <a href="{{ url_for('market') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 22) }}<span>Market</span></a>
+  <a href="{{ url_for('pochi') }}" class="{{ 'on' if active == 'pochi' }}">{{ icon('wallet', 22) }}<span>Pochi</span></a>
+  <a href="{{ url_for('wasifu') }}" class="{{ 'on' if active == 'wasifu' }}">{{ icon('user', 22) }}<span>Wasifu</span></a>
+</nav>
+
+<script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

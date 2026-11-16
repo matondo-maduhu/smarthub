@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Pochi · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('wallet', 24) }} Pochi</h1>
+
+{% if coin_mode == 'demo' %}
+<p class="notice warn">{{ icon('shield', 16) }} Hali ya majaribio: coin ni bandia. Malipo halisi yataongezwa baada ya kupata ruhusa zinazotakiwa.</p>
+{% endif %}
+
+<section class="card balance">
+  <p class="muted">Salio lako</p>
+  <div class="balance-amount">{{ icon('coin', 32) }} <span>{{ coin_balance }}</span></div>
+  <div class="balance-actions">
+    <button class="btn primary" type="button" disabled>{{ icon('arrow-down', 18) }} Nunua coin</button>
+    <button class="btn" type="button" disabled>{{ icon('arrow-up', 18) }} Toa pesa</button>
+  </div>
+</section>
+
+<div class="section-head"><h2>Historia ya miamala</h2></div>
+<section class="card list">
+  {% for x in txns %}
+  <div class="row">
+    <span class="row-icon {{ 'ok' if x.amount > 0 else 'bad' }}">{{ icon('arrow-down' if x.amount > 0 else 'arrow-up', 18) }}</span>
+    <div class="row-main">
+      <strong>{{ x.label }}</strong>
+      <span class="muted">{{ x.time }}</span>
+    </div>
+    <strong class="{{ 'pos' if x.amount > 0 else 'neg' }}">{{ '+' if x.amount > 0 }}{{ x.amount }}</strong>
+  </div>
+  {% endfor %}
+</section>
+<p class="muted center">Data ya mfano. Miamala halisi itaonekana baada ya usajili.</p>
+{% endblock %}

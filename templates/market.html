@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import product_card %}
+{% block title %}Market · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="section-head">
+  <h1>{{ icon('store', 24) }} Market</h1>
+  <button class="btn primary small" type="button" disabled>{{ icon('plus', 16) }} Weka bidhaa</button>
+</div>
+
+<label class="search">
+  {{ icon('search', 18) }}
+  <input type="search" id="market-search" placeholder="Tafuta bidhaa au huduma" autocomplete="off">
+</label>
+
+<div class="chips" data-filter-group="market">
+  {% for slug, name in categories %}
+  <button class="chip {{ 'on' if loop.first }}" data-filter="{{ slug }}" type="button">{{ name }}</button>
+  {% endfor %}
+</div>
+
+<div class="grid" id="market-list">
+  {% for p in products %}
+  <div data-category="{{ p.category }}" data-title="{{ p.title|lower }}">{{ product_card(p) }}</div>
+  {% endfor %}
+</div>
+<p class="muted center hidden" id="market-empty">Hakuna bidhaa iliyopatikana.</p>
+{% endblock %}

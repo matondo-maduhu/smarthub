@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ukurasa haupo · {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="card guest">
+  <div class="avatar big">{{ icon('search', 32) }}</div>
+  <h2>Ukurasa huu haupo</h2>
+  <p class="muted">Kiungo ulichofuata hakipo au kimehamishwa.</p>
+  <a class="btn primary" href="{{ url_for('home') }}">{{ icon('home', 18) }} Rudi nyumbani</a>
+</section>
+{% endblock %}

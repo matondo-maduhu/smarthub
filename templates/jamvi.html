@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card with context %}
+{% block title %}Jamvi · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="section-head">
+  <h1>{{ icon('ticket', 24) }} Jamvi la mikeka</h1>
+  <button class="btn primary small" type="button" disabled>{{ icon('plus', 16) }} Weka mkeka</button>
+</div>
+
+<div class="chips" data-filter-group="tips">
+  <button class="chip on" data-filter="all" type="button">Zote</button>
+  <button class="chip" data-filter="open" type="button">Zinazosubiri</button>
+  <button class="chip" data-filter="won" type="button">Zilizoshinda</button>
+  <button class="chip" data-filter="lost" type="button">Zilizopoteza</button>
+</div>
+
+<div class="stack" id="tips-list">
+  {% for t in tips %}
+  <div data-status="{{ t.status }}">{{ tip_card(t) }}</div>
+  {% endfor %}
+</div>
+
+<p class="notice">{{ icon('shield', 16) }} Mikeka ni maoni ya watumiaji, si uhakika wa ushindi. Cheza kwa kiasi.</p>
+{% endblock %}

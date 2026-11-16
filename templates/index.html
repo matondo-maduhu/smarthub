@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card, product_card with context %}
+
+{% block content %}
+<section class="hero card">
+  <div>
+    <p class="eyebrow">Karibu {{ app_name }}</p>
+    <h1>Jamvi la mikeka na soko lako la kila siku.</h1>
+    <p class="muted">Shiriki mikeka, nunua na uza vitu, tumia coin kwenye kila kitu.</p>
+  </div>
+  <div class="hero-actions">
+    <a class="btn primary" href="{{ url_for('wasifu') }}">{{ icon('user', 18) }} Jisajili</a>
+    <a class="btn" href="{{ url_for('jamvi') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
+  </div>
+</section>
+
+<section class="quick">
+  <a class="card quick-item" href="{{ url_for('jamvi') }}">
+    <span class="quick-icon blue">{{ icon('ticket', 22) }}</span><strong>Jamvi</strong><span class="muted">Mikeka ya leo</span>
+  </a>
+  <a class="card quick-item" href="{{ url_for('market') }}">
+    <span class="quick-icon green">{{ icon('store', 22) }}</span><strong>Market</strong><span class="muted">Nunua na uza</span>
+  </a>
+  <a class="card quick-item" href="{{ url_for('pochi') }}">
+    <span class="quick-icon orange">{{ icon('wallet', 22) }}</span><strong>Pochi</strong><span class="muted">Coin zako</span>
+  </a>
+  <a class="card quick-item" href="{{ url_for('wasifu') }}">
+    <span class="quick-icon purple">{{ icon('user', 22) }}</span><strong>Wasifu</strong><span class="muted">Akaunti yako</span>
+  </a>
+</section>
+
+<section>
+  <div class="section-head">
+    <h2>{{ icon('fire', 20) }} Mikeka ya hivi karibuni</h2>
+    <a href="{{ url_for('jamvi') }}">Yote</a>
+  </div>
+  <div class="stack">
+    {% for t in tips %}{{ tip_card(t) }}{% endfor %}
+  </div>
+</section>
+
+<section>
+  <div class="section-head">
+    <h2>{{ icon('tag', 20) }} Kwenye market</h2>
+    <a href="{{ url_for('market') }}">Yote</a>
+  </div>
+  <div class="grid">
+    {% for p in products %}{{ product_card(p) }}{% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% from "_icons.html" import icon %}
+
+{% macro tip_card(t) -%}
+{% set st = status_labels[t.status] %}
+<article class="card tip">
+  <header class="tip-head">
+    <div class="avatar">{{ t.initials }}</div>
+    <div class="tip-who">
+      <strong>{{ t.tipster }}</strong>
+      <span class="muted">{{ t.league }} · {{ t.time }}</span>
+    </div>
+    <span class="badge {{ st[1] }}">{{ st[0] }}</span>
+  </header>
+
+  <h3 class="tip-match">{{ t.match }}</h3>
+
+  <div class="tip-pick">
+    {% if t.price > 0 %}
+      <span class="lock">{{ icon('lock', 16) }} Mkeka umefungwa</span>
+    {% else %}
+      <span>{{ t.pick }}</span>
+    {% endif %}
+    <span class="odds">{{ '%.2f'|format(t.odds) }}</span>
+  </div>
+
+  <footer class="tip-foot">
+    <span class="stat">{{ icon('heart', 16) }} {{ t.likes }}</span>
+    <span class="stat">{{ icon('chat', 16) }} {{ t.comments }}</span>
+    <span class="stat">{{ icon('trend', 16) }} {{ t.win_rate }}%</span>
+    <span class="spacer"></span>
+    {% if t.price > 0 %}
+      <button class="btn small primary" type="button" disabled>{{ icon('coin', 16) }} {{ t.price }}</button>
+    {% else %}
+      <span class="badge ok">Bure</span>
+    {% endif %}
+  </footer>
+</article>
+{%- endmacro %}
+
+{% macro product_card(p) -%}
+<article class="card product">
+  <div class="product-img" style="--h: {{ p.hue }}">{{ icon(p.icon, 40) }}</div>
+  <div class="product-body">
+    <h3>{{ p.title }}</h3>
+    <p class="muted">{{ p.location }}</p>
+    <div class="product-price">{{ icon('coin', 16) }} {{ p.price }}</div>
+  </div>
+</article>
+{%- endmacro %}

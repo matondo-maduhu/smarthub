@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Wasifu · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('user', 24) }} Wasifu</h1>
+
+<section class="card guest">
+  <div class="avatar big">{{ icon('user', 32) }}</div>
+  <h2>Ingia au jisajili</h2>
+  <p class="muted">Tengeneza akaunti ili uweke mikeka, ununue coin, na uuze kwenye market.</p>
+
+  <div class="stack tight">
+    <button class="btn block" type="button" disabled>{{ icon('globe', 18) }} Endelea na Google</button>
+    <button class="btn block" type="button" disabled>{{ icon('phone', 18) }} Endelea na namba ya simu</button>
+    <button class="btn block" type="button" disabled>{{ icon('mail', 18) }} Endelea na barua pepe</button>
+  </div>
+  <p class="muted small-text">Usajili unaanza hatua ya 2. Njia zaidi zitaongezwa baadaye.</p>
+</section>
+
+<section class="card list">
+  <div class="row"><span class="row-icon">{{ icon('shield', 18) }}</span><div class="row-main"><strong>Usalama na umri</strong><span class="muted">Miaka 18+ tu</span></div></div>
+  <div class="row"><span class="row-icon">{{ icon('bell', 18) }}</span><div class="row-main"><strong>Arifa</strong><span class="muted">Hivi karibuni</span></div></div>
+  <div class="row"><span class="row-icon">{{ icon('globe', 18) }}</span><div class="row-main"><strong>Lugha</strong><span class="muted">Kiswahili</span></div></div>
+</section>
+{% endblock %}
