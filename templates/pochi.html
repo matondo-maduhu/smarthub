@@ -11,10 +11,11 @@
 
 <section class="card balance">
   <p class="muted">Salio lako</p>
-  <div class="balance-amount">{{ icon('coin', 32) }} <span>{{ coin_balance }}</span></div>
+  <div class="balance-amount">{{ icon('coin', 32) }} <span>{{ coin_balance|num }}</span></div>
+  <p class="muted">Takriban TSh {{ (coin_balance * coin_rate)|num }}</p>
   <div class="balance-actions">
-    <button class="btn primary" type="button" disabled>{{ icon('arrow-down', 18) }} Nunua coin</button>
-    <button class="btn" type="button" disabled>{{ icon('arrow-up', 18) }} Toa pesa</button>
+    <a class="btn primary" href="{{ url_for('wallet.buy') }}">{{ icon('arrow-down', 18) }} Nunua coin</a>
+    <a class="btn" href="{{ url_for('wallet.withdraw') }}">{{ icon('arrow-up', 18) }} Toa pesa</a>
   </div>
 </section>
 

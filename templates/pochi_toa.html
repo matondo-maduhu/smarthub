@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Toa pesa · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('arrow-up', 24) }} Toa pesa</h1>
+
+<p class="notice warn">{{ icon('shield', 16) }} Hali ya majaribio: coin zinakatwa lakini hakuna pesa halisi inayotumwa.</p>
+
+<section class="card auth">
+  <p class="muted">Salio lako: <strong>{{ coin_balance|num }}</strong> coin. Coin 1 = TSh {{ coin_rate|num }}. Kiwango cha chini: coin {{ min_withdraw|num }}.</p>
+
+  {% include "_errors.html" %}
+
+  {% if coin_balance < min_withdraw %}
+  <p class="notice">Salio lako bado halifikii kiwango cha chini cha kutoa.</p>
+  {% else %}
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
+
+    <label class="field">
+      <span>Idadi ya coin</span>
+      <input type="number" name="amount" id="toa-amount" data-rate="{{ coin_rate }}" value="{{ form.amount }}" min="{{ min_withdraw }}" max="{{ coin_balance }}" step="1" inputmode="numeric" required>
+      <small class="muted">Utapokea takriban TSh <strong id="toa-tsh">0</strong></small>
+    </label>
+
+    <div class="field">
+      <span>Mtandao wa kupokelea</span>
+      <div class="pack-grid three">
+        {% for key, label in networks.items() %}
+        <label class="pack small">
+          <input type="radio" name="network" value="{{ key }}" {{ 'checked' if form.network == key }} required>
+          <span>{{ label }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <label class="field">
+      <span>Namba ya simu</span>
+      <input name="phone" value="{{ form.phone }}" required inputmode="tel" autocomplete="tel" placeholder="mfano 0712345678">
+    </label>
+
+    <button class="btn primary block" type="submit">Toa (majaribio)</button>
+  </form>
+  {% endif %}
+  <a class="btn block" href="{{ url_for('pochi') }}">Rudi kwenye pochi</a>
+</section>
+{% endblock %}

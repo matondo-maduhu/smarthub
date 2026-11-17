@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Nunua coin · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('arrow-down', 24) }} Nunua coin</h1>
+
+<p class="notice warn">{{ icon('shield', 16) }} Hali ya majaribio: hakuna pesa halisi inayokatwa. Coin zinaongezwa kwenye pochi yako kwa kuiga.</p>
+
+<section class="card auth">
+  <p class="muted">Coin 1 = TSh {{ coin_rate|num }}. Chagua kifurushi:</p>
+
+  {% include "_errors.html" %}
+
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="token" value="{{ token }}">
+
+    <div class="pack-grid">
+      {% for p in packages %}
+      <label class="pack">
+        <input type="radio" name="coins" value="{{ p }}" required>
+        <span class="pack-coins">{{ icon('coin', 20) }} {{ p|num }}</span>
+        <span class="muted">TSh {{ (p * coin_rate)|num }}</span>
+      </label>
+      {% endfor %}
+    </div>
+
+    <button class="btn primary block" type="submit">Nunua (majaribio)</button>
+  </form>
+  <a class="btn block" href="{{ url_for('pochi') }}">Rudi kwenye pochi</a>
+</section>
+{% endblock %}
