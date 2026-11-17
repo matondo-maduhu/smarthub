@@ -346,3 +346,37 @@ p { margin: 0; }
 .pack:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .pack:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
 .pack-coins { display: inline-flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 700; color: var(--orange); }
+
+/* ===== Jamvi: mkeka, maoni, viwango ===== */
+.avatar { text-decoration: none; overflow: hidden; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+a.chip { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+.tip-link { color: var(--text); }
+.tip-link:hover { text-decoration: none; }
+.tip-who a { color: var(--text); }
+.back { font-size: 14px; }
+.pad { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.prewrap { white-space: pre-wrap; overflow-wrap: anywhere; }
+.buy-box { border-color: var(--orange); }
+.actions-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.actions-row form { margin: 0; }
+.btn.liked { color: var(--red); border-color: var(--red); }
+.pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.field textarea, .field select {
+  width: 100%; padding: 10px 12px; border-radius: 8px; resize: vertical;
+  background: var(--bg); color: var(--text); border: 1px solid var(--border); font: inherit; outline: 0;
+}
+.field textarea:focus, .field select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.comments { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.comment { padding-top: 12px; border-top: 1px solid var(--border); }
+.comment-head { display: flex; align-items: center; gap: 8px; font-size: 13px; flex-wrap: wrap; }
+.comment-head a { color: var(--text); }
+form.inline { display: inline; margin-left: auto; }
+.link-btn { background: none; border: 0; color: var(--red); font: inherit; font-size: 13px; cursor: pointer; padding: 0; }
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; margin-top: 12px; }
+.stat-grid div { display: flex; flex-direction: column; align-items: center; }
+.stat-grid strong { font-size: 20px; }
+.stat-grid .muted { font-size: 12px; }
+.rank-row { color: var(--text); }
+.rank-row:hover { text-decoration: none; background: var(--surface-2); }
+.rank { width: 28px; text-align: center; font-weight: 700; color: var(--muted); }
