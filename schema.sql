@@ -46,8 +46,10 @@ CREATE INDEX IF NOT EXISTS idx_tx_user ON transactions(user_id, created_at DESC)
 CREATE TABLE IF NOT EXISTS tips (
     id          BIGSERIAL PRIMARY KEY,
     user_id     BIGINT NOT NULL REFERENCES users(id),
-    title       TEXT NOT NULL,
-    body        TEXT,
+    title       TEXT NOT NULL,                   -- mchezo, mfano "Simba vs Yanga"
+    league      TEXT NOT NULL DEFAULT '',
+    pick        TEXT NOT NULL DEFAULT '',        -- mkeka wenyewe (unafichwa kama umefungwa)
+    body        TEXT,                            -- maelezo ya ziada (yanafichwa pamoja na mkeka)
     odds        NUMERIC(8,2),
     price       BIGINT NOT NULL DEFAULT 0,       -- 0 = bure
     status      TEXT NOT NULL DEFAULT 'open',    -- open | won | lost | void
@@ -55,7 +57,18 @@ CREATE TABLE IF NOT EXISTS tips (
     starts_at   TIMESTAMPTZ,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Kwa database iliyotengenezwa kabla ya hatua ya 4
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT '';
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS pick TEXT NOT NULL DEFAULT '';
 CREATE INDEX IF NOT EXISTS idx_tips_created ON tips(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tips_user ON tips(user_id, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS tip_likes (
+    tip_id     BIGINT NOT NULL REFERENCES tips(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES users(id),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (tip_id, user_id)
+);
 
 CREATE TABLE IF NOT EXISTS tip_purchases (
     tip_id     BIGINT NOT NULL REFERENCES tips(id) ON DELETE CASCADE,
@@ -71,6 +84,7 @@ CREATE TABLE IF NOT EXISTS comments (
     body       TEXT NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+CREATE INDEX IF NOT EXISTS idx_comments_tip ON comments(tip_id, created_at);
 
 -- Market
 CREATE TABLE IF NOT EXISTS products (

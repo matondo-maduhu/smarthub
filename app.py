@@ -8,6 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 import auth
 import db
 import models
+import tips
 import wallet
 from config import Config
 
@@ -29,13 +30,6 @@ PRODUCTS = [
     {"id": 4, "title": "Pikipiki ya miezi 6", "category": "magari", "price": 2400, "location": "Dodoma", "icon": "trend", "hue": 0},
     {"id": 5, "title": "Mchele kilo 25", "category": "chakula", "price": 55, "location": "Mbeya", "icon": "store", "hue": 50},
     {"id": 6, "title": "Fundi wa umeme", "category": "huduma", "price": 25, "location": "Dar es Salaam", "icon": "fire", "hue": 280},
-]
-
-TIPS = [
-    {"id": 1, "tipster": "Juma K.", "initials": "JK", "league": "Ligi Kuu", "match": "Simba vs Yanga", "pick": "Wote kufunga", "odds": 1.85, "price": 0, "status": "open", "time": "Leo 19:00", "likes": 42, "comments": 18, "win_rate": 72},
-    {"id": 2, "tipster": "Asha M.", "initials": "AM", "league": "Premier League", "match": "Arsenal vs Chelsea", "pick": "Arsenal ashinde", "odds": 2.10, "price": 15, "status": "open", "time": "Kesho 17:30", "likes": 31, "comments": 9, "win_rate": 68},
-    {"id": 3, "tipster": "Baraka T.", "initials": "BT", "league": "La Liga", "match": "Real Madrid vs Sevilla", "pick": "Magoli zaidi ya 2.5", "odds": 1.70, "price": 10, "status": "won", "time": "Jana 22:00", "likes": 88, "comments": 27, "win_rate": 81},
-    {"id": 4, "tipster": "Neema S.", "initials": "NS", "league": "Serie A", "match": "Inter vs Napoli", "pick": "Sare au Inter", "odds": 1.55, "price": 0, "status": "lost", "time": "Jana 21:45", "likes": 12, "comments": 6, "win_rate": 59},
 ]
 
 STATUS_LABELS = {
@@ -68,6 +62,7 @@ def create_app():
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(wallet.bp)
+    app.register_blueprint(tips.bp)
 
     @app.before_request
     def load_user():
@@ -105,6 +100,8 @@ def create_app():
 
     @app.template_filter("eat")
     def eat(value):
+        if value is None:
+            return ""
         if isinstance(value, str):
             try:
                 value = datetime.fromisoformat(value)
@@ -117,11 +114,12 @@ def create_app():
     # ----- Kurasa -----
     @app.route("/")
     def home():
-        return render_template("index.html", active="home", tips=TIPS[:3], products=PRODUCTS[:4])
-
-    @app.route("/jamvi")
-    def jamvi():
-        return render_template("jamvi.html", active="jamvi", tips=TIPS)
+        try:
+            latest = models.list_tips(g.user["id"] if g.user else None, limit=3)
+        except Exception as e:  # ukurasa wa nyumbani ufunguke hata database ikikosekana
+            print(f"ONYO: imeshindwa kusoma mikeka: {e}", file=sys.stderr)
+            latest = []
+        return render_template("index.html", active="home", tips=latest, products=PRODUCTS[:4])
 
     @app.route("/market")
     def market():

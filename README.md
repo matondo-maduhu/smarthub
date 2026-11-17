@@ -11,8 +11,8 @@ App ya jamvi la mikeka, market na pochi ya coin. Inatumia Flask (Python), Neon k
 | 1 | Msingi, muonekano, Neon na R2 | Imekamilika |
 | 2 | Usajili na akaunti | Imekamilika |
 | 3 | Pochi ya coin (majaribio) | Imekamilika |
-| 4 | Jamvi la mikeka linalofanya kazi | Inafuata |
-| 5 | Market inayofanya kazi | Bado |
+| 4 | Jamvi la mikeka linalofanya kazi | Imekamilika |
+| 5 | Market inayofanya kazi | Inafuata |
 | 6 | Ujumbe na arifa | Bado |
 | 7 | Usimamizi (admin) | Bado |
 | 8 | Malipo halisi (M-Pesa, Tigo Pesa, Airtel Money) | Bado, baada ya leseni |
@@ -24,6 +24,7 @@ App ya jamvi la mikeka, market na pochi ya coin. Inatumia Flask (Python), Neon k
 app.py            njia za kurasa, wasifu, pochi
 auth.py           usajili, kuingia, Google, ulinzi wa fomu (CSRF)
 wallet.py         kununua na kutoa coin (hali ya majaribio)
+tips.py           jamvi la mikeka: kuweka, kununua, maoni, matokeo, viwango
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -131,9 +132,39 @@ App ikianza (au Vercel ikiamsha function mpya), ombi la kwanza linaendesha `sche
 - **Faili mpya**: `wallet.py`, `pochi_nunua.html`, `pochi_toa.html`. Safu mpya `idem_key` kwenye jedwali la `transactions` (inaongezwa yenyewe kwenye database ya zamani).
 - **Bado**: kiasi cha kuandika mwenyewe na vifurushi vikubwa zaidi (hiari, kulingana na uamuzi wako).
 
+## Hatua ya 4: jamvi la mikeka linalofanya kazi
+
+- **Kuweka mkeka** (`/jamvi/weka`): mchezo, ligi, mkeka wako, odds, saa ya mchezo (saa za Tanzania), bei (0 = bure, au coin 5 hadi `TIP_MAX_PRICE`) na maelezo ya hiari. Mchezo uanze angalau dakika 5 mbele na usizidi siku 30. Kikomo ni mikeka `MAX_TIPS_PER_DAY` (10) kwa siku kwa kila mtumiaji.
+- **Orodha** (`/jamvi`): kichujio cha hali (zote, zinazosubiri, zilizoshinda, zilizopoteza) na kurasa za mikeka 20.
+- **Mkeka uliofungwa**: mkeka na maelezo yake vinafichwa na seva yenyewe, havipo kwenye HTML kwa asiyenunua. Unaonekana kwa mwenye mkeka, kwa aliyenunua, na kwa wote baada ya matokeo kuwekwa (uwazi wa rekodi ya mtabiri).
+- **Kununua**: mnunuzi analipa bei, muuzaji anapokea bei toa ada ya jukwaa (`TIP_FEE_PCT`, chaguo-msingi 10%), na miamala miwili inaandikwa kwa mkupuo mmoja. Kosa lolote linarudisha kila kitu nyuma. Mtu hawezi kununua mara mbili, kununua wake mwenyewe, mkeka wa bure, mkeka uliokwisha, wala baada ya mchezo kuanza.
+- **Kupenda na maoni**: kupenda/kuondoa, maoni hadi herufi 500, kikomo cha maoni 5 kwa dakika, na kufuta maoni (mwenye maoni au msimamizi). Maoni yanatoroshwa dhidi ya XSS.
+- **Matokeo**: mwenye mkeka anaweza kuweka umeshinda/umepoteza mara moja baada ya mchezo kuanza. Msimamizi anaweza kuweka au kurekebisha wakati wowote.
+- **Kufuta**: mwenye mkeka anaweza kuufuta kama hakuna aliyeununua.
+- **Wasifu wa mtabiri** (`/jamvi/mtabiri/<jina>`): idadi ya mikeka, ushindi, kupoteza na asilimia.
+- **Viwango** (`/jamvi/viwango`): watabiri wenye angalau `MIN_SETTLED_FOR_RANK` (5) mikeka iliyokwisha, kwa asilimia ya ushindi.
+- **Nyumbani** sasa inaonyesha mikeka halisi, na inafunguka hata database ikikosekana.
+- **Faili mpya**: `tips.py`, `jamvi_weka.html`, `mkeka.html`, `mtabiri.html`, `viwango.html`. Majedwali: `tip_likes` mpya, safu `league` na `pick` kwenye `tips`, na `idx_comments_tip` (zinaongezwa zenyewe kwenye database ya zamani).
+- **Mipangilio mipya**: `TIP_FEE_PCT`, `TIP_MAX_PRICE`, `MAX_TIPS_PER_DAY`, `MIN_SETTLED_FOR_RANK`.
+
+### Kumfanya mtu kuwa msimamizi
+
+Hakuna ukurasa wa usimamizi bado (hatua ya 7). Kwa sasa, kwenye SQL Editor ya Neon:
+
+```sql
+UPDATE users SET is_admin = TRUE WHERE username = 'jina_la_mtumiaji';
+```
+
+### Mambo ya kujua (hatua ya 4)
+
+- **Matokeo yanaripotiwa na mtabiri mwenyewe.** Mtabiri asiye mwaminifu anaweza kuweka "umeshinda" kwa mkeka uliopoteza, na hilo linapotosha viwango. Hatua ya 7 itaongeza uthibitisho wa msimamizi na ripoti za watumiaji.
+- **Hakuna kurudisha pesa (refund) bado.** Hali ya "umefutwa" (`void`) kwa mchezo ulioahirishwa na kurudishiwa wanunuzi itaongezwa hatua ya 7.
+- **Maoni hayafichwi** kwa asiyenunua, kwa hiyo mtabiri au mnunuzi anaweza kuandika mkeka kwenye maoni. Udhibiti wa maudhui ni hatua ya 7.
+- **Ada ya jukwaa** kwa sasa inatoweka (haiingii akaunti yoyote). Itaandikwa kwenye hesabu ya jukwaa hatua ya 8, pamoja na malipo halisi.
+- Mikeka ya mfano ya hatua ya 1 imeondolewa; jamvi linaanza tupu na linajazwa na watumiaji halisi.
+
 ## Hatua zinazofuata
 
-4. Jamvi la mikeka linalofanya kazi: kuweka mkeka, kuufunga kwa bei ya coin, kununua, maoni na viwango vya watabiri
 5. Market inayofanya kazi
 6. Ujumbe na arifa
 7. Usimamizi (admin)

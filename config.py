@@ -34,6 +34,13 @@ class Config:
     COIN_RATE_TZS = int(os.getenv("COIN_RATE_TZS", "100"))
     MIN_WITHDRAW = int(os.getenv("MIN_WITHDRAW", "50"))
 
+    # Jamvi la mikeka
+    TIP_FEE_PCT = int(os.getenv("TIP_FEE_PCT", "10"))              # ada ya jukwaa kwa kila mauzo (%)
+    TIP_MAX_PRICE = int(os.getenv("TIP_MAX_PRICE", "1000"))        # bei ya juu ya mkeka (coin)
+    MAX_TIPS_PER_DAY = int(os.getenv("MAX_TIPS_PER_DAY", "10"))    # mikeka kwa mtumiaji kwa siku
+    MIN_SETTLED_FOR_RANK = int(os.getenv("MIN_SETTLED_FOR_RANK", "5"))  # mikeka iliyokwisha ili aingie viwango
+    TIPS_PER_PAGE = 20
+
     # Zawadi ya kujiunga (coin bandia) hutolewa hali ya demo tu
     SIGNUP_BONUS = int(os.getenv("SIGNUP_BONUS", "100")) if COIN_MODE == "demo" else 0
 
