@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 from dotenv import load_dotenv
 
@@ -23,3 +24,20 @@ class Config:
     COIN_MODE = os.getenv("COIN_MODE", "demo")
 
     MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB kwa kila upakiaji
+
+    # Kuingia kwa Google (hiari). Acha wazi kama hujaiweka.
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
+
+    # Zawadi ya kujiunga (coin bandia) hutolewa hali ya demo tu
+    SIGNUP_BONUS = int(os.getenv("SIGNUP_BONUS", "100")) if COIN_MODE == "demo" else 0
+
+    # Vidakuzi vya kikao
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+    SESSION_COOKIE_SECURE = os.getenv("COOKIE_SECURE", "1") == "1"
+    PERMANENT_SESSION_LIFETIME = timedelta(days=30)
+
+    # 1 = app iko nyuma ya proxy ya hosting (Render, Railway, Nginx...)
+    TRUST_PROXY = os.getenv("TRUST_PROXY", "1") == "1"

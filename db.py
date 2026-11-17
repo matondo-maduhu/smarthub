@@ -14,6 +14,9 @@ from config import Config
 
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "schema.sql")
 
+# Kosa la "tayari ipo" (barua pepe, simu au jina la mtumiaji lililotumika)
+IntegrityError = psycopg2.IntegrityError
+
 
 def _dsn():
     if not Config.DATABASE_URL:

@@ -32,12 +32,29 @@ def public_url(key):
     return f"{Config.R2_PUBLIC_URL}/{key}"
 
 
+def _sniff(stream):
+    """Hutambua aina halisi ya picha kwa baiti za mwanzo, si kwa jina la faili."""
+    head = stream.read(12)
+    stream.seek(0)
+    if head.startswith(b"\xff\xd8\xff"):
+        return {"jpg", "jpeg"}
+    if head.startswith(b"\x89PNG\r\n\x1a\n"):
+        return {"png"}
+    if head[:6] in (b"GIF87a", b"GIF89a"):
+        return {"gif"}
+    if head[:4] == b"RIFF" and head[8:12] == b"WEBP":
+        return {"webp"}
+    return set()
+
+
 def upload_image(file_storage, folder="uploads"):
     """Pakia picha kutoka kwenye fomu (request.files[...]). Inarudisha URL ya umma."""
     name = file_storage.filename or ""
     ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
     if ext not in ALLOWED_EXT:
         raise ValueError("Aina ya picha hairuhusiwi. Tumia jpg, png, webp au gif.")
+    if ext not in _sniff(file_storage.stream):
+        raise ValueError("Faili hili si picha halali.")
     key = f"{folder}/{uuid.uuid4().hex}.{ext}"
     content_type = mimetypes.guess_type(name)[0] or "application/octet-stream"
     _get_client().upload_fileobj(

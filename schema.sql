@@ -13,8 +13,11 @@ CREATE TABLE IF NOT EXISTS users (
     is_verified   BOOLEAN NOT NULL DEFAULT FALSE,
     is_admin      BOOLEAN NOT NULL DEFAULT FALSE,
     is_banned     BOOLEAN NOT NULL DEFAULT FALSE,
+    age_confirmed_at TIMESTAMPTZ,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Kwa database iliyotengenezwa hatua ya 1
+ALTER TABLE users ADD COLUMN IF NOT EXISTS age_confirmed_at TIMESTAMPTZ;
 
 -- Salio la coin la kila mtumiaji
 CREATE TABLE IF NOT EXISTS wallets (
