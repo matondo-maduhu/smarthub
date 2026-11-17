@@ -331,3 +331,18 @@ p { margin: 0; }
 .profile { padding: 24px 20px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
 .profile .avatar.big { margin-bottom: 8px; }
 .avatar-img { object-fit: cover; }
+
+/* ===== Vifurushi vya coin na mitandao ===== */
+.pack-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.pack-grid.three { grid-template-columns: repeat(3, 1fr); }
+.pack {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  padding: 14px 8px; border-radius: 10px; cursor: pointer; text-align: center;
+  background: var(--bg); border: 1px solid var(--border);
+}
+.pack.small { padding: 10px 6px; font-size: 13px; font-weight: 600; }
+.pack input { position: absolute; opacity: 0; pointer-events: none; }
+.pack:hover { border-color: var(--muted); }
+.pack:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.pack:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; }
+.pack-coins { display: inline-flex; align-items: center; gap: 6px; font-size: 20px; font-weight: 700; color: var(--orange); }
