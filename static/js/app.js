@@ -61,3 +61,17 @@
   }
   if (search) search.addEventListener("input", applyMarket);
 })();
+
+// Makadirio ya shilingi wakati wa kutoa coin
+(function () {
+  var a = document.getElementById("toa-amount");
+  var out = document.getElementById("toa-tsh");
+  if (!a || !out) return;
+  var rate = parseInt(a.dataset.rate, 10) || 0;
+  function update() {
+    var n = parseInt(a.value, 10);
+    out.textContent = n > 0 ? (n * rate).toLocaleString("en-US") : "0";
+  }
+  a.addEventListener("input", update);
+  update();
+})();
