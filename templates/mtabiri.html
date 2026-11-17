@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card with context %}
+{% block title %}{{ person.display_name }} · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
+
+<section class="card profile">
+  {% if person.avatar_url %}
+  <img class="avatar big avatar-img" src="{{ person.avatar_url }}" alt="" referrerpolicy="no-referrer">
+  {% else %}
+  <div class="avatar big">{{ person.display_name[:1]|upper }}</div>
+  {% endif %}
+  <h2>{{ person.display_name }}</h2>
+  <p class="muted">@{{ person.username }}</p>
+  <div class="stat-grid">
+    <div><strong>{{ stats.total }}</strong><span class="muted">Mikeka</span></div>
+    <div><strong>{{ stats.won }}</strong><span class="muted">Imeshinda</span></div>
+    <div><strong>{{ stats.lost }}</strong><span class="muted">Imepoteza</span></div>
+    <div><strong>{{ (stats.win_rate ~ '%') if stats.win_rate is not none else '—' }}</strong><span class="muted">Ushindi</span></div>
+  </div>
+</section>
+
+<div class="section-head"><h2>Mikeka yake</h2></div>
+{% if tips %}
+<div class="stack">{% for t in tips %}{{ tip_card(t) }}{% endfor %}</div>
+{% else %}
+<p class="muted center">Hajaweka mkeka bado.</p>
+{% endif %}
+{% endblock %}

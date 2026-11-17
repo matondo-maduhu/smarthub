@@ -11,17 +11,17 @@
   </div>
   <div class="hero-actions">
     {% if user %}
-    <a class="btn primary" href="{{ url_for('jamvi') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
+    <a class="btn primary" href="{{ url_for('tips.index') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
     <a class="btn" href="{{ url_for('market') }}">{{ icon('store', 18) }} Fungua market</a>
     {% else %}
     <a class="btn primary" href="{{ url_for('auth.register') }}">{{ icon('user', 18) }} Jisajili</a>
-    <a class="btn" href="{{ url_for('jamvi') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
+    <a class="btn" href="{{ url_for('tips.index') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
     {% endif %}
   </div>
 </section>
 
 <section class="quick">
-  <a class="card quick-item" href="{{ url_for('jamvi') }}">
+  <a class="card quick-item" href="{{ url_for('tips.index') }}">
     <span class="quick-icon blue">{{ icon('ticket', 22) }}</span><strong>Jamvi</strong><span class="muted">Mikeka ya leo</span>
   </a>
   <a class="card quick-item" href="{{ url_for('market') }}">
@@ -38,10 +38,12 @@
 <section>
   <div class="section-head">
     <h2>{{ icon('fire', 20) }} Mikeka ya hivi karibuni</h2>
-    <a href="{{ url_for('jamvi') }}">Yote</a>
+    <a href="{{ url_for('tips.index') }}">Yote</a>
   </div>
   <div class="stack">
-    {% for t in tips %}{{ tip_card(t) }}{% endfor %}
+    {% for t in tips %}{{ tip_card(t) }}{% else %}
+    <p class="muted">Hakuna mikeka bado. <a href="{{ url_for('tips.new') }}">Weka wa kwanza</a>.</p>
+    {% endfor %}
   </div>
 </section>
 

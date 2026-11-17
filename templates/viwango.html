@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Viwango vya watabiri · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
+<h1>{{ icon('trend', 24) }} Viwango vya watabiri</h1>
+<p class="muted">Wanaoingia hapa ni wenye mikeka angalau {{ min_settled }} iliyokwisha. Viwango vinatokana na matokeo yaliyowekwa kwenye jamvi.</p>
+
+{% if rows %}
+<section class="card list">
+  {% for r in rows %}
+  <a class="row rank-row" href="{{ url_for('tips.tipster', username=r.username) }}">
+    <span class="rank">{{ loop.index }}</span>
+    <div class="row-main">
+      <strong>{{ r.display_name }}</strong>
+      <span class="muted">@{{ r.username }} · {{ r.won }} ushindi, {{ r.lost }} kupoteza</span>
+    </div>
+    <strong class="pos">{{ r.win_rate }}%</strong>
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<p class="muted center">Hakuna mtabiri aliyefikia kiwango cha kuingia bado.</p>
+{% endif %}
+{% endblock %}

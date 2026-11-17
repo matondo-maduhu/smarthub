@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card with context %}
+{% block title %}{{ t.title }} · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
+
+{{ tip_card(t) }}
+
+{% if t.pick_visible %}
+  {% if t.body %}
+  <section class="card pad">
+    <h2>Maelezo ya mtabiri</h2>
+    <p class="prewrap">{{ t.body }}</p>
+  </section>
+  {% endif %}
+{% else %}
+<section class="card pad buy-box">
+  <h2>{{ icon('lock', 20) }} Mkeka huu umefungwa</h2>
+  <p class="muted">Nunua kuuona. Mtabiri anapokea coin {{ t.price - (t.price * fee // 100) }} (ada ya jukwaa {{ fee }}%).</p>
+  {% if not user %}
+    <a class="btn primary block" href="{{ url_for('auth.login', next=request.path) }}">Ingia ili ununue</a>
+  {% elif t.started %}
+    <p class="notice warn">Mchezo umeshaanza, ununuzi umefungwa.</p>
+  {% else %}
+    <form method="post" action="{{ url_for('tips.buy', tip_id=t.id) }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn primary block" type="submit">{{ icon('coin', 18) }} Nunua kwa coin {{ t.price }}</button>
+    </form>
+    <p class="muted center">Salio lako: {{ coin_balance }} coin{% if coin_balance < t.price %} · <a href="{{ url_for('wallet.buy') }}">Nunua coin</a>{% endif %}</p>
+  {% endif %}
+</section>
+{% endif %}
+
+{% if user %}
+<div class="actions-row">
+  <form method="post" action="{{ url_for('tips.like', tip_id=t.id) }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn {{ 'liked' if t.liked }}" type="submit">{{ icon('heart', 18) }} {{ 'Umependa' if t.liked else 'Penda' }} ({{ t.likes }})</button>
+  </form>
+</div>
+{% endif %}
+
+{% if can_settle %}
+<section class="card pad">
+  <h2>Weka matokeo</h2>
+  <p class="muted">
+    {% if is_admin and not t.is_owner %}Kama msimamizi unaweza kuweka au kurekebisha matokeo.
+    {% else %}Matokeo yakishawekwa hayabadiliki isipokuwa kwa msimamizi.{% endif %}
+  </p>
+  <form method="post" action="{{ url_for('tips.settle', tip_id=t.id) }}" class="actions-row">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn primary" name="result" value="won" type="submit">{{ icon('check', 18) }} Umeshinda</button>
+    <button class="btn danger" name="result" value="lost" type="submit">Umepoteza</button>
+  </form>
+</section>
+{% endif %}
+
+{% if can_delete %}
+<form method="post" action="{{ url_for('tips.delete', tip_id=t.id) }}" onsubmit="return confirm('Futa mkeka huu?');">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <button class="btn danger block" type="submit">Futa mkeka huu</button>
+</form>
+{% endif %}
+
+<section class="card pad">
+  <h2>{{ icon('chat', 20) }} Maoni ({{ comments|length }})</h2>
+  {% if user %}
+  <form method="post" action="{{ url_for('tips.comment', tip_id=t.id) }}" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field">
+      <textarea name="body" rows="2" maxlength="500" required placeholder="Andika maoni yako"></textarea>
+    </label>
+    <button class="btn" type="submit">Tuma maoni</button>
+  </form>
+  {% else %}
+  <p class="muted"><a href="{{ url_for('auth.login', next=request.path) }}">Ingia</a> ili utoe maoni.</p>
+  {% endif %}
+
+  <div class="comments">
+    {% for c in comments %}
+    <div class="comment">
+      <div class="comment-head">
+        <a href="{{ url_for('tips.tipster', username=c.username) }}"><strong>{{ c.display_name }}</strong></a>
+        <span class="muted">{{ c.created_at|eat }}</span>
+        {% if user and (user.id == c.user_id or is_admin) %}
+        <form method="post" action="{{ url_for('tips.comment_delete', tip_id=t.id, comment_id=c.id) }}" class="inline">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="link-btn" type="submit">Futa</button>
+        </form>
+        {% endif %}
+      </div>
+      <p class="prewrap">{{ c.body }}</p>
+    </div>
+    {% else %}
+    <p class="muted">Hakuna maoni bado.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

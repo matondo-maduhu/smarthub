@@ -1,38 +1,44 @@
 {% from "_icons.html" import icon %}
 
+{% macro avatar(t) -%}
+<a class="avatar" href="{{ url_for('tips.tipster', username=t.username) }}" aria-label="{{ t.display_name }}">
+  {%- if t.avatar_url %}<img src="{{ t.avatar_url }}" alt="" referrerpolicy="no-referrer">{% else %}{{ t.display_name[:1]|upper }}{% endif -%}
+</a>
+{%- endmacro %}
+
 {% macro tip_card(t) -%}
 {% set st = status_labels[t.status] %}
 <article class="card tip">
   <header class="tip-head">
-    <div class="avatar">{{ t.initials }}</div>
+    {{ avatar(t) }}
     <div class="tip-who">
-      <strong>{{ t.tipster }}</strong>
-      <span class="muted">{{ t.league }} · {{ t.time }}</span>
+      <a href="{{ url_for('tips.tipster', username=t.username) }}"><strong>{{ t.display_name }}</strong></a>
+      <span class="muted">{{ t.league or 'Mchezo' }} · {{ t.starts_at|eat }}</span>
     </div>
     <span class="badge {{ st[1] }}">{{ st[0] }}</span>
   </header>
 
-  <h3 class="tip-match">{{ t.match }}</h3>
+  <a class="tip-link" href="{{ url_for('tips.detail', tip_id=t.id) }}"><h3 class="tip-match">{{ t.title }}</h3></a>
 
   <div class="tip-pick">
-    {% if t.price > 0 %}
-      <span class="lock">{{ icon('lock', 16) }} Mkeka umefungwa</span>
-    {% else %}
+    {% if t.pick_visible %}
       <span>{{ t.pick }}</span>
+    {% else %}
+      <span class="lock">{{ icon('lock', 16) }} Mkeka umefungwa · {{ icon('coin', 14) }} {{ t.price }}</span>
     {% endif %}
-    <span class="odds">{{ '%.2f'|format(t.odds) }}</span>
+    <span class="odds">{{ '%.2f'|format(t.odds or 0) }}</span>
   </div>
 
   <footer class="tip-foot">
     <span class="stat">{{ icon('heart', 16) }} {{ t.likes }}</span>
     <span class="stat">{{ icon('chat', 16) }} {{ t.comments }}</span>
-    <span class="stat">{{ icon('trend', 16) }} {{ t.win_rate }}%</span>
+    <span class="stat" title="Asilimia ya mikeka iliyoshinda">{{ icon('trend', 16) }} {{ (t.win_rate ~ '%') if t.win_rate is not none else '—' }}</span>
     <span class="spacer"></span>
-    {% if t.price > 0 %}
-      <button class="btn small primary" type="button" disabled>{{ icon('coin', 16) }} {{ t.price }}</button>
-    {% else %}
-      <span class="badge ok">Bure</span>
+    {% if t.is_owner %}<span class="badge">Wako</span>
+    {% elif t.bought %}<span class="badge ok">Umenunua</span>
+    {% elif t.price == 0 %}<span class="badge ok">Bure</span>
     {% endif %}
+    <a class="btn small" href="{{ url_for('tips.detail', tip_id=t.id) }}">Fungua</a>
   </footer>
 </article>
 {%- endmacro %}

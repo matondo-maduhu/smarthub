@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Weka mkeka · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('plus', 24) }} Weka mkeka</h1>
+
+<section class="card auth">
+  {% include "_errors.html" %}
+
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+    <label class="field">
+      <span>Mchezo</span>
+      <input name="title" value="{{ form.title }}" required minlength="3" maxlength="80" placeholder="mfano Simba vs Yanga">
+    </label>
+    <label class="field">
+      <span>Ligi</span>
+      <input name="league" value="{{ form.league }}" list="leagues" maxlength="40" placeholder="mfano Ligi Kuu Tanzania">
+      <datalist id="leagues">{% for l in leagues %}<option value="{{ l }}">{% endfor %}</datalist>
+    </label>
+    <label class="field">
+      <span>Mkeka wako</span>
+      <input name="pick" value="{{ form.pick }}" required minlength="2" maxlength="120" placeholder="mfano Wote kufunga">
+    </label>
+    <label class="field">
+      <span>Odds</span>
+      <input name="odds" value="{{ form.odds }}" required inputmode="decimal" placeholder="mfano 1.85">
+    </label>
+    <label class="field">
+      <span>Mchezo unaanza lini (saa za Tanzania)</span>
+      <input type="datetime-local" name="starts_at" value="{{ form.starts_at }}" required>
+    </label>
+    <label class="field">
+      <span>Bei (coin)</span>
+      <input type="number" name="price" value="{{ form.price }}" min="0" max="{{ max_price }}" step="1" inputmode="numeric">
+      <small class="muted">0 = bure. Mkeka wa kulipia: coin 5 hadi {{ max_price }}. Jukwaa linakata ada ya {{ fee }}% kwenye kila mauzo.</small>
+    </label>
+    <label class="field">
+      <span>Maelezo ya ziada (hiari)</span>
+      <textarea name="body" rows="4" maxlength="500" placeholder="Sababu za mkeka wako">{{ form.body }}</textarea>
+      <small class="muted">Yanafichwa pamoja na mkeka kwa asiyenunua.</small>
+    </label>
+
+    <p class="notice">{{ icon('shield', 16) }} Usiahidi ushindi wa uhakika. Mkeka wa kulipia unafichwa hadi mtu anunue au matokeo yawekwe.</p>
+    <button class="btn primary block" type="submit">Weka mkeka</button>
+  </form>
+  <a class="btn block" href="{{ url_for('tips.index') }}">Ghairi</a>
+</section>
+{% endblock %}
