@@ -6,6 +6,7 @@ from flask import (Flask, flash, g, jsonify, redirect, render_template,
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import auth
+import db
 import models
 from config import Config
 
@@ -69,6 +70,11 @@ def create_app():
     @app.before_request
     def load_user():
         g.user = None
+        if Config.DATABASE_URL:
+            try:
+                db.ensure_schema()
+            except Exception as e:  # kurasa zisizotumia database bado zifunguke
+                print(f"ONYO: imeshindwa kutengeneza majedwali: {e}", file=sys.stderr)
         uid = session.get("uid")
         if uid:
             user = models.get_user(uid)

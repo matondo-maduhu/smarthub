@@ -59,6 +59,23 @@ def init_db():
     print("Majedwali yametengenezwa.")
 
 
+_schema_ready = False
+
+
+def ensure_schema():
+    """Hutengeneza majedwali yanayokosekana mara moja kwa kila mwanzo wa app.
+    Kufuli la Postgres linazuia maombi mawili ya kwanza kugongana kwenye Vercel."""
+    global _schema_ready
+    if _schema_ready:
+        return
+    with open(SCHEMA_PATH, encoding="utf-8") as f:
+        sql = f.read()
+    with get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT pg_advisory_xact_lock(727274)")
+        cur.execute(sql)
+    _schema_ready = True
+
+
 def ping():
     row = query("SELECT 1 AS ok", one=True)
     return bool(row and row["ok"] == 1)
