@@ -10,8 +10,13 @@
     <p class="muted">Shiriki mikeka, nunua na uza vitu, tumia coin kwenye kila kitu.</p>
   </div>
   <div class="hero-actions">
-    <a class="btn primary" href="{{ url_for('wasifu') }}">{{ icon('user', 18) }} Jisajili</a>
+    {% if user %}
+    <a class="btn primary" href="{{ url_for('jamvi') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
+    <a class="btn" href="{{ url_for('market') }}">{{ icon('store', 18) }} Fungua market</a>
+    {% else %}
+    <a class="btn primary" href="{{ url_for('auth.register') }}">{{ icon('user', 18) }} Jisajili</a>
     <a class="btn" href="{{ url_for('jamvi') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
+    {% endif %}
   </div>
 </section>
 

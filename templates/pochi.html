@@ -19,17 +19,20 @@
 </section>
 
 <div class="section-head"><h2>Historia ya miamala</h2></div>
+{% if txns %}
 <section class="card list">
   {% for x in txns %}
   <div class="row">
     <span class="row-icon {{ 'ok' if x.amount > 0 else 'bad' }}">{{ icon('arrow-down' if x.amount > 0 else 'arrow-up', 18) }}</span>
     <div class="row-main">
       <strong>{{ x.label }}</strong>
-      <span class="muted">{{ x.time }}</span>
+      <span class="muted">{{ x.time|eat }}</span>
     </div>
     <strong class="{{ 'pos' if x.amount > 0 else 'neg' }}">{{ '+' if x.amount > 0 }}{{ x.amount }}</strong>
   </div>
   {% endfor %}
 </section>
-<p class="muted center">Data ya mfano. Miamala halisi itaonekana baada ya usajili.</p>
+{% else %}
+<p class="muted center">Bado hujafanya muamala wowote.</p>
+{% endif %}
 {% endblock %}

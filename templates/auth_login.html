@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ingia · {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="card auth">
+  <h1>{{ icon('user', 24) }} Ingia</h1>
+  <p class="muted">Tumia barua pepe au namba ya simu uliyosajili.</p>
+
+  {% include "_errors.html" %}
+
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ next or '' }}">
+    <label class="field">
+      <span>Barua pepe au namba ya simu</span>
+      <input name="identifier" value="{{ form.identifier }}" required autocomplete="username" autocapitalize="none" placeholder="mfano 0712345678">
+    </label>
+    <label class="field">
+      <span>Nenosiri</span>
+      <input type="password" name="password" required autocomplete="current-password">
+    </label>
+    <button class="btn primary block" type="submit">Ingia</button>
+  </form>
+
+  {% if google_enabled %}
+  <div class="divider"><span>au</span></div>
+  <a class="btn block" href="{{ url_for('auth.google', next=next) }}">{{ icon('globe', 18) }} Endelea na Google</a>
+  {% endif %}
+
+  <p class="muted center">Huna akaunti? <a href="{{ url_for('auth.register') }}">Jisajili</a></p>
+</section>
+{% endblock %}

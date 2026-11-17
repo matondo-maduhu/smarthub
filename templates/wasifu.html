@@ -5,22 +5,73 @@
 {% block content %}
 <h1>{{ icon('user', 24) }} Wasifu</h1>
 
+{% if user %}
+<section class="card profile">
+  {% if user.avatar_url %}
+  <img class="avatar big avatar-img" src="{{ user.avatar_url }}" alt="" referrerpolicy="no-referrer">
+  {% else %}
+  <div class="avatar big">{{ user.display_name[:1]|upper }}</div>
+  {% endif %}
+  <h2>{{ user.display_name }}</h2>
+  <p class="muted">@{{ user.username }}</p>
+  <p>
+    {% if user.is_verified %}<span class="badge ok">Imethibitishwa</span>{% endif %}
+    <span class="badge">Miaka 18+</span>
+  </p>
+</section>
+
+<section class="card list">
+  {% if user.email %}
+  <div class="row"><span class="row-icon">{{ icon('mail', 18) }}</span><div class="row-main"><strong>Barua pepe</strong><span class="muted">{{ user.email }}</span></div></div>
+  {% endif %}
+  {% if user.phone %}
+  <div class="row"><span class="row-icon">{{ icon('phone', 18) }}</span><div class="row-main"><strong>Namba ya simu</strong><span class="muted">{{ user.phone }}</span></div></div>
+  {% endif %}
+  <div class="row"><span class="row-icon">{{ icon('coin', 18) }}</span><div class="row-main"><strong>Salio la coin</strong><span class="muted">{{ coin_balance }}</span></div></div>
+</section>
+
+<section class="card auth">
+  <h2>Badilisha jina</h2>
+  <form method="post" action="{{ url_for('wasifu_jina') }}" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Jina la kuonyesha</span>
+      <input name="display_name" value="{{ user.display_name }}" required maxlength="40">
+    </label>
+    <button class="btn" type="submit">Hifadhi jina</button>
+  </form>
+</section>
+
+<section class="card auth">
+  <h2>Picha ya wasifu</h2>
+  <form method="post" action="{{ url_for('wasifu_picha') }}" enctype="multipart/form-data" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Chagua picha (jpg, png, webp, gif; hadi MB 8)</span>
+      <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" required>
+    </label>
+    <button class="btn" type="submit">Pakia picha</button>
+  </form>
+</section>
+
+<form method="post" action="{{ url_for('auth.logout') }}">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <button class="btn block danger" type="submit">Toka kwenye akaunti</button>
+</form>
+
+{% else %}
 <section class="card guest">
   <div class="avatar big">{{ icon('user', 32) }}</div>
   <h2>Ingia au jisajili</h2>
   <p class="muted">Tengeneza akaunti ili uweke mikeka, ununue coin, na uuze kwenye market.</p>
 
   <div class="stack tight">
-    <button class="btn block" type="button" disabled>{{ icon('globe', 18) }} Endelea na Google</button>
-    <button class="btn block" type="button" disabled>{{ icon('phone', 18) }} Endelea na namba ya simu</button>
-    <button class="btn block" type="button" disabled>{{ icon('mail', 18) }} Endelea na barua pepe</button>
+    <a class="btn primary block" href="{{ url_for('auth.register') }}">{{ icon('plus', 18) }} Jisajili</a>
+    <a class="btn block" href="{{ url_for('auth.login') }}">{{ icon('user', 18) }} Ingia</a>
+    {% if google_enabled %}
+    <a class="btn block" href="{{ url_for('auth.google') }}">{{ icon('globe', 18) }} Endelea na Google</a>
+    {% endif %}
   </div>
-  <p class="muted small-text">Usajili unaanza hatua ya 2. Njia zaidi zitaongezwa baadaye.</p>
 </section>
-
-<section class="card list">
-  <div class="row"><span class="row-icon">{{ icon('shield', 18) }}</span><div class="row-main"><strong>Usalama na umri</strong><span class="muted">Miaka 18+ tu</span></div></div>
-  <div class="row"><span class="row-icon">{{ icon('bell', 18) }}</span><div class="row-main"><strong>Arifa</strong><span class="muted">Hivi karibuni</span></div></div>
-  <div class="row"><span class="row-icon">{{ icon('globe', 18) }}</span><div class="row-main"><strong>Lugha</strong><span class="muted">Kiswahili</span></div></div>
-</section>
+{% endif %}
 {% endblock %}

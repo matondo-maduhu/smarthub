@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Jisajili · {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="card auth">
+  <h1>{{ icon('plus', 24) }} Tengeneza akaunti</h1>
+  <p class="muted">Ni bure. Unahitaji kuwa na miaka 18 au zaidi.</p>
+
+  {% include "_errors.html" %}
+
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Barua pepe au namba ya simu</span>
+      <input name="identifier" value="{{ form.identifier }}" required autocomplete="username" autocapitalize="none" placeholder="mfano 0712345678">
+    </label>
+    <label class="field">
+      <span>Jina la kuonyesha</span>
+      <input name="display_name" value="{{ form.display_name }}" required maxlength="40" autocomplete="name">
+    </label>
+    <label class="field">
+      <span>Jina la mtumiaji</span>
+      <input name="username" value="{{ form.username }}" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" autocapitalize="none" autocomplete="off">
+      <small class="muted">Herufi, namba na _ tu (3 hadi 20).</small>
+    </label>
+    <label class="field">
+      <span>Tarehe ya kuzaliwa</span>
+      <input type="date" name="birth_date" value="{{ form.birth_date }}" required autocomplete="bday">
+    </label>
+    <label class="field">
+      <span>Nenosiri</span>
+      <input type="password" name="password" required minlength="8" autocomplete="new-password">
+      <small class="muted">Herufi 8 au zaidi.</small>
+    </label>
+    <label class="field">
+      <span>Rudia nenosiri</span>
+      <input type="password" name="password2" required minlength="8" autocomplete="new-password">
+    </label>
+    <label class="check">
+      <input type="checkbox" name="age_ok" value="1" required>
+      <span>Nathibitisha kuwa nina miaka 18 au zaidi.</span>
+    </label>
+    <button class="btn primary block" type="submit">Jisajili</button>
+  </form>
+
+  {% if google_enabled %}
+  <div class="divider"><span>au</span></div>
+  <a class="btn block" href="{{ url_for('auth.google') }}">{{ icon('globe', 18) }} Endelea na Google</a>
+  {% endif %}
+
+  <p class="muted center">Una akaunti tayari? <a href="{{ url_for('auth.login') }}">Ingia</a></p>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Kamilisha usajili · {{ app_name }}{% endblock %}
+
+{% block content %}
+<section class="card auth">
+  <h1>{{ icon('check', 24) }} Kamilisha usajili</h1>
+  <p class="muted">Google imethibitisha <strong>{{ email }}</strong>. Jaza taarifa chache za mwisho.</p>
+
+  {% include "_errors.html" %}
+
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field">
+      <span>Jina la kuonyesha</span>
+      <input name="display_name" value="{{ form.display_name }}" required maxlength="40">
+    </label>
+    <label class="field">
+      <span>Jina la mtumiaji</span>
+      <input name="username" value="{{ form.username }}" required minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}" autocapitalize="none" autocomplete="off">
+      <small class="muted">Herufi, namba na _ tu (3 hadi 20).</small>
+    </label>
+    <label class="field">
+      <span>Tarehe ya kuzaliwa</span>
+      <input type="date" name="birth_date" value="{{ form.birth_date }}" required autocomplete="bday">
+    </label>
+    <label class="check">
+      <input type="checkbox" name="age_ok" value="1" required>
+      <span>Nathibitisha kuwa nina miaka 18 au zaidi.</span>
+    </label>
+    <button class="btn primary block" type="submit">Maliza</button>
+  </form>
+</section>
+{% endblock %}

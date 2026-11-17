@@ -34,9 +34,13 @@
     </nav>
 
     <div class="topbar-actions">
+      {% if user %}
       <a class="coin-chip" href="{{ url_for('pochi') }}" title="Salio lako">
         {{ icon('coin', 18) }}<span>{{ coin_balance }}</span>
       </a>
+      {% else %}
+      <a class="btn small primary" href="{{ url_for('auth.login') }}">Ingia</a>
+      {% endif %}
       <button class="icon-btn" type="button" aria-label="Arifa">{{ icon('bell', 20) }}</button>
       <button class="icon-btn" type="button" id="theme-toggle" aria-label="Badilisha mandhari">
         <span class="show-dark">{{ icon('sun', 20) }}</span>
@@ -47,6 +51,14 @@
 </header>
 
 <main class="page">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="flashes">
+    {% for cat, msg in messages %}<div class="notice {{ cat }}">{{ msg }}</div>{% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
   {% block content %}{% endblock %}
 
   <footer class="site-footer">
