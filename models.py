@@ -52,6 +52,33 @@ def create_user(*, username, display_name, birth_date, email=None, phone=None,
     return uid
 
 
+class InsufficientFunds(Exception):
+    pass
+
+
+def wallet_change(uid, delta, kind, note, status="done", idem_key=None):
+    """Hubadilisha salio na kuandika muamala kwa mkupuo mmoja (yote au hakuna).
+
+    - Salio haliwezi kushuka chini ya sifuri: InsufficientFunds.
+    - idem_key ikirudiwa, db.IntegrityError inatupwa na mabadiliko yote yanarudishwa nyuma.
+    Inarudisha salio jipya."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP "
+            "WHERE user_id = %s AND balance + %s >= 0 RETURNING balance",
+            (delta, uid, delta),
+        )
+        row = cur.fetchone()
+        if row is None:
+            raise InsufficientFunds()
+        cur.execute(
+            "INSERT INTO transactions (user_id, kind, amount, note, status, idem_key) "
+            "VALUES (%s, %s, %s, %s, %s, %s)",
+            (uid, kind, delta, note, status, idem_key),
+        )
+        return row["balance"]
+
+
 def update_display_name(uid, name):
     db.execute("UPDATE users SET display_name = %s WHERE id = %s", (name, uid))
 

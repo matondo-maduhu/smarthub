@@ -34,8 +34,12 @@ CREATE TABLE IF NOT EXISTS transactions (
     amount     BIGINT NOT NULL,        -- chanya = ameongezewa, hasi = amekatwa
     note       TEXT,
     status     TEXT NOT NULL DEFAULT 'done',   -- pending | done | failed
+    idem_key   TEXT,                           -- kinazuia ombi moja kutekelezwa mara mbili
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Kwa database iliyotengenezwa kabla ya hatua ya 3
+ALTER TABLE transactions ADD COLUMN IF NOT EXISTS idem_key TEXT;
+CREATE UNIQUE INDEX IF NOT EXISTS ux_tx_idem ON transactions(idem_key);
 CREATE INDEX IF NOT EXISTS idx_tx_user ON transactions(user_id, created_at DESC);
 
 -- Jamvi la mikeka

@@ -30,6 +30,10 @@ class Config:
     GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
     GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
 
+    # Thamani ya coin 1 kwa shilingi ya Tanzania, na kiwango cha chini cha kutoa
+    COIN_RATE_TZS = int(os.getenv("COIN_RATE_TZS", "100"))
+    MIN_WITHDRAW = int(os.getenv("MIN_WITHDRAW", "50"))
+
     # Zawadi ya kujiunga (coin bandia) hutolewa hali ya demo tu
     SIGNUP_BONUS = int(os.getenv("SIGNUP_BONUS", "100")) if COIN_MODE == "demo" else 0
 

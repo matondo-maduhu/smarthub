@@ -8,6 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 import auth
 import db
 import models
+import wallet
 from config import Config
 
 # Data ya mfano ya mikeka na bidhaa. Hatua ya 4 na 5 zitaisoma kutoka Neon.
@@ -66,6 +67,7 @@ def create_app():
         print("ONYO: SECRET_KEY haijabadilishwa. Weka thamani ndefu ya siri kwenye .env", file=sys.stderr)
 
     app.register_blueprint(auth.bp)
+    app.register_blueprint(wallet.bp)
 
     @app.before_request
     def load_user():
@@ -90,10 +92,16 @@ def create_app():
             "coin_mode": Config.COIN_MODE,
             "user": g.get("user"),
             "coin_balance": g.user["balance"] if g.get("user") else 0,
+            "coin_rate": Config.COIN_RATE_TZS,
+            "min_withdraw": Config.MIN_WITHDRAW,
             "status_labels": STATUS_LABELS,
             "csrf_token": auth.csrf_token,
             "google_enabled": auth.google_enabled(),
         }
+
+    @app.template_filter("num")
+    def num(value):
+        return f"{int(value):,}"
 
     @app.template_filter("eat")
     def eat(value):
