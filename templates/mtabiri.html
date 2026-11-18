@@ -14,6 +14,9 @@
   {% endif %}
   <h2>{{ person.display_name }}</h2>
   <p class="muted">@{{ person.username }}</p>
+  {% if user and user.id != person.id %}
+  <a class="btn small" href="{{ url_for('chat.conversation', username=person.username) }}">{{ icon('chat', 16) }} Tuma ujumbe</a>
+  {% endif %}
   <div class="stat-grid">
     <div><strong>{{ stats.total }}</strong><span class="muted">Mikeka</span></div>
     <div><strong>{{ stats.won }}</strong><span class="muted">Imeshinda</span></div>

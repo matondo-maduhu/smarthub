@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}{{ other.display_name }} · Ujumbe · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('chat.inbox') }}">← Ujumbe wote</a>
+
+<section class="card pad chat-head">
+  <div class="grow">
+    <strong>{{ other.display_name }}</strong>
+    <div class="muted">@{{ other.username }}</div>
+  </div>
+  {% if state.by_me %}
+  <form method="post" action="{{ url_for('chat.unblock', username=other.username) }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn small" type="submit">Ondoa kizuizi</button>
+  </form>
+  {% else %}
+  <form method="post" action="{{ url_for('chat.block', username=other.username) }}" onsubmit="return confirm('Kumzuia mtumiaji huyu?');">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn small danger" type="submit">Mzuie</button>
+  </form>
+  {% endif %}
+</section>
+
+<section class="card chat-box" id="chat-box"
+         data-poll="{{ url_for('chat.poll', username=other.username) }}" data-last="{{ last_id }}">
+  {% for m in msgs %}
+  <div class="bubble {{ 'mine' if m.sender_id == user.id else 'theirs' }}" data-id="{{ m.id }}">
+    <div class="prewrap">{{ m.body }}</div>
+    <small>{{ m.created_at|eat }}{% if m.sender_id == user.id and m.read_at %} · Imesomwa{% endif %}</small>
+  </div>
+  {% endfor %}
+  <p class="muted center" id="chat-empty" {% if msgs %}hidden{% endif %}>Anza mazungumzo kwa kutuma ujumbe wa kwanza.</p>
+</section>
+
+{% if state.by_me %}
+<p class="notice info">Umemzuia mtumiaji huyu. Muondolee kizuizi ili kumtumia ujumbe.</p>
+{% else %}
+<form method="post" class="card pad form chat-form">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <textarea name="body" rows="2" maxlength="{{ max_len }}" required placeholder="Andika ujumbe..."></textarea>
+  <button class="btn primary" type="submit">{{ icon('chat', 18) }} Tuma</button>
+</form>
+<p class="muted center small-time">Ujumbe haujasimbwa. Usitume nywila wala namba za siri.</p>
+{% endif %}
+{% endblock %}

@@ -23,6 +23,10 @@
     {% if o.location %}<span class="muted">Mahali</span><span>{{ o.location }}</span>{% endif %}
   </div>
 </section>
+{% if is_buyer or is_seller %}
+{% set peer = o.seller_username if is_buyer else o.buyer_username %}
+<a class="btn block" href="{{ url_for('chat.conversation', username=peer) }}">{{ icon('chat', 18) }} Tuma ujumbe kwa {{ 'muuzaji' if is_buyer else 'mnunuzi' }}</a>
+{% endif %}
 
 {% if is_seller and o.note %}
 <section class="card pad">

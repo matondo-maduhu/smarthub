@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Arifa · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="section-head"><h1>Arifa</h1></div>
+{% if items %}
+<section class="card">
+  {% for n in items %}
+  {% set ok = n.url and n.url.startswith('/') and not n.url.startswith('//') %}
+  <{{ 'a' if ok else 'div' }} class="row {{ 'unread' if not n.read_at }}" {% if ok %}href="{{ n.url }}"{% endif %}>
+    <span class="row-icon">{{ icon('bell', 18) }}</span>
+    <span class="row-main">
+      <span>{{ n.text }}</span>
+      <span class="muted">{{ n.created_at|eat }}</span>
+    </span>
+  </{{ 'a' if ok else 'div' }}>
+  {% endfor %}
+</section>
+{% else %}
+<section class="card pad center"><p class="muted">Huna arifa bado.</p></section>
+{% endif %}
+{% endblock %}

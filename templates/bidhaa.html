@@ -71,4 +71,7 @@
 <p class="notice">{{ 'Bidhaa hii ina agizo linaloendelea.' if p.status == 'reserved' else 'Bidhaa hii haipatikani.' }}
   {% if my_order_id %}<a href="{{ url_for('market.order_detail', order_id=my_order_id) }}">Fungua agizo lako</a>{% endif %}</p>
 {% endif %}
+{% if user and not is_owner %}
+<a class="btn block" href="{{ url_for('chat.conversation', username=p.username) }}">{{ icon('chat', 18) }} Tuma ujumbe kwa muuzaji</a>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ujumbe · {{ app_name }}{% endblock %}
+
+{% block content %}
+<div class="section-head"><h1>Ujumbe</h1></div>
+{% if convs %}
+<section class="card">
+  {% for c in convs %}
+  <a class="row {{ 'unread' if c.unread }}" href="{{ url_for('chat.conversation', username=c.user.username) }}">
+    {% if c.user.avatar_url %}
+    <img class="avatar avatar-img" src="{{ c.user.avatar_url }}" alt="" referrerpolicy="no-referrer">
+    {% else %}
+    <div class="avatar">{{ c.user.display_name[:1]|upper }}</div>
+    {% endif %}
+    <span class="row-main">
+      <strong>{{ c.user.display_name }}</strong>
+      <span class="muted clip">{{ 'Wewe: ' if c.mine }}{{ c.last.body[:80] }}</span>
+    </span>
+    <span class="muted small-time">{{ c.last.created_at|eat }}</span>
+    {% if c.unread %}<span class="dot inline">{{ c.unread }}</span>{% endif %}
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<section class="card pad center">
+  <p class="muted">Huna mazungumzo bado. Fungua bidhaa au wasifu wa mtabiri kisha bonyeza "Tuma ujumbe".</p>
+</section>
+{% endif %}
+{% endblock %}

@@ -41,7 +41,10 @@
       {% else %}
       <a class="btn small primary" href="{{ url_for('auth.login') }}">Ingia</a>
       {% endif %}
-      <button class="icon-btn" type="button" aria-label="Arifa">{{ icon('bell', 20) }}</button>
+      {% if user %}
+      <a class="icon-btn has-dot" href="{{ url_for('chat.inbox') }}" aria-label="Ujumbe">{{ icon('chat', 20) }}{% if unread_messages %}<span class="dot">{{ unread_messages if unread_messages < 100 else '99+' }}</span>{% endif %}</a>
+      <a class="icon-btn has-dot" href="{{ url_for('notifications.index') }}" aria-label="Arifa">{{ icon('bell', 20) }}{% if unread_notifications %}<span class="dot">{{ unread_notifications if unread_notifications < 100 else '99+' }}</span>{% endif %}</a>
+      {% endif %}
       <button class="icon-btn" type="button" id="theme-toggle" aria-label="Badilisha mandhari">
         <span class="show-dark">{{ icon('sun', 20) }}</span>
         <span class="show-light">{{ icon('moon', 20) }}</span>
