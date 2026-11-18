@@ -400,3 +400,24 @@ a.product:hover { text-decoration: none; border-color: var(--accent); }
 .order-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .search-form .search { min-width: 0; }
 .search-form .btn { flex: none; }
+
+/* Ujumbe na arifa */
+.has-dot { position: relative; }
+.dot {
+  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px;
+  border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+}
+.dot.inline { position: static; }
+.row.unread { background: var(--accent-soft); }
+a.row { color: inherit; text-decoration: none; }
+.clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.small-time { font-size: 12px; }
+.chat-head { display: flex; align-items: center; gap: 12px; }
+.chat-box { max-height: 55vh; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; word-wrap: break-word; overflow-wrap: anywhere; }
+.bubble small { display: block; margin-top: 2px; font-size: 11px; opacity: .7; }
+.bubble.mine { align-self: flex-end; background: var(--accent); color: #fff; }
+.bubble.theirs { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--border); }
+.chat-form { display: flex; gap: 8px; align-items: flex-end; }
+.chat-form textarea { flex: 1; }
