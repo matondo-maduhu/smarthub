@@ -75,3 +75,41 @@
   a.addEventListener("input", update);
   update();
 })();
+
+// Ujumbe: kuangalia ujumbe mpya kila sekunde 8 (haufanyi kazi ukurasa ukiwa umefichwa)
+(function () {
+  var box = document.getElementById("chat-box");
+  if (!box) return;
+  var url = box.dataset.poll;
+  var last = parseInt(box.dataset.last || "0", 10);
+  box.scrollTop = box.scrollHeight;
+
+  function add(m) {
+    var d = document.createElement("div");
+    d.className = "bubble " + (m.mine ? "mine" : "theirs");
+    d.dataset.id = m.id;
+    var b = document.createElement("div");
+    b.className = "prewrap";
+    b.textContent = m.body;
+    var s = document.createElement("small");
+    s.textContent = m.time;
+    d.appendChild(b); d.appendChild(s);
+    box.appendChild(d);
+  }
+
+  function poll() {
+    if (document.hidden) return;
+    fetch(url + "?baada=" + last, { credentials: "same-origin", headers: { Accept: "application/json" } })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (rows) {
+        if (!rows.length) return;
+        var empty = document.getElementById("chat-empty");
+        if (empty) empty.hidden = true;
+        var atBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
+        rows.forEach(function (m) { if (m.id > last) { add(m); last = m.id; } });
+        if (atBottom) box.scrollTop = box.scrollHeight;
+      })
+      .catch(function () {});
+  }
+  setInterval(poll, 8000);
+})();
