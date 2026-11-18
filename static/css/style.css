@@ -380,3 +380,23 @@ form.inline { display: inline; margin-left: auto; }
 .rank-row { color: var(--text); }
 .rank-row:hover { text-decoration: none; background: var(--surface-2); }
 .rank { width: 28px; text-align: center; font-weight: 700; color: var(--muted); }
+
+/* ===== Market: picha, utafutaji, maagizo ===== */
+a.product { color: var(--text); display: block; }
+a.product:hover { text-decoration: none; border-color: var(--accent); }
+.product-img { position: relative; overflow: hidden; }
+.product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-img.big { height: 220px; }
+.img-badge { position: absolute; top: 8px; left: 8px; }
+.product-price.big { font-size: 22px; margin-top: 0; }
+.search-form { display: flex; gap: 8px; }
+.search-form .search { flex: 1; }
+.gallery-main { width: 100%; max-height: 420px; object-fit: cover; display: block; border-radius: 12px 12px 0 0; }
+.gallery-thumbs { display: flex; gap: 8px; padding: 8px; overflow-x: auto; }
+.gallery-thumbs img { width: 72px; height: 72px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+.grow { flex: 1; min-width: 0; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px; font-size: 14px; }
+.kv strong, .kv span:nth-child(even) { text-align: right; }
+.order-side { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.search-form .search { min-width: 0; }
+.search-form .btn { flex: none; }
