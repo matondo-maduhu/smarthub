@@ -130,3 +130,38 @@ CREATE INDEX IF NOT EXISTS idx_orders_seller ON orders(seller_id, created_at DES
 -- Bidhaa moja haiwezi kuwa na maagizo mawili yaliyo wazi kwa wakati mmoja (kinga dhidi ya kuuza mara mbili)
 CREATE UNIQUE INDEX IF NOT EXISTS ux_orders_open_product ON orders(product_id)
     WHERE status IN ('paid', 'delivered', 'disputed');
+
+-- Ujumbe wa moja kwa moja kati ya watumiaji wawili
+CREATE TABLE IF NOT EXISTS messages (
+    id           BIGSERIAL PRIMARY KEY,
+    sender_id    BIGINT NOT NULL REFERENCES users(id),
+    recipient_id BIGINT NOT NULL REFERENCES users(id),
+    body         TEXT NOT NULL,
+    read_at      TIMESTAMPTZ,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    CHECK (sender_id <> recipient_id)
+);
+CREATE INDEX IF NOT EXISTS idx_msg_pair ON messages(sender_id, recipient_id, id);
+CREATE INDEX IF NOT EXISTS idx_msg_recipient ON messages(recipient_id, read_at);
+
+-- Mtumiaji aliyezuiwa hawezi kumtumia ujumbe aliyemzuia
+CREATE TABLE IF NOT EXISTS blocks (
+    blocker_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    blocked_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (blocker_id, blocked_id),
+    CHECK (blocker_id <> blocked_id)
+);
+
+-- Arifa (maoni, mauzo, matokeo ya mikeka, hatua za maagizo)
+CREATE TABLE IF NOT EXISTS notifications (
+    id         BIGSERIAL PRIMARY KEY,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    kind       TEXT NOT NULL,
+    text       TEXT NOT NULL,
+    url        TEXT,
+    read_at    TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notif_unread ON notifications(user_id, read_at);

@@ -13,8 +13,8 @@ App ya jamvi la mikeka, market na pochi ya coin. Inatumia Flask (Python), Neon k
 | 3 | Pochi ya coin (majaribio) | Imekamilika |
 | 4 | Jamvi la mikeka linalofanya kazi | Imekamilika |
 | 5 | Market inayofanya kazi | Imekamilika |
-| 6 | Ujumbe na arifa | Inafuata |
-| 7 | Usimamizi (admin) | Bado |
+| 6 | Ujumbe na arifa | Imekamilika |
+| 7 | Usimamizi (admin) | Inafuata |
 | 8 | Malipo halisi (M-Pesa, Tigo Pesa, Airtel Money) | Bado, baada ya leseni |
 | 9 | App ya Android/iPhone | Bado |
 
@@ -26,6 +26,8 @@ auth.py           usajili, kuingia, Google, ulinzi wa fomu (CSRF)
 wallet.py         kununua na kutoa coin (hali ya majaribio)
 tips.py           jamvi la mikeka: kuweka, kununua, maoni, matokeo, viwango
 market.py         market: bidhaa, picha, utafutaji, maagizo yenye escrow
+chat.py           ujumbe wa moja kwa moja na kuzuia watumiaji
+notifications.py  orodha ya arifa
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -193,9 +195,26 @@ UPDATE users SET is_admin = TRUE WHERE username = 'jina_la_mtumiaji';
 - **Ada ya jukwaa inatoweka** (haiingii akaunti yoyote) hadi hatua ya 8, kama ilivyo kwa jamvi.
 - **Pingamizi kamili la msimamizi** (orodha ya mapingamizi, ushahidi, ripoti) ni hatua ya 7. Kwa sasa msimamizi anaamua kutoka ukurasa wa agizo.
 
+## Hatua ya 6: ujumbe na arifa
+
+- **Ujumbe wa moja kwa moja** (`/ujumbe`): mazungumzo kati ya watu wawili tu. Kitufe cha "Tuma ujumbe" kipo kwenye bidhaa (kwa muuzaji), kwenye agizo (kwa upande wa pili) na kwenye wasifu wa mtabiri. Ujumbe 1 hadi 1000 herufi, hadi ujumbe 10 kwa dakika (`MESSAGES_PER_MINUTE`).
+- **Kuonyesha ujumbe mpya**: ukurasa wa mazungumzo unaangalia ujumbe mpya kila sekunde 8 (hauangalii ukiwa umefichwa). Si "papo hapo" kamili kwa sababu Vercel haishikilii muunganisho wazi; kwa chat ya papo hapo tutahitaji huduma ya ziada baadaye.
+- **Kuzuia**: mtumiaji anaweza kumzuia mwingine ("Mzuie") na kuondoa kizuizi. Aliyezuiwa hawezi kutuma na haambiwi kwa maneno ya moja kwa moja kuwa amezuiwa.
+- **Faragha**: kila mazungumzo yanasomwa na wahusika wawili tu; mtu wa tatu haoni chochote.
+- **Arifa** (`/arifa`, kengele ya juu): mkeka wako umenunuliwa; maoni kwenye mkeka wako; matokeo ya mkeka ulioununua; agizo jipya; muuzaji amekabidhi; pingamizi (muuzaji na wasimamizi wote); agizo limekamilika, limefutwa, au limeachiliwa na msimamizi au kiotomatiki. Arifa zinaandikwa ndani ya muamala uleule, kwa hiyo kitendo kikishindwa hakuna arifa ya uongo.
+- **Alama ya idadi** inaonekana kwenye ikoni ya ujumbe na kengele.
+- **Faili mpya**: `chat.py`, `notifications.py`, `mazungumzo.html`, `ujumbe.html`, `arifa.html`. Majedwali mapya: `messages`, `blocks`, `notifications` (yanajitengeneza yenyewe).
+- **Mpangilio mpya**: `MESSAGES_PER_MINUTE` (hiari, chaguo-msingi 10).
+
+### Mambo ya kujua (hatua ya 6)
+
+- **Ujumbe haujasimbwa** (end-to-end): mwenye ufikiaji wa database anaweza kuusoma. Watumiaji wanaonywa wasitume nywila.
+- **Hakuna ripoti ya unyanyasaji bado**; kuzuia ndiyo kinga ya sasa. Ripoti na hatua za msimamizi ni hatua ya 7.
+- **Arifa hazifutwi kiotomatiki**; zinaonyeshwa 50 za mwisho.
+- Ujumbe kati ya mnunuzi na muuzaji sasa unawezekana (tofauti na hatua ya 5).
+
 ## Hatua zinazofuata
 
-6. Ujumbe na arifa
 7. Usimamizi (admin)
 8. Malipo halisi
 9. App ya Android/iPhone

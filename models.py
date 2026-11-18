@@ -117,12 +117,28 @@ def to_dt(value):
 
 def recent_times(table, uid, n):
     """Nyakati za vitu n vya mwisho vya mtumiaji (kwa kuzuia kutuma kupita kiasi)."""
-    col = {"tips": "user_id", "comments": "user_id", "products": "seller_id"}[table]
+    col = {"tips": "user_id", "comments": "user_id", "products": "seller_id",
+           "messages": "sender_id"}[table]
     rows = db.query(
         f"SELECT created_at FROM {table} WHERE {col} = %s ORDER BY created_at DESC, id DESC LIMIT %s",
         (uid, n),
     )
     return [to_dt(r["created_at"]) for r in rows]
+
+
+def notify(cur, user_id, kind, text, url=None):
+    """Huandika arifa ndani ya transaction iliyopo (rollback ikitokea, arifa pia inaondoka)."""
+    cur.execute("INSERT INTO notifications (user_id, kind, text, url) VALUES (%s, %s, %s, %s)",
+                (user_id, kind, text[:200], url))
+
+
+def notify_safe(user_id, kind, text, url=None):
+    """Arifa nje ya transaction: hitilafu ya arifa isivuruge kitendo kikuu."""
+    try:
+        with db.get_conn() as conn, conn.cursor() as cur:
+            notify(cur, user_id, kind, text, url)
+    except Exception:
+        pass
 
 
 _TIP_SELECT = (
@@ -190,8 +206,21 @@ def create_tip(uid, *, title, league, pick, body, odds, price, starts_at):
     return row["id"]
 
 
+_TIP_RESULT = {"won": "umeshinda", "lost": "umepoteza", "void": "umebatilishwa"}
+
+
 def set_tip_status(tip_id, status):
-    db.execute("UPDATE tips SET status = %s WHERE id = %s", (status, tip_id))
+    """Hubadilisha matokeo na kuwaarifu wote walionunua mkeka (kwa mkupuo mmoja)."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE tips SET status = %s WHERE id = %s AND status <> %s RETURNING title",
+                    (status, tip_id, status))
+        row = cur.fetchone()
+        if row and status in _TIP_RESULT:
+            cur.execute(
+                "INSERT INTO notifications (user_id, kind, text, url) "
+                "SELECT user_id, 'tip', %s, %s FROM tip_purchases WHERE tip_id = %s",
+                (f"Mkeka ulionunua {_TIP_RESULT[status]}: {row['title']}"[:200], f"/jamvi/{tip_id}", tip_id),
+            )
 
 
 def delete_tip(tip_id, uid):
@@ -280,6 +309,8 @@ def purchase_tip(tip_id, buyer_id, fee_pct):
             "INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_sale', %s, %s)",
             (tip["user_id"], net, f"Mauzo ya mkeka: {tip['title']}"),
         )
+        notify(cur, tip["user_id"], "sale", f"Mkeka wako umenunuliwa: {tip['title']} (+{net} coin)",
+               f"/jamvi/{tip_id}")
         return {"price": price, "fee": fee, "net": net, "balance": row["balance"]}
 
 
@@ -439,6 +470,7 @@ def create_order(product_id, buyer_id, note, fee_pct):
             "INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'market', %s, %s)",
             (buyer_id, -price, f"Agizo #{oid}: {p['title']} (inashikiliwa hadi upokee)"),
         )
+        notify(cur, p["seller_id"], "order", f"Agizo jipya #{oid}: {p['title']}", f"/market/maagizo/{oid}")
         return {"id": oid, "price": price, "balance": row["balance"]}
 
 
@@ -456,8 +488,24 @@ def _finish(cur, order_id, new_status, allowed, party_col=None, party_id=None):
     return cur.fetchone()
 
 
-def _pay_seller(cur, o):
+_PAY_TEXT = {
+    "buyer": "Mnunuzi amethibitisha kupokea",
+    "admin": "Msimamizi ameachilia malipo",
+    "auto": "Malipo yameachiliwa kiotomatiki (siku zimepita)",
+}
+_REFUND_TEXT = {
+    "buyer": ("Mnunuzi amefuta agizo", "Umerudishiwa coin zako"),
+    "seller": ("", "Muuzaji amefuta agizo, umerudishiwa coin zako"),
+    "admin": ("Msimamizi amefuta agizo", "Msimamizi amefuta agizo, umerudishiwa coin zako"),
+}
+
+
+def _pay_seller(cur, o, actor="buyer"):
     net = o["price"] - o["fee"]
+    url = f"/market/maagizo/{o['id']}"
+    notify(cur, o["seller_id"], "order", f"{_PAY_TEXT[actor]}: umelipwa {net} coin (agizo #{o['id']})", url)
+    if actor != "buyer":
+        notify(cur, o["buyer_id"], "order", f"Agizo #{o['id']} limekamilika, malipo yameenda kwa muuzaji", url)
     cur.execute("UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
                 (net, o["seller_id"]))
     cur.execute("UPDATE products SET status = 'sold' WHERE id = %s", (o["product_id"],))
@@ -465,7 +513,13 @@ def _pay_seller(cur, o):
                 (o["seller_id"], net, f"Mauzo ya agizo #{o['id']}"))
 
 
-def _refund_buyer(cur, o):
+def _refund_buyer(cur, o, actor="admin"):
+    to_seller, to_buyer = _REFUND_TEXT[actor]
+    url = f"/market/maagizo/{o['id']}"
+    if to_seller:
+        notify(cur, o["seller_id"], "order", f"{to_seller} #{o['id']}", url)
+    notify(cur, o["buyer_id"], "order", f"{to_buyer} (agizo #{o['id']})" if actor != "buyer" else
+           f"Agizo #{o['id']} limefutwa, umerudishiwa coin zako", url)
     cur.execute("UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
                 (o["price"], o["buyer_id"]))
     cur.execute("UPDATE products SET status = 'active' WHERE id = %s AND status = 'reserved'", (o["product_id"],))
@@ -476,20 +530,20 @@ def _refund_buyer(cur, o):
 _STALE = "Hali ya agizo imebadilika. Onyesha ukurasa upya."
 
 
-def _complete(order_id, allowed, party_col=None, party_id=None):
+def _complete(order_id, allowed, party_col=None, party_id=None, actor="buyer"):
     with db.get_conn() as conn, conn.cursor() as cur:
         o = _finish(cur, order_id, "completed", allowed, party_col, party_id)
         if o is None:
             raise MarketError(_STALE)
-        _pay_seller(cur, o)
+        _pay_seller(cur, o, actor)
 
 
-def _cancel(order_id, allowed, party_col=None, party_id=None):
+def _cancel(order_id, allowed, party_col=None, party_id=None, actor="admin"):
     with db.get_conn() as conn, conn.cursor() as cur:
         o = _finish(cur, order_id, "cancelled", allowed, party_col, party_id)
         if o is None:
             raise MarketError(_STALE)
-        _refund_buyer(cur, o)
+        _refund_buyer(cur, o, actor)
 
 
 def confirm_received(order_id, buyer_id):
@@ -497,37 +551,53 @@ def confirm_received(order_id, buyer_id):
 
 
 def admin_release(order_id):
-    _complete(order_id, _OPEN)
+    _complete(order_id, _OPEN, actor="admin")
 
 
 def cancel_by_buyer(order_id, buyer_id):
-    _cancel(order_id, ("paid",), "buyer_id", buyer_id)
+    _cancel(order_id, ("paid",), "buyer_id", buyer_id, "buyer")
 
 
 def cancel_by_seller(order_id, seller_id):
-    _cancel(order_id, _OPEN, "seller_id", seller_id)
+    _cancel(order_id, _OPEN, "seller_id", seller_id, "seller")
 
 
 def admin_refund(order_id):
-    _cancel(order_id, _OPEN)
+    _cancel(order_id, _OPEN, actor="admin")
 
 
-def _simple_transition(order_id, party_col, party_id, src, sql_set):
+def _simple_transition(order_id, party_col, party_id, src, sql_set, notice=None):
+    """notice: (nani, maandishi): nani = "buyer" | "seller" | "both" (wapokeaji + wasimamizi)."""
     assert party_col in ("buyer_id", "seller_id")
     with db.get_conn() as conn, conn.cursor() as cur:
-        cur.execute(f"UPDATE orders SET {sql_set} WHERE id = %s AND {party_col} = %s AND status = %s",
+        cur.execute(f"UPDATE orders SET {sql_set} WHERE id = %s AND {party_col} = %s AND status = %s "
+                    "RETURNING id, buyer_id, seller_id",
                     (order_id, party_id, src))
-        if cur.rowcount == 0:
+        o = cur.fetchone()
+        if o is None:
             raise MarketError(_STALE)
+        if notice:
+            who, text = notice
+            url = f"/market/maagizo/{o['id']}"
+            text = f"{text} (agizo #{o['id']})"
+            if who == "buyer":
+                notify(cur, o["buyer_id"], "order", text, url)
+            else:
+                notify(cur, o["seller_id"], "order", text, url)
+                cur.execute("INSERT INTO notifications (user_id, kind, text, url) "
+                            "SELECT id, 'order', %s, %s FROM users WHERE is_admin = TRUE",
+                            (text[:200], url))
 
 
 def mark_delivered(order_id, seller_id):
     _simple_transition(order_id, "seller_id", seller_id, "paid",
-                       "status = 'delivered', delivered_at = CURRENT_TIMESTAMP")
+                       "status = 'delivered', delivered_at = CURRENT_TIMESTAMP",
+                       ("buyer", "Muuzaji amekabidhi bidhaa, thibitisha ukipokea"))
 
 
 def open_dispute(order_id, buyer_id):
-    _simple_transition(order_id, "buyer_id", buyer_id, "delivered", "status = 'disputed'")
+    _simple_transition(order_id, "buyer_id", buyer_id, "delivered", "status = 'disputed'",
+                       ("both", "Mnunuzi amefungua pingamizi"))
 
 
 def release_overdue(days, user_id=None):
@@ -543,7 +613,7 @@ def release_overdue(days, user_id=None):
         when = to_dt(r["delivered_at"])
         if when and when <= cutoff:
             try:
-                _complete(r["id"], ("delivered",))
+                _complete(r["id"], ("delivered",), actor="auto")
                 done += 1
             except MarketError:
                 pass  # mwingine ameshalishughulikia
@@ -566,3 +636,100 @@ def get_order(order_id):
 def list_orders(uid, role, limit=100):
     col = {"buyer": "o.buyer_id", "seller": "o.seller_id"}[role]
     return db.query(_ORDER_SELECT + f" WHERE {col} = %s ORDER BY o.created_at DESC, o.id DESC LIMIT %s", (uid, limit))
+
+
+# ===================== Ujumbe na arifa =====================
+class ChatError(Exception):
+    """Kosa la ujumbe; maandishi yanaonyeshwa kwa mtumiaji."""
+
+
+def block_state(a, b):
+    """by_me: a amemzuia b. by_them: b amemzuia a."""
+    rows = db.query(
+        "SELECT blocker_id FROM blocks WHERE (blocker_id = %s AND blocked_id = %s) "
+        "OR (blocker_id = %s AND blocked_id = %s)", (a, b, b, a))
+    ids = {r["blocker_id"] for r in rows}
+    return {"by_me": a in ids, "by_them": b in ids}
+
+
+def block_user(blocker, blocked):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT 1 AS x FROM blocks WHERE blocker_id = %s AND blocked_id = %s", (blocker, blocked))
+        if cur.fetchone() is None:
+            cur.execute("INSERT INTO blocks (blocker_id, blocked_id) VALUES (%s, %s)", (blocker, blocked))
+
+
+def unblock_user(blocker, blocked):
+    db.execute("DELETE FROM blocks WHERE blocker_id = %s AND blocked_id = %s", (blocker, blocked))
+
+
+def send_message(sender, recipient, body):
+    """Inatuma ujumbe. Aliyezuiwa anapata kosa la jumla (hafichuliwi kuwa amezuiwa)."""
+    st = block_state(sender, recipient)
+    if st["by_me"]:
+        raise ChatError("Umemzuia mtumiaji huyu. Muondolee kizuizi ili kumtumia ujumbe.")
+    if st["by_them"]:
+        raise ChatError("Ujumbe haukutumwa. Mtumiaji huyu hapokei ujumbe kwa sasa.")
+    row = db.query(
+        "INSERT INTO messages (sender_id, recipient_id, body) VALUES (%s, %s, %s) RETURNING id",
+        (sender, recipient, body), one=True)
+    return row["id"]
+
+
+def thread(uid, other_id, after_id=None, limit=100):
+    """Ujumbe kati ya watu wawili tu. Bila after_id: ujumbe 100 wa mwisho; vinginevyo mpya zaidi ya after_id."""
+    pair = ("((sender_id = %s AND recipient_id = %s) OR (sender_id = %s AND recipient_id = %s))")
+    p = (uid, other_id, other_id, uid)
+    if after_id:
+        return db.query(
+            f"SELECT id, sender_id, body, read_at, created_at FROM messages WHERE {pair} AND id > %s "
+            "ORDER BY id ASC LIMIT %s", p + (after_id, limit))
+    rows = db.query(
+        f"SELECT id, sender_id, body, read_at, created_at FROM messages WHERE {pair} "
+        "ORDER BY id DESC LIMIT %s", p + (limit,))
+    return list(reversed(rows))
+
+
+def mark_thread_read(uid, other_id):
+    db.execute("UPDATE messages SET read_at = CURRENT_TIMESTAMP "
+               "WHERE recipient_id = %s AND sender_id = %s AND read_at IS NULL", (uid, other_id))
+
+
+def inbox(uid, limit=50):
+    """Mazungumzo yote: mwenzi, ujumbe wa mwisho na idadi ya ambazo hazijasomwa."""
+    groups = db.query(
+        "SELECT CASE WHEN sender_id = %s THEN recipient_id ELSE sender_id END AS other_id, "
+        "MAX(id) AS last_id, "
+        "SUM(CASE WHEN recipient_id = %s AND read_at IS NULL THEN 1 ELSE 0 END) AS unread "
+        "FROM messages WHERE sender_id = %s OR recipient_id = %s "
+        "GROUP BY CASE WHEN sender_id = %s THEN recipient_id ELSE sender_id END "
+        "ORDER BY last_id DESC LIMIT %s", (uid, uid, uid, uid, uid, limit))
+    if not groups:
+        return []
+    last = {r["id"]: r for r in db.query(
+        "SELECT id, sender_id, body, created_at FROM messages WHERE id IN ("
+        + ", ".join(["%s"] * len(groups)) + ")", tuple(g["last_id"] for g in groups))}
+    users = {r["id"]: r for r in db.query(
+        "SELECT id, username, display_name, avatar_url FROM users WHERE id IN ("
+        + ", ".join(["%s"] * len(groups)) + ")", tuple(g["other_id"] for g in groups))}
+    out = []
+    for g in groups:
+        u, m = users.get(g["other_id"]), last.get(g["last_id"])
+        if u and m:
+            out.append({"user": u, "last": m, "unread": int(g["unread"] or 0), "mine": m["sender_id"] == uid})
+    return out
+
+
+def unread_counts(uid):
+    m = db.query("SELECT COUNT(*) AS n FROM messages WHERE recipient_id = %s AND read_at IS NULL", (uid,), one=True)
+    n = db.query("SELECT COUNT(*) AS n FROM notifications WHERE user_id = %s AND read_at IS NULL", (uid,), one=True)
+    return int(m["n"]), int(n["n"])
+
+
+def list_notifications(uid, limit=50):
+    return db.query("SELECT id, kind, text, url, read_at, created_at FROM notifications "
+                    "WHERE user_id = %s ORDER BY id DESC LIMIT %s", (uid, limit))
+
+
+def mark_notifications_read(uid):
+    db.execute("UPDATE notifications SET read_at = CURRENT_TIMESTAMP WHERE user_id = %s AND read_at IS NULL", (uid,))

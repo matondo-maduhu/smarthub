@@ -6,9 +6,11 @@ from flask import (Flask, flash, g, jsonify, redirect, render_template,
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 import auth
+import chat
 import db
 import market
 import models
+import notifications
 import tips
 import wallet
 from config import Config
@@ -45,6 +47,8 @@ def create_app():
     app.register_blueprint(wallet.bp)
     app.register_blueprint(tips.bp)
     app.register_blueprint(market.bp)
+    app.register_blueprint(chat.bp)
+    app.register_blueprint(notifications.bp)
 
     @app.before_request
     def load_user():
@@ -64,7 +68,15 @@ def create_app():
 
     @app.context_processor
     def inject_globals():
+        unread_msgs = unread_notes = 0
+        if g.get("user"):
+            try:
+                unread_msgs, unread_notes = models.unread_counts(g.user["id"])
+            except Exception:
+                pass
         return {
+            "unread_messages": unread_msgs,
+            "unread_notifications": unread_notes,
             "app_name": Config.APP_NAME,
             "coin_mode": Config.COIN_MODE,
             "user": g.get("user"),

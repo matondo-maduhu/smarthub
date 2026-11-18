@@ -184,7 +184,12 @@ def comment(tip_id):
     if len(times) >= 5 and times[-1] > datetime.now(timezone.utc) - timedelta(seconds=60):
         flash("Unatuma maoni haraka mno. Subiri kidogo.", "error")
         return _back(tip_id)
+    tip = _get_or_404(tip_id)
     models.add_comment(tip_id, g.user["id"], body)
+    if tip["user_id"] != g.user["id"]:
+        models.notify_safe(tip["user_id"], "comment",
+                           f"{g.user['display_name']} ametoa maoni kwenye mkeka wako: {tip['title']}",
+                           f"/jamvi/{tip_id}")
     return _back(tip_id)
 
 

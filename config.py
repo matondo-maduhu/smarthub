@@ -48,6 +48,10 @@ class Config:
     ORDER_AUTO_RELEASE_DAYS = int(os.getenv("ORDER_AUTO_RELEASE_DAYS", "7")) # siku za kuachilia coin muuzaji akikabidhi
     PRODUCTS_PER_PAGE = 20
 
+    # Ujumbe
+    MESSAGES_PER_MINUTE = int(os.getenv("MESSAGES_PER_MINUTE", "10"))  # ujumbe kwa dakika kwa kila mtumiaji
+    MAX_MESSAGE_LEN = 1000
+
     # Zawadi ya kujiunga (coin bandia) hutolewa hali ya demo tu
     SIGNUP_BONUS = int(os.getenv("SIGNUP_BONUS", "100")) if COIN_MODE == "demo" else 0
 
