@@ -47,7 +47,7 @@
   <form method="post" action="{{ url_for('wasifu_picha') }}" enctype="multipart/form-data" class="form">
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
     <label class="field">
-      <span>Chagua picha (jpg, png, webp, gif; hadi MB 8)</span>
+      <span>Chagua picha (jpg, png, webp, gif; hadi MB 5)</span>
       <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" required>
     </label>
     <button class="btn" type="submit">Pakia picha</button>

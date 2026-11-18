@@ -12,7 +12,7 @@
   <div class="hero-actions">
     {% if user %}
     <a class="btn primary" href="{{ url_for('tips.index') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
-    <a class="btn" href="{{ url_for('market') }}">{{ icon('store', 18) }} Fungua market</a>
+    <a class="btn" href="{{ url_for('market.index') }}">{{ icon('store', 18) }} Fungua market</a>
     {% else %}
     <a class="btn primary" href="{{ url_for('auth.register') }}">{{ icon('user', 18) }} Jisajili</a>
     <a class="btn" href="{{ url_for('tips.index') }}">{{ icon('ticket', 18) }} Angalia mikeka</a>
@@ -24,7 +24,7 @@
   <a class="card quick-item" href="{{ url_for('tips.index') }}">
     <span class="quick-icon blue">{{ icon('ticket', 22) }}</span><strong>Jamvi</strong><span class="muted">Mikeka ya leo</span>
   </a>
-  <a class="card quick-item" href="{{ url_for('market') }}">
+  <a class="card quick-item" href="{{ url_for('market.index') }}">
     <span class="quick-icon green">{{ icon('store', 22) }}</span><strong>Market</strong><span class="muted">Nunua na uza</span>
   </a>
   <a class="card quick-item" href="{{ url_for('pochi') }}">
@@ -50,10 +50,12 @@
 <section>
   <div class="section-head">
     <h2>{{ icon('tag', 20) }} Kwenye market</h2>
-    <a href="{{ url_for('market') }}">Yote</a>
+    <a href="{{ url_for('market.index') }}">Yote</a>
   </div>
   <div class="grid">
-    {% for p in products %}{{ product_card(p) }}{% endfor %}
+    {% for p in products %}{{ product_card(p) }}{% else %}
+    <p class="muted">Hakuna bidhaa bado. <a href="{{ url_for('market.new') }}">Weka ya kwanza</a>.</p>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}

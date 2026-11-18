@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% set meta = category_meta.get(p.category, category_meta['mengineyo']) %}
+{% block title %}{{ p.title }} · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('market.index') }}">← Rudi kwenye market</a>
+
+<section class="card">
+  {% if p.images %}
+  <div class="gallery">
+    <img class="gallery-main" src="{{ p.images[0] }}" alt="{{ p.title }}" referrerpolicy="no-referrer">
+    {% if p.images|length > 1 %}
+    <div class="gallery-thumbs">
+      {% for url in p.images[1:] %}<a href="{{ url }}" target="_blank" rel="noopener"><img src="{{ url }}" alt="" loading="lazy" referrerpolicy="no-referrer"></a>{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="product-img big" style="--h: {{ meta.hue }}">{{ icon(meta.icon, 56) }}</div>
+  {% endif %}
+
+  <div class="pad">
+    <div class="tip-head">
+      <h1 class="grow">{{ p.title }}</h1>
+      {% if p.status in product_status %}<span class="badge {{ product_status[p.status][1] }}">{{ product_status[p.status][0] }}</span>{% endif %}
+    </div>
+    <div class="product-price big">{{ icon('coin', 22) }} {{ p.price|num }} <span class="muted small-text">≈ TSh {{ (p.price * coin_rate)|num }}</span></div>
+    <p class="muted">{{ meta.label }}{% if p.location %} · {{ p.location }}{% endif %} · Muuzaji: {{ p.display_name }}</p>
+    {% if p.description %}<p class="prewrap">{{ p.description }}</p>{% endif %}
+  </div>
+</section>
+
+{% if is_owner %}
+<section class="card pad">
+  <h2>Bidhaa yako</h2>
+  {% if my_order_id %}<a class="btn primary" href="{{ url_for('market.order_detail', order_id=my_order_id) }}">Fungua agizo</a>{% endif %}
+  <div class="actions-row">
+    {% if p.status in ('active', 'hidden') %}
+    <form method="post" action="{{ url_for('market.toggle_hidden', product_id=p.id) }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn" type="submit">{{ 'Ficha bidhaa' if p.status == 'active' else 'Onyesha bidhaa' }}</button>
+    </form>
+    {% endif %}
+    <form method="post" action="{{ url_for('market.delete', product_id=p.id) }}" onsubmit="return confirm('Futa bidhaa hii?');">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn danger" type="submit">Futa</button>
+    </form>
+  </div>
+</section>
+{% elif p.status == 'active' %}
+<section class="card pad buy-box">
+  <h2>{{ icon('shield', 20) }} Agiza kwa coin</h2>
+  <p class="muted">Coin zako zinashikiliwa na jukwaa, hazimfikii muuzaji hadi uthibitishe kupokea bidhaa. Ukighairi kabla muuzaji hajakabidhi, unarudishiwa zote. Muuzaji akisema amekabidhi na hujajibu kwa siku {{ days }}, coin zinaachiliwa kwake.</p>
+  {% if not user %}
+    <a class="btn primary block" href="{{ url_for('auth.login', next=request.path) }}">Ingia ili uagize</a>
+  {% else %}
+    <form method="post" action="{{ url_for('market.place_order', product_id=p.id) }}" class="form">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <label class="field">
+        <span>Namba yako ya simu na mahali pa kukutana au kupelekewa</span>
+        <textarea name="note" rows="2" maxlength="300" placeholder="mfano 0712345678, Mwenge karibu na kituo"></textarea>
+        <small class="muted">Muuzaji ataiona ili mwasiliane.</small>
+      </label>
+      <button class="btn primary block" type="submit">{{ icon('coin', 18) }} Agiza kwa coin {{ p.price|num }}</button>
+    </form>
+    <p class="muted center">Salio lako: {{ coin_balance|num }} coin{% if coin_balance < p.price %} · <a href="{{ url_for('wallet.buy') }}">Nunua coin</a>{% endif %}</p>
+  {% endif %}
+</section>
+{% else %}
+<p class="notice">{{ 'Bidhaa hii ina agizo linaloendelea.' if p.status == 'reserved' else 'Bidhaa hii haipatikani.' }}
+  {% if my_order_id %}<a href="{{ url_for('market.order_detail', order_id=my_order_id) }}">Fungua agizo lako</a>{% endif %}</p>
+{% endif %}
+{% endblock %}

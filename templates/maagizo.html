@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Maagizo · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('market.index') }}">← Rudi kwenye market</a>
+<h1>{{ icon('ticket', 24) }} Maagizo yangu</h1>
+
+<div class="chips">
+  <a class="chip {{ 'on' if kama == 'mnunuzi' }}" href="{{ url_for('market.orders') }}">Nilizoagiza</a>
+  <a class="chip {{ 'on' if kama == 'muuzaji' }}" href="{{ url_for('market.orders', kama='muuzaji') }}">Nilizoagizwa</a>
+</div>
+
+{% if orders %}
+<section class="card list">
+  {% for o in orders %}
+  {% set st = order_status[o.status] %}
+  <a class="row rank-row" href="{{ url_for('market.order_detail', order_id=o.id) }}">
+    <div class="row-main">
+      <strong>{{ o.title }}</strong>
+      <span class="muted">#{{ o.id }} · {{ o.created_at|eat }} · {{ (o.seller_name if kama == 'mnunuzi' else o.buyer_name) }}</span>
+    </div>
+    <div class="order-side">
+      <strong>{{ icon('coin', 14) }} {{ o.price|num }}</strong>
+      <span class="badge {{ st[1] }}">{{ st[0] }}</span>
+    </div>
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<p class="muted center">Huna maagizo {{ 'uliyoagiza' if kama == 'mnunuzi' else 'uliyoagizwa' }} bado.</p>
+{% endif %}
+{% endblock %}

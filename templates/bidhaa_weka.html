@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Weka bidhaa · {{ app_name }}{% endblock %}
+
+{% block content %}
+<h1>{{ icon('plus', 24) }} Weka bidhaa</h1>
+
+<section class="card auth">
+  {% include "_errors.html" %}
+
+  <form method="post" enctype="multipart/form-data" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+
+    <label class="field">
+      <span>Jina la bidhaa</span>
+      <input name="title" value="{{ form.title }}" required minlength="3" maxlength="80" placeholder="mfano Simu janja 128GB">
+    </label>
+    <label class="field">
+      <span>Kundi</span>
+      <select name="category" required>
+        {% for slug, name in categories %}<option value="{{ slug }}" {{ 'selected' if form.category == slug }}>{{ name }}</option>{% endfor %}
+      </select>
+    </label>
+    <label class="field">
+      <span>Bei (coin)</span>
+      <input type="number" name="price" value="{{ form.price }}" required min="1" max="{{ max_price }}" step="1" inputmode="numeric">
+      <small class="muted">Jukwaa linakata ada ya {{ fee }}% pale mauzo yanapokamilika.</small>
+    </label>
+    <label class="field">
+      <span>Mahali</span>
+      <input name="location" value="{{ form.location }}" maxlength="60" placeholder="mfano Dar es Salaam, Kariakoo">
+    </label>
+    <label class="field">
+      <span>Maelezo</span>
+      <textarea name="description" rows="5" maxlength="1000" placeholder="Hali ya bidhaa, umri, sababu ya kuuza...">{{ form.description }}</textarea>
+    </label>
+    <label class="field">
+      <span>Namba ya kuwasiliana (hiari)</span>
+      <input name="contact" value="{{ form.contact }}" maxlength="40" inputmode="tel" placeholder="mfano 0712345678">
+      <small class="muted">Inaonekana kwa mnunuzi mwenye agizo tu, si kwa kila mtu.</small>
+    </label>
+    <label class="field">
+      <span>Picha (hadi {{ max_images }}, kila moja chini ya MB 5)</span>
+      <input type="file" name="images" accept="image/jpeg,image/png,image/webp,image/gif" multiple>
+    </label>
+
+    <p class="notice">{{ icon('shield', 16) }} Usiuze vitu haramu au visivyo vyako. Coin za mnunuzi zinashikiliwa hadi apokee bidhaa.</p>
+    <button class="btn primary block" type="submit">Weka bidhaa</button>
+  </form>
+  <a class="btn block" href="{{ url_for('market.index') }}">Ghairi</a>
+</section>
+{% endblock %}

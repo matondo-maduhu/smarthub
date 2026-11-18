@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% set st = order_status[o.status] %}
+{% block title %}Agizo #{{ o.id }} · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('market.orders', kama='muuzaji' if is_seller and not is_buyer else None) }}">← Maagizo yangu</a>
+
+<section class="card pad">
+  <div class="tip-head">
+    <h1 class="grow">Agizo #{{ o.id }}</h1>
+    <span class="badge {{ st[1] }}">{{ st[0] }}</span>
+  </div>
+  <p><a href="{{ url_for('market.detail', product_id=o.product_id) }}"><strong>{{ o.title }}</strong></a></p>
+
+  <div class="kv">
+    <span class="muted">Bei</span><strong>{{ icon('coin', 14) }} {{ o.price|num }}</strong>
+    <span class="muted">Ada ya jukwaa</span><span>{{ o.fee|num }}</span>
+    <span class="muted">Muuzaji anapokea</span><span>{{ net|num }}</span>
+    <span class="muted">Mnunuzi</span><span>{{ o.buyer_name }}</span>
+    <span class="muted">Muuzaji</span><span>{{ o.seller_name }}</span>
+    <span class="muted">Imewekwa</span><span>{{ o.created_at|eat }}</span>
+    {% if o.location %}<span class="muted">Mahali</span><span>{{ o.location }}</span>{% endif %}
+  </div>
+</section>
+
+{% if is_seller and o.note %}
+<section class="card pad">
+  <h2>Maelezo ya mnunuzi</h2>
+  <p class="prewrap">{{ o.note }}</p>
+</section>
+{% endif %}
+{% if (is_buyer or is_admin) and o.product_contact %}
+<section class="card pad">
+  <h2>Namba ya muuzaji</h2>
+  <p>{{ o.product_contact }}</p>
+</section>
+{% endif %}
+
+{% if is_open %}
+  {% if o.status == 'delivered' and release_at %}
+  <p class="notice warn">Mnunuzi asipojibu, coin zitaachiliwa kwa muuzaji tarehe {{ release_at|eat }}.</p>
+  {% endif %}
+
+  <section class="card pad">
+    <h2>Hatua</h2>
+    <div class="actions-row">
+      {% if is_buyer %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='pokea') }}" onsubmit="return confirm('Thibitisha umepokea bidhaa? Muuzaji atalipwa.');">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn primary" type="submit">{{ icon('check', 18) }} Nimepokea bidhaa</button>
+        </form>
+        {% if o.status == 'paid' %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='ghairi') }}" onsubmit="return confirm('Ghairi agizo na urudishiwe coin?');">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn danger" type="submit">Ghairi na nirudishiwe</button>
+        </form>
+        {% elif o.status == 'delivered' %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='pingamizi') }}" onsubmit="return confirm('Weka pingamizi? Coin zitashikiliwa hadi msimamizi aamue.');">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn danger" type="submit">Sijapokea / kuna tatizo</button>
+        </form>
+        {% endif %}
+      {% endif %}
+
+      {% if is_seller %}
+        {% if o.status == 'paid' %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='kabidhi') }}">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn primary" type="submit">Nimekabidhi bidhaa</button>
+        </form>
+        {% endif %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='ghairi') }}" onsubmit="return confirm('Ghairi agizo na umrudishie mnunuzi coin?');">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn danger" type="submit">Ghairi na nirudishe coin</button>
+        </form>
+      {% endif %}
+
+      {% if is_admin %}
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='achilia') }}">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn" type="submit">Achilia kwa muuzaji (msimamizi)</button>
+        </form>
+        <form method="post" action="{{ url_for('market.order_action', order_id=o.id, action='rudisha') }}">
+          <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+          <button class="btn" type="submit">Rudisha kwa mnunuzi (msimamizi)</button>
+        </form>
+      {% endif %}
+    </div>
+    {% if o.status == 'disputed' %}<p class="muted">Pingamizi limewekwa. Coin zinashikiliwa hadi msimamizi aamue, au muuzaji aghairi na kurudisha, au mnunuzi athibitishe kupokea.</p>{% endif %}
+  </section>
+{% endif %}
+{% endblock %}

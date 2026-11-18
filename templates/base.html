@@ -28,7 +28,7 @@
     <nav class="nav-desktop" aria-label="Menyu kuu">
       <a href="{{ url_for('home') }}" class="{{ 'on' if active == 'home' }}">{{ icon('home', 18) }} Nyumbani</a>
       <a href="{{ url_for('tips.index') }}" class="{{ 'on' if active == 'jamvi' }}">{{ icon('ticket', 18) }} Jamvi</a>
-      <a href="{{ url_for('market') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 18) }} Market</a>
+      <a href="{{ url_for('market.index') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 18) }} Market</a>
       <a href="{{ url_for('pochi') }}" class="{{ 'on' if active == 'pochi' }}">{{ icon('wallet', 18) }} Pochi</a>
       <a href="{{ url_for('wasifu') }}" class="{{ 'on' if active == 'wasifu' }}">{{ icon('user', 18) }} Wasifu</a>
     </nav>
@@ -72,7 +72,7 @@
 <nav class="nav-mobile" aria-label="Menyu ya simu">
   <a href="{{ url_for('home') }}" class="{{ 'on' if active == 'home' }}">{{ icon('home', 22) }}<span>Nyumbani</span></a>
   <a href="{{ url_for('tips.index') }}" class="{{ 'on' if active == 'jamvi' }}">{{ icon('ticket', 22) }}<span>Jamvi</span></a>
-  <a href="{{ url_for('market') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 22) }}<span>Market</span></a>
+  <a href="{{ url_for('market.index') }}" class="{{ 'on' if active == 'market' }}">{{ icon('store', 22) }}<span>Market</span></a>
   <a href="{{ url_for('pochi') }}" class="{{ 'on' if active == 'pochi' }}">{{ icon('wallet', 22) }}<span>Pochi</span></a>
   <a href="{{ url_for('wasifu') }}" class="{{ 'on' if active == 'wasifu' }}">{{ icon('user', 22) }}<span>Wasifu</span></a>
 </nav>
