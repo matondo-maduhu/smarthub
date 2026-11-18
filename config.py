@@ -23,7 +23,7 @@ class Config:
     # demo = coin bandia. Malipo halisi yanaongezwa hatua ya 8, baada ya leseni.
     COIN_MODE = os.getenv("COIN_MODE", "demo")
 
-    MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB kwa kila upakiaji
+    MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # MB 20 kwa ombi lote (picha hadi 4 za MB 5 kila moja)
 
     # Kuingia kwa Google (hiari). Acha wazi kama hujaiweka.
     GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
@@ -40,6 +40,13 @@ class Config:
     MAX_TIPS_PER_DAY = int(os.getenv("MAX_TIPS_PER_DAY", "10"))    # mikeka kwa mtumiaji kwa siku
     MIN_SETTLED_FOR_RANK = int(os.getenv("MIN_SETTLED_FOR_RANK", "5"))  # mikeka iliyokwisha ili aingie viwango
     TIPS_PER_PAGE = 20
+
+    # Market
+    MARKET_FEE_PCT = int(os.getenv("MARKET_FEE_PCT", "5"))                   # ada ya jukwaa kwa kila mauzo (%)
+    MARKET_MAX_PRICE = int(os.getenv("MARKET_MAX_PRICE", "1000000"))         # bei ya juu ya bidhaa (coin)
+    MAX_PRODUCTS_PER_DAY = int(os.getenv("MAX_PRODUCTS_PER_DAY", "10"))      # bidhaa kwa mtumiaji kwa siku
+    ORDER_AUTO_RELEASE_DAYS = int(os.getenv("ORDER_AUTO_RELEASE_DAYS", "7")) # siku za kuachilia coin muuzaji akikabidhi
+    PRODUCTS_PER_PAGE = 20
 
     # Zawadi ya kujiunga (coin bandia) hutolewa hali ya demo tu
     SIGNUP_BONUS = int(os.getenv("SIGNUP_BONUS", "100")) if COIN_MODE == "demo" else 0

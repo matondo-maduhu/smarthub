@@ -95,10 +95,14 @@ CREATE TABLE IF NOT EXISTS products (
     category    TEXT NOT NULL,
     price       BIGINT NOT NULL CHECK (price >= 0),
     location    TEXT,
-    status      TEXT NOT NULL DEFAULT 'active',  -- active | sold | hidden
+    contact     TEXT,                            -- namba ya kuwasiliana (inaonekana kwa mwenye agizo tu)
+    status      TEXT NOT NULL DEFAULT 'active',  -- active | reserved | sold | hidden
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+-- Kwa database iliyotengenezwa kabla ya hatua ya 5
+ALTER TABLE products ADD COLUMN IF NOT EXISTS contact TEXT;
 CREATE INDEX IF NOT EXISTS idx_products_cat ON products(category, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_products_seller ON products(seller_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS product_images (
     id         BIGSERIAL PRIMARY KEY,
@@ -106,3 +110,23 @@ CREATE TABLE IF NOT EXISTS product_images (
     url        TEXT NOT NULL,
     position   INT NOT NULL DEFAULT 0
 );
+
+-- Maagizo ya market. Coin za mnunuzi zinashikiliwa (escrow) hadi agizo likamilike au lighairiwe.
+CREATE TABLE IF NOT EXISTS orders (
+    id           BIGSERIAL PRIMARY KEY,
+    product_id   BIGINT NOT NULL REFERENCES products(id),
+    buyer_id     BIGINT NOT NULL REFERENCES users(id),
+    seller_id    BIGINT NOT NULL REFERENCES users(id),
+    price        BIGINT NOT NULL CHECK (price > 0),
+    fee          BIGINT NOT NULL DEFAULT 0,       -- ada ya jukwaa, inakatwa muuzaji anapolipwa
+    status       TEXT NOT NULL DEFAULT 'paid',    -- paid | delivered | completed | cancelled | disputed
+    note         TEXT,                            -- maelezo ya mnunuzi (simu, mahali pa kukutana)
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+    delivered_at TIMESTAMPTZ,
+    closed_at    TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_orders_buyer ON orders(buyer_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_seller ON orders(seller_id, created_at DESC);
+-- Bidhaa moja haiwezi kuwa na maagizo mawili yaliyo wazi kwa wakati mmoja (kinga dhidi ya kuuza mara mbili)
+CREATE UNIQUE INDEX IF NOT EXISTS ux_orders_open_product ON orders(product_id)
+    WHERE status IN ('paid', 'delivered', 'disputed');

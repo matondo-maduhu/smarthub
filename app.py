@@ -7,30 +7,11 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 
 import auth
 import db
+import market
 import models
 import tips
 import wallet
 from config import Config
-
-# Data ya mfano ya mikeka na bidhaa. Hatua ya 4 na 5 zitaisoma kutoka Neon.
-CATEGORIES = [
-    ("zote", "Zote"),
-    ("simu", "Simu na umeme"),
-    ("nguo", "Nguo na viatu"),
-    ("nyumbani", "Nyumbani"),
-    ("magari", "Magari na pikipiki"),
-    ("chakula", "Chakula"),
-    ("huduma", "Huduma"),
-]
-
-PRODUCTS = [
-    {"id": 1, "title": "Simu janja 128GB", "category": "simu", "price": 450, "location": "Dar es Salaam", "icon": "phone", "hue": 210},
-    {"id": 2, "title": "Viatu vya michezo", "category": "nguo", "price": 60, "location": "Arusha", "icon": "tag", "hue": 140},
-    {"id": 3, "title": "Kochi la watu watatu", "category": "nyumbani", "price": 380, "location": "Mwanza", "icon": "home", "hue": 30},
-    {"id": 4, "title": "Pikipiki ya miezi 6", "category": "magari", "price": 2400, "location": "Dodoma", "icon": "trend", "hue": 0},
-    {"id": 5, "title": "Mchele kilo 25", "category": "chakula", "price": 55, "location": "Mbeya", "icon": "store", "hue": 50},
-    {"id": 6, "title": "Fundi wa umeme", "category": "huduma", "price": 25, "location": "Dar es Salaam", "icon": "fire", "hue": 280},
-]
 
 STATUS_LABELS = {
     "open": ("Unasubiri", "warn"),
@@ -63,6 +44,7 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(wallet.bp)
     app.register_blueprint(tips.bp)
+    app.register_blueprint(market.bp)
 
     @app.before_request
     def load_user():
@@ -90,6 +72,8 @@ def create_app():
             "coin_rate": Config.COIN_RATE_TZS,
             "min_withdraw": Config.MIN_WITHDRAW,
             "status_labels": STATUS_LABELS,
+            "category_meta": market.CATEGORY_META,
+            "product_status": market.PRODUCT_STATUS,
             "csrf_token": auth.csrf_token,
             "google_enabled": auth.google_enabled(),
         }
@@ -114,16 +98,14 @@ def create_app():
     # ----- Kurasa -----
     @app.route("/")
     def home():
-        try:
-            latest = models.list_tips(g.user["id"] if g.user else None, limit=3)
-        except Exception as e:  # ukurasa wa nyumbani ufunguke hata database ikikosekana
-            print(f"ONYO: imeshindwa kusoma mikeka: {e}", file=sys.stderr)
-            latest = []
-        return render_template("index.html", active="home", tips=latest, products=PRODUCTS[:4])
-
-    @app.route("/market")
-    def market():
-        return render_template("market.html", active="market", products=PRODUCTS, categories=CATEGORIES)
+        viewer = g.user["id"] if g.user else None
+        try:  # ukurasa wa nyumbani ufunguke hata database ikikosekana
+            latest = models.list_tips(viewer, limit=3)
+            products = models.list_products(limit=4)
+        except Exception as e:
+            print(f"ONYO: imeshindwa kusoma nyumbani: {e}", file=sys.stderr)
+            latest, products = [], []
+        return render_template("index.html", active="home", tips=latest, products=products)
 
     @app.route("/pochi")
     @auth.login_required
@@ -204,7 +186,7 @@ def create_app():
     @app.errorhandler(413)
     def too_large(_):
         return render_template("error.html", active="", title="Faili ni kubwa mno",
-                               message="Ukubwa wa juu ni MB 8."), 413
+                               message="Ukubwa wa juu ni MB 20 kwa ombi lote, na MB 5 kwa kila picha."), 413
 
     return app
 

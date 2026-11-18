@@ -12,8 +12,8 @@ App ya jamvi la mikeka, market na pochi ya coin. Inatumia Flask (Python), Neon k
 | 2 | Usajili na akaunti | Imekamilika |
 | 3 | Pochi ya coin (majaribio) | Imekamilika |
 | 4 | Jamvi la mikeka linalofanya kazi | Imekamilika |
-| 5 | Market inayofanya kazi | Inafuata |
-| 6 | Ujumbe na arifa | Bado |
+| 5 | Market inayofanya kazi | Imekamilika |
+| 6 | Ujumbe na arifa | Inafuata |
 | 7 | Usimamizi (admin) | Bado |
 | 8 | Malipo halisi (M-Pesa, Tigo Pesa, Airtel Money) | Bado, baada ya leseni |
 | 9 | App ya Android/iPhone | Bado |
@@ -25,6 +25,7 @@ app.py            njia za kurasa, wasifu, pochi
 auth.py           usajili, kuingia, Google, ulinzi wa fomu (CSRF)
 wallet.py         kununua na kutoa coin (hali ya majaribio)
 tips.py           jamvi la mikeka: kuweka, kununua, maoni, matokeo, viwango
+market.py         market: bidhaa, picha, utafutaji, maagizo yenye escrow
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -163,9 +164,37 @@ UPDATE users SET is_admin = TRUE WHERE username = 'jina_la_mtumiaji';
 - **Ada ya jukwaa** kwa sasa inatoweka (haiingii akaunti yoyote). Itaandikwa kwenye hesabu ya jukwaa hatua ya 8, pamoja na malipo halisi.
 - Mikeka ya mfano ya hatua ya 1 imeondolewa; jamvi linaanza tupu na linajazwa na watumiaji halisi.
 
+## Hatua ya 5: market inayofanya kazi
+
+- **Kuweka bidhaa** (`/market/weka`): jina, kundi (simu na umeme, nguo na viatu, nyumbani, magari na pikipiki, chakula, huduma, mengineyo), bei kwa coin, mahali, maelezo, namba ya kuwasiliana (hiari) na picha hadi 4. Kikomo ni bidhaa `MAX_PRODUCTS_PER_DAY` (10) kwa siku kwa kila mtumiaji.
+- **Picha**: zinakaguliwa kwa aina halisi (si jina la faili tu) na ukubwa (jpg, png, webp, gif; MB 5 kila moja; MB 20 kwa ombi lote) kabla ya kupakiwa R2. Upakiaji ukishindwa katikati, picha zilizokwisha pakiwa zinafutwa na bidhaa haiundwi. Bidhaa ikifutwa, picha zake zinafutwa R2.
+- **Orodha na utafutaji** (`/market`): vikundi, utafutaji wa jina na maelezo, na kurasa za bidhaa 20. Bidhaa iliyoagizwa, kuuzwa au kufichwa haionekani kwenye orodha.
+- **Kuagiza kwa coin (escrow)**: mnunuzi akiagiza, coin zinakatwa kwake lakini **hazimfikii muuzaji** hadi agizo likamilike. Bidhaa inafungwa (`reserved`) ili isiuzwe mara mbili. Kuuza mara mbili pia kunazuiwa na database yenyewe.
+- **Mtiririko wa agizo**:
+  1. Mnunuzi anaagiza na kuandika namba yake na mahali pa kukutana (muuzaji anaiona).
+  2. Muuzaji anabonyeza "Nimekabidhi", au anaweza kughairi wakati wowote (mnunuzi anarudishiwa zote).
+  3. Mnunuzi anabonyeza "Nimepokea" na muuzaji analipwa bei toa ada ya jukwaa (`MARKET_FEE_PCT`, chaguo-msingi 5%, inakatwa chini hadi shilingi nzima).
+  4. Mnunuzi anaweza kughairi kabla muuzaji hajakabidhi. Baada ya kukabidhiwa, akiwa hajapokea anaweka "pingamizi" na coin zinabaki zimeshikiliwa.
+  5. Muuzaji akikabidhi na mnunuzi asijibu kwa `ORDER_AUTO_RELEASE_DAYS` (7) siku, coin zinaachiliwa kwa muuzaji.
+- **Pingamizi**: msimamizi anaweza kuachilia coin kwa muuzaji au kuzirudisha kwa mnunuzi kutoka ukurasa wa agizo. Muuzaji anaweza pia kughairi na kurudisha mwenyewe.
+- **Faragha**: namba ya kuwasiliana ya muuzaji inaonekana kwa mnunuzi mwenye agizo tu. Agizo linaonekana kwa mnunuzi, muuzaji na msimamizi tu; wengine wanaona 404.
+- **Maagizo yangu** (`/market/maagizo`): orodha ya ulizoagiza na ulizoagizwa.
+- **Usahihi wa coin**: kila hatua ya agizo inafanyika kwa mkupuo mmoja na mshindi mmoja tu hata maombi mawili yakigongana. Jumla ya coin (salio + zilizoshikiliwa + ada) haibadiliki kamwe, na jaribio linalithibitisha.
+- **Faili mpya**: `market.py`, `market.html` (imeandikwa upya), `bidhaa.html`, `bidhaa_weka.html`, `maagizo.html`, `agizo.html`. Jedwali jipya `orders`, safu `contact` kwenye `products`, na faharasa ya kuzuia agizo la pili wazi kwa bidhaa moja (zinaongezwa zenyewe kwenye database ya zamani).
+- **Mipangilio mipya**: `MARKET_FEE_PCT`, `MARKET_MAX_PRICE`, `MAX_PRODUCTS_PER_DAY`, `ORDER_AUTO_RELEASE_DAYS`.
+- **Mabadiliko mengine**: kikomo cha upakiaji wa ombi kimepanda kuwa MB 20 (kwa picha nyingi), na picha ya wasifu sasa ina kikomo cha MB 5. Bidhaa za mfano za hatua ya 1 zimeondolewa; market inaanza tupu.
+
+### Mambo ya kujua (hatua ya 5)
+
+- **Kuachilia kiotomatiki hakuna cron.** Siku 7 zikipita, coin zinaachiliwa pale mnunuzi au muuzaji anapofungua maagizo yake. Ukitaka iwe ya uhakika bila mtu kufungua, tutaongeza kazi ya kila siku (Vercel Cron) baadaye.
+- **Hakuna kuhariri bidhaa.** Kwa sasa unaweza kuificha, kuifuta (kama haina maagizo) na kuweka upya. Kuhariri kunaweza kuongezwa.
+- **Hakuna ujumbe kati ya mnunuzi na muuzaji** hadi hatua ya 6. Wanawasiliana kwa namba zilizo kwenye agizo.
+- **Picha hazipunguzwi ukubwa.** Zinaonyeshwa kama zilivyopakiwa. Kwa kasi zaidi tunaweza kutumia ukubwa mdogo wa picha (Cloudflare Images au Pillow) baadaye.
+- **Ada ya jukwaa inatoweka** (haiingii akaunti yoyote) hadi hatua ya 8, kama ilivyo kwa jamvi.
+- **Pingamizi kamili la msimamizi** (orodha ya mapingamizi, ushahidi, ripoti) ni hatua ya 7. Kwa sasa msimamizi anaamua kutoka ukurasa wa agizo.
+
 ## Hatua zinazofuata
 
-5. Market inayofanya kazi
 6. Ujumbe na arifa
 7. Usimamizi (admin)
 8. Malipo halisi

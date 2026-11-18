@@ -47,14 +47,35 @@ def _sniff(stream):
     return set()
 
 
-def upload_image(file_storage, folder="uploads"):
-    """Pakia picha kutoka kwenye fomu (request.files[...]). Inarudisha URL ya umma."""
+MAX_IMAGE_BYTES = 5 * 1024 * 1024  # MB 5 kwa kila picha
+
+
+def validate_image(file_storage):
+    """Hukagua jina, aina halisi na ukubwa wa picha bila kuipakia. Inatupa ValueError."""
     name = file_storage.filename or ""
     ext = name.rsplit(".", 1)[-1].lower() if "." in name else ""
     if ext not in ALLOWED_EXT:
         raise ValueError("Aina ya picha hairuhusiwi. Tumia jpg, png, webp au gif.")
     if ext not in _sniff(file_storage.stream):
         raise ValueError("Faili hili si picha halali.")
+    file_storage.stream.seek(0, 2)
+    size = file_storage.stream.tell()
+    file_storage.stream.seek(0)
+    if size > MAX_IMAGE_BYTES:
+        raise ValueError("Picha ni kubwa mno (MB 5 ndiyo ya juu).")
+    return ext
+
+
+def key_from_url(url):
+    """URL ya umma -> ufunguo wa faili kwenye bucket (au None kama si ya bucket hii)."""
+    prefix = Config.R2_PUBLIC_URL + "/"
+    return url[len(prefix):] if Config.R2_PUBLIC_URL and url.startswith(prefix) else None
+
+
+def upload_image(file_storage, folder="uploads"):
+    """Pakia picha kutoka kwenye fomu (request.files[...]). Inarudisha URL ya umma."""
+    name = file_storage.filename or ""
+    ext = validate_image(file_storage)
     key = f"{folder}/{uuid.uuid4().hex}.{ext}"
     content_type = mimetypes.guess_type(name)[0] or "application/octet-stream"
     _get_client().upload_fileobj(
