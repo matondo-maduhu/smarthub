@@ -235,6 +235,21 @@ Ukurasa: `/admin` (ikoni ya ngao kwenye header, kwa wasimamizi tu). Asiye msimam
 - Ripoti za ujumbe mmoja mmoja hazipo; unaripoti mtumiaji. Wasimamizi hawasomi ujumbe wa watu kupitia ukurasa huu.
 - Matokeo ya mikeka bado yanawekwa na mtabiri; msimamizi anaweza kuyarekebisha.
 
+### Kuwa msimamizi kupitia environment (nyongeza ya hatua ya 7)
+
+Mbali na SQL, unaweza kuweka kwenye Vercel (Settings → Environment Variables) moja au zaidi ya hizi, kisha Redeploy:
+
+```
+ADMIN_USERNAMES=jina_lako
+ADMIN_EMAILS=wewe@mfano.com
+ADMIN_PHONES=0712345678
+```
+
+Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara anapofungua app akiwa ameingia, na kitendo kinaandikwa kwenye kumbukumbu (`env_admin`). Kuondoa jina kwenye orodha **hakumwondolei cheo**; tumia `UPDATE users SET is_admin = FALSE WHERE username = '...'`.
+
+**Tahadhari ya usalama**: barua pepe na simu bado hazithibitishwi (SMS/barua pepe ni kazi ijayo). Mtu anaweza kujisajili kwa jina, barua pepe au namba ya mtu mwingine kabla yake. Kwa hiyo jisajili wewe kwanza, kisha weka kwenye environment; na usiweke jina linaloweza kuchukuliwa na mtu mwingine kabla yako.
+- Namba za simu zinahifadhiwa kama `+255712345678`; kwenye `ADMIN_PHONES` unaweza kuandika `0712345678` au `+255712345678`.
+
 ## Hatua zinazofuata
 
 8. Malipo halisi

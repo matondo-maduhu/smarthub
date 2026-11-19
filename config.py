@@ -48,6 +48,11 @@ class Config:
     ORDER_AUTO_RELEASE_DAYS = int(os.getenv("ORDER_AUTO_RELEASE_DAYS", "7")) # siku za kuachilia coin muuzaji akikabidhi
     PRODUCTS_PER_PAGE = 20
 
+    # Wasimamizi kutoka environment (hiari). Orodha iliyotenganishwa kwa koma.
+    ADMIN_USERNAMES = [x.strip().lower().lstrip("@") for x in os.getenv("ADMIN_USERNAMES", "").split(",") if x.strip()]
+    ADMIN_EMAILS = [x.strip().lower() for x in os.getenv("ADMIN_EMAILS", "").split(",") if x.strip()]
+    ADMIN_PHONES = [x.strip() for x in os.getenv("ADMIN_PHONES", "").split(",") if x.strip()]
+
     # Ujumbe
     MESSAGES_PER_MINUTE = int(os.getenv("MESSAGES_PER_MINUTE", "10"))  # ujumbe kwa dakika kwa kila mtumiaji
     MAX_MESSAGE_LEN = 1000

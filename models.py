@@ -925,3 +925,10 @@ def admin_resolve_report(admin_id, report_id, status):
 def admin_log_list(limit=100):
     return db.query("SELECT l.*, u.username FROM admin_log l JOIN users u ON u.id = l.admin_id "
                     "ORDER BY l.id DESC LIMIT %s", (limit,))
+
+
+def make_admin(user_id):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE users SET is_admin = TRUE WHERE id = %s AND is_admin = FALSE", (user_id,))
+        if cur.rowcount:
+            log_admin(cur, user_id, "env_admin", "alipandishwa kupitia environment")

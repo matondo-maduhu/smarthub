@@ -35,6 +35,16 @@ KIND_LABELS = {
 EAT = timezone(timedelta(hours=3))  # saa za Afrika Mashariki
 
 
+def _env_admin(user):
+    """Je, mtumiaji huyu yumo kwenye ADMIN_USERNAMES / ADMIN_EMAILS / ADMIN_PHONES?"""
+    if (user["username"] or "").lower() in Config.ADMIN_USERNAMES:
+        return True
+    if user["email"] and user["email"].lower() in Config.ADMIN_EMAILS:
+        return True
+    phones = {auth.normalize_phone(p) for p in Config.ADMIN_PHONES}
+    return bool(user["phone"] and user["phone"] in phones)
+
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -65,6 +75,12 @@ def create_app():
         if uid:
             user = models.get_user(uid)
             if user and not user["is_banned"]:
+                if not user["is_admin"] and _env_admin(user):
+                    try:
+                        models.make_admin(user["id"])
+                        user = models.get_user(uid)
+                    except Exception as e:
+                        print(f"ONYO: imeshindwa kumfanya msimamizi: {e}", file=sys.stderr)
                 g.user = user
             else:
                 session.clear()
