@@ -65,7 +65,7 @@ class Config:
     ALLOW_MANUAL_TIPS = os.getenv("ALLOW_MANUAL_TIPS", "0") == "1"  # 1 = ruhusu mikeka ya mkono hata API ikiwa imewashwa
     ODDS_CACHE_MINUTES = int(os.getenv("ODDS_CACHE_MINUTES", "30"))
     FIXTURE_SYNC_HOURS = int(os.getenv("FIXTURE_SYNC_HOURS", "6"))
-    FIXTURE_DAYS_AHEAD = int(os.getenv("FIXTURE_DAYS_AHEAD", "3"))
+    FIXTURE_DAYS_AHEAD = int(os.getenv("FIXTURE_DAYS_AHEAD", "2"))  # mpango wa bure: leo na kesho tu
 
     # Ujumbe
     MESSAGES_PER_MINUTE = int(os.getenv("MESSAGES_PER_MINUTE", "10"))  # ujumbe kwa dakika kwa kila mtumiaji

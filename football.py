@@ -114,13 +114,23 @@ def sync_fixtures(days=None, force=False):
     days = days or Config.FIXTURE_DAYS_AHEAD
     n = 0
     today = datetime.now(timezone.utc).date()
+    note = ""
     for i in range(days):
         day = (today + timedelta(days=i)).isoformat()
-        for item in _get("/fixtures", {"date": day, "timezone": "Africa/Dar_es_Salaam"}, force=force):
+        try:
+            items = _get("/fixtures", {"date": day, "timezone": "Africa/Dar_es_Salaam"}, force=force)
+        except FootballError as e:
+            if i == 0:
+                raise  # siku ya kwanza imeshindwa: ni kosa halisi
+            # Siku za mbele zimekataliwa (mfano mpango wa bure unaruhusu jana hadi kesho tu): tunaendelea na tulizopata
+            note = str(e)
+            break
+        for item in items:
             if item["league"]["id"] in Config.FOOTBALL_LEAGUES:
                 _upsert_fixture(item)
                 n += 1
     kv_set("fixtures_synced", n)
+    kv_set("fixtures_note", note or "-")
     return n
 
 

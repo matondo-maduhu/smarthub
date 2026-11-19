@@ -147,6 +147,7 @@ def fixtures():
         "admin_mechi.html", active="admin", configured=football.configured(), q=q, found=found, err=err,
         leagues=Config.FOOTBALL_LEAGUES, left=football.requests_left() if football.configured() else None,
         synced=football.kv_get("fixtures_synced") if football.configured() else None,
+        sync_note=(lambda r: r["value"] if r and r["value"] != "-" else None)(football.kv_get("fixtures_note")) if football.configured() else None,
         upcoming=len(football.list_fixtures(limit=600)) if football.configured() else 0,
         waiting=models.admin_waiting_tips())
 
