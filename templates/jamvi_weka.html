@@ -4,6 +4,9 @@
 
 {% block content %}
 <h1>{{ icon('plus', 24) }} Weka mkeka</h1>
+{% if api_mode %}
+{% include "jamvi_weka_mechi.html" %}
+{% else %}
 
 <section class="card auth">
   {% include "_errors.html" %}
@@ -48,4 +51,5 @@
   </form>
   <a class="btn block" href="{{ url_for('tips.index') }}">Ghairi</a>
 </section>
+{% endif %}
 {% endblock %}

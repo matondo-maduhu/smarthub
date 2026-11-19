@@ -9,6 +9,21 @@
 
 {{ tip_card(t) }}
 
+{% if fixture %}
+<section class="box">
+  <div class="box-header">Mechi halisi {% if t.bookmaker %}<span class="badge ok">Odds za {{ t.bookmaker }}</span>{% endif %}</div>
+  <div class="box-row"><span>Mechi</span><strong>{{ fixture.home }} vs {{ fixture.away }}</strong></div>
+  <div class="box-row"><span>Ligi</span><span>{{ fixture.league_name }}</span></div>
+  <div class="box-row"><span>Inaanza</span><span>{{ fixture.kickoff|eat }}</span></div>
+  {% if fixture.status in ('FT', 'AET', 'PEN') and fixture.home_goals is not none %}
+  <div class="box-row"><span>Matokeo (dakika 90)</span><strong>{{ fixture.home_goals }} - {{ fixture.away_goals }}</strong></div>
+  {% elif fixture.status in ('CANC', 'ABD', 'AWD', 'WO', 'PST') %}
+  <div class="box-row"><span>Hali ya mechi</span><span class="badge warn">{{ 'Imeahirishwa' if fixture.status == 'PST' else 'Imefutwa' }}</span></div>
+  {% endif %}
+  {% if t.status == 'open' %}<div class="box-row muted">Matokeo yatahukumiwa kiotomatiki mchezo ukiisha.</div>{% endif %}
+</section>
+{% endif %}
+
 {% if t.pick_visible %}
   {% if t.body %}
   <section class="card pad">

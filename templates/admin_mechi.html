@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mechi · Usimamizi{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Mechi halisi, odds na hukumu ya kiotomatiki ya mikeka.</p></div>
+{% set sec = 'fixtures' %}{% include "_admin_nav.html" %}
+
+{% if not configured %}
+<p class="notice warn">{{ icon('shield', 16) }} <code>APIFOOTBALL_KEY</code> haijawekwa. Mikeka inawekwa kwa mkono hadi ufunguo uwekwe kwenye Vercel.</p>
+{% else %}
+<section class="box">
+  <div class="box-header">Hali</div>
+  <div class="box-row"><span>Maombi yaliyobaki leo</span><strong>{{ left if left is not none else '—' }}</strong></div>
+  <div class="box-row"><span>Mechi zijazo zilizopo</span><span class="counter">{{ upcoming }}</span></div>
+  <div class="box-row"><span>Usasishaji wa mwisho</span><span class="muted">{{ synced.updated_at|eat if synced else 'bado' }}</span></div>
+  <div class="box-row"><span>Ligi zinazofuatiliwa (ID)</span><span class="muted">{{ leagues|join(', ') }}</span></div>
+  <div class="box-row">
+    <form method="post" action="{{ url_for('admin.fixtures_action', action='sasisha') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small" type="submit">Sasisha mechi sasa</button></form>
+    <form method="post" action="{{ url_for('admin.fixtures_action', action='hukumu') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small" type="submit">Hukumu mikeka sasa</button></form>
+  </div>
+</section>
+
+<section class="box">
+  <div class="box-header">Mikeka inayosubiri hukumu <span class="counter">{{ waiting|length }}</span></div>
+  {% for w in waiting %}
+  <a class="box-row" href="{{ url_for('tips.detail', tip_id=w.id) }}"><span class="row-main"><strong>{{ w.title }}</strong><span class="muted">{{ w.market }}:{{ w.selection }} · {{ w.kickoff|eat }}</span></span><span class="badge">{{ w.status }}</span></a>
+  {% else %}<div class="box-empty">Hakuna.</div>{% endfor %}
+</section>
+
+<form method="get" class="search-form">
+  <label class="field"><span>Tafuta ligi (kupata ID ya kuweka kwenye FOOTBALL_LEAGUES)</span><input name="q" value="{{ q }}" maxlength="40" placeholder="mfano Tanzania, Kenya, Premier"></label>
+  <button class="btn" type="submit">Tafuta</button>
+</form>
+{% if err %}<p class="notice warn">{{ err }}</p>{% endif %}
+{% if found %}
+<section class="box">
+  <div class="box-header">Ligi zilizopatikana <span class="counter">{{ found|length }}</span></div>
+  {% for l in found %}
+  <div class="box-row"><span class="row-main"><strong>{{ l.name }}</strong><span class="muted">{{ l.country }} · {{ l.type }}</span></span><span class="counter">{{ l.id }}</span></div>
+  {% endfor %}
+</section>
+{% endif %}
+{% endif %}
+{% endblock %}

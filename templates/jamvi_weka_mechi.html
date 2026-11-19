@@ -1,0 +1,85 @@
+{% if not fixture %}
+<p class="muted">Chagua mechi halisi. Odds zinachukuliwa kutoka kampuni za kubashiri; huwezi kuziandika kwa mkono.</p>
+<form method="get" class="search-form">
+  <label class="field"><span>Tafuta timu au ligi</span><input name="q" value="{{ q }}" maxlength="40" placeholder="mfano Simba, Arsenal, Premier"></label>
+  <button class="btn" type="submit">Tafuta</button>
+</form>
+{% if svc_error %}<p class="notice warn">{{ icon('shield', 16) }} {{ svc_error }}</p>{% endif %}
+{% set ns = namespace(day='') %}
+{% if fixtures %}
+<section class="box">
+  <div class="box-header">Mechi zijazo <span class="counter">{{ fixtures|length }}</span></div>
+  {% for f in fixtures %}
+  {% set d = f.kickoff|eat_date %}
+  {% if d != ns.day %}{% set ns.day = d %}<div class="box-subhead">{{ d }}</div>{% endif %}
+  <a class="box-row" href="{{ url_for('tips.new', mechi=f.id) }}">
+    <span class="row-main"><strong>{{ f.home }} vs {{ f.away }}</strong><span class="muted">{{ f.league_name }}{% if f.country %} · {{ f.country }}{% endif %} · {{ f.kickoff|eat_time }}</span></span>
+    <span class="muted">›</span>
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<section class="box"><div class="box-empty">Hakuna mechi zilizopatikana{% if q %} kwa "{{ q }}"{% endif %}. Mechi zinasasishwa kila baada ya saa chache; msimamizi anaweza kuzisasisha mara moja.</div></section>
+{% endif %}
+<a class="btn block" href="{{ url_for('tips.index') }}">Ghairi</a>
+
+{% else %}
+<a class="muted back" href="{{ url_for('tips.new') }}">← Chagua mechi nyingine</a>
+<section class="card pad">
+  <strong>{{ fixture.home }} vs {{ fixture.away }}</strong>
+  <p class="muted">{{ fixture.league_name }} · {{ fixture.kickoff|eat }}</p>
+</section>
+{% if svc_error %}<p class="notice warn">{{ icon('shield', 16) }} {{ svc_error }}</p>{% endif %}
+{% include "_errors.html" %}
+
+{% if not markets %}
+<section class="box"><div class="box-empty">Kampuni bado hazijaweka odds za mechi hii. Jaribu tena baadaye.</div></section>
+{% else %}
+<section class="box">
+  <div class="box-header">1. Chagua mkeka wako</div>
+  {% for mk in markets %}
+  <div class="box-subhead">{{ mk.title }}</div>
+  {% for o in mk.options %}
+  <a class="box-row {{ 'selected' if chosen and chosen.key == o.key }}" href="{{ url_for('tips.new', mechi=fixture.id, chaguo=o.key) }}">
+    <span class="row-main"><strong>{{ o.label }}</strong><span class="muted">kampuni {{ o.n }}</span></span>
+    <span class="counter ok">{{ '%.2f'|format(o.best) }}</span>
+  </a>
+  {% endfor %}
+  {% endfor %}
+</section>
+
+{% if chosen %}
+<form method="post" class="form box" action="{{ url_for('tips.new') }}">
+  <div class="box-header">2. Kampuni na bei</div>
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="mechi" value="{{ fixture.id }}">
+  <input type="hidden" name="chaguo" value="{{ chosen.key }}">
+  <div class="pad form">
+    <p><strong>{{ chosen.label }}</strong></p>
+    <fieldset class="radio-list">
+      <legend class="muted">Odds za kampuni (zimechukuliwa sasa hivi)</legend>
+      {% for b in books %}
+      <label class="radio-row">
+        <input type="radio" name="bookmaker" value="{{ b.id }}" {{ 'checked' if form.bookmaker == b.id or (not form.bookmaker and loop.first) }}>
+        <span class="row-main"><strong>{{ b.name }}</strong></span>
+        <span class="counter">{{ '%.2f'|format(b.odd) }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <label class="field">
+      <span>Bei (coin)</span>
+      <input type="number" name="price" value="{{ form.price }}" min="0" max="{{ max_price }}" step="1" inputmode="numeric">
+      <small class="muted">0 = bure. Mkeka wa kulipia: coin 5 hadi {{ max_price }}. Jukwaa linakata ada ya {{ fee }}%.</small>
+    </label>
+    <label class="field">
+      <span>Maelezo ya ziada (hiari)</span>
+      <textarea name="body" rows="3" maxlength="500" placeholder="Sababu za mkeka wako">{{ form.body }}</textarea>
+      <small class="muted">Yanafichwa pamoja na mkeka kwa asiyenunua.</small>
+    </label>
+    <p class="notice">{{ icon('shield', 16) }} Odds hubadilika. Zitakazorekodiwa ni za kampuni uliyochagua wakati unaposhinikiza "Weka mkeka". Matokeo yatahukumiwa kiotomatiki mchezo ukiisha.</p>
+    <button class="btn primary block" type="submit">Weka mkeka</button>
+  </div>
+</form>
+{% endif %}
+{% endif %}
+{% endif %}

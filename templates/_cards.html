@@ -7,7 +7,7 @@
 {%- endmacro %}
 
 {% macro tip_card(t) -%}
-{% set st = ("Imefungwa, inasubiri matokeo", "warn") if t.phase == "pending" else (("Wazi kwa kununua", "ok") if t.phase == "open" and t.price > 0 else status_labels[t.status]) %}
+{% set st = ("Inasubiri matokeo", "warn") if t.phase == "pending" else (("Wazi kwa kununua", "ok") if t.phase == "open" and t.price > 0 else status_labels[t.status]) %}
 <article class="card tip">
   <header class="tip-head">
     {{ avatar(t) }}
@@ -26,7 +26,7 @@
     {% else %}
       <span class="lock">{{ icon('lock', 16) }} Mkeka umefungwa · {{ icon('coin', 14) }} {{ t.price }}</span>
     {% endif %}
-    <span class="odds">{{ '%.2f'|format(t.odds or 0) }}</span>
+    <span class="odds" {% if t.bookmaker %}title="Odds za {{ t.bookmaker }}"{% endif %}>{{ '%.2f'|format(t.odds or 0) }}{% if t.bookmaker %}<small class="odds-book">{{ t.bookmaker }}</small>{% endif %}</span>
   </div>
 
   <footer class="tip-foot">
