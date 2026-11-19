@@ -266,6 +266,12 @@ Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara an
 - **Sehemu za kuandika** (ujumbe, ripoti, nenosiri): sasa zinatumia rangi za mandhari yetu kila mahali.
 - **Faili zilizobadilika**: `static/css/style.css`, `templates/admin_dash.html`, `templates/_admin_nav.html`, `templates/admin_users.html`, `templates/admin_orders.html`, `templates/admin_reports.html`.
 
+## Mwonekano tulivu na mpangilio mpya wa usimamizi
+
+- **Mwonekano mzima**: pembe ndogo (6px), mistari myembamba, vitufe tambarare (kijani kwa kitendo kikuu, nyekundu kwa hatari), alama (labels) zenye mpaka, vihesabio vidogo vya kijivu (nyekundu kunapohitaji hatua), na vichujio vimekuwa tabo zenye mstari chini (tab iliyochaguliwa inaonekana hata orodha ikisogezwa). Nembo ni ya duara tambarare isiyo na mchanganyiko wa rangi.
+- **Usimamizi**: kila ukurasa una kichwa na maelezo mafupi, kisha tabo, kisha visanduku vyenye vichwa. Muhtasari umepangwa kwa makundi: "Zinazohitaji hatua" (mapingamizi, ripoti), "Watumiaji na maudhui", "Coin", na mapingamizi yanayosubiri. Orodha zote zina kichwa chenye idadi.
+- **Faili zilizobadilika**: `static/css/style.css`, `static/js/app.js`, `templates/admin_dash.html`, `admin_users.html`, `admin_tips.html`, `admin_products.html`, `admin_orders.html`, `admin_reports.html`, `admin_log.html`.
+
 ## Hatua zinazofuata
 
 8. Malipo halisi
