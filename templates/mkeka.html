@@ -19,11 +19,12 @@
 {% else %}
 <section class="card pad buy-box">
   <h2>{{ icon('lock', 20) }} Mkeka huu umefungwa</h2>
-  <p class="muted">Nunua kuuona. Mtabiri anapokea coin {{ t.price - (t.price * fee // 100) }} (ada ya jukwaa {{ fee }}%).</p>
+  {% if not t.started %}<p class="muted">Muda wa kununua: unafungwa baada ya {{ t.closes_in|closes }} (mchezo ukianza).</p>{% endif %}
+  <p class="muted">{% if t.started %}Muda wa kununua umeisha.{% else %}Nunua kuuona.{% endif %}{% if not t.started %} Mtabiri anapokea coin {{ t.price - (t.price * fee // 100) }} (ada ya jukwaa {{ fee }}%).{% endif %}</p>
   {% if not user %}
     <a class="btn primary block" href="{{ url_for('auth.login', next=request.path) }}">Ingia ili ununue</a>
   {% elif t.started %}
-    <p class="notice warn">Mchezo umeshaanza, ununuzi umefungwa.</p>
+    <p class="notice warn">Mchezo umeshaanza, ununuzi umefungwa. Mkeka utafunguka kwa wote matokeo yakiwekwa.</p>
   {% else %}
     <form method="post" action="{{ url_for('tips.buy', tip_id=t.id) }}">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
