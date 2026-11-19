@@ -54,6 +54,19 @@
   </form>
 </section>
 
+<section class="card auth">
+  <h2>{{ 'Badilisha nenosiri' if user.password_hash else 'Weka nenosiri' }}</h2>
+  <form method="post" action="{{ url_for('auth.change_password') }}" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% if user.password_hash %}
+    <label class="field"><span>Nenosiri la sasa</span><input type="password" name="current" autocomplete="current-password" required></label>
+    {% endif %}
+    <label class="field"><span>Nenosiri jipya</span><input type="password" name="new" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+    <label class="field"><span>Rudia nenosiri jipya</span><input type="password" name="new2" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+    <button class="btn" type="submit">Hifadhi</button>
+  </form>
+</section>
+
 <form method="post" action="{{ url_for('auth.logout') }}">
   <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
   <button class="btn block danger" type="submit">Toka kwenye akaunti</button>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Masharti · {{ app_name }}{% endblock %}
+{% block content %}
+<article class="card pad legal">
+  <h1>Masharti ya matumizi</h1>
+  <p class="muted">Yamesasishwa mara ya mwisho: Novemba 2026</p>
+
+  <h2>1. Umri na akaunti</h2>
+  <p>Unaweza kutumia {{ app_name }} ikiwa una miaka 18 au zaidi. Wewe ndiye mwenye jukumu la akaunti yako na nenosiri lako. Taarifa unazotoa zisiwe za uongo.</p>
+
+  <h2>2. Coin</h2>
+  <p>Coin ni kipimo cha thamani ndani ya app. {% if coin_mode == 'demo' %}Kwa sasa app iko kwenye hali ya majaribio: coin zote ni bandia na hazina thamani ya pesa.{% else %}Coin zinanunuliwa na kutolewa kwa viwango na ada vilivyoonyeshwa kwenye app.{% endif %} Ada ya jukwaa inakatwa kwenye mauzo ya mikeka na bidhaa kama ilivyoonyeshwa wakati wa kuuza.</p>
+
+  <h2>3. Jamvi la mikeka</h2>
+  <p>Mikeka ni maoni ya watumiaji, si ushauri wa uhakika. {{ app_name }} haihakikishi matokeo wala faida. Usitumie pesa usizoweza kupoteza. Mtabiri anawajibika kwa maudhui yake na kuweka matokeo kwa uaminifu; udanganyifu ukigundulika, mkeka unaweza kubatilishwa na wanunuzi kurudishiwa coin zao, na akaunti kusimamishwa.</p>
+
+  <h2>4. Market</h2>
+  <p>Wauzaji wanawajibika kwa bidhaa wanazoweka na wanapaswa kuuza vitu halali tu. Mnunuzi akiagiza, coin zake zinashikiliwa hadi apokee bidhaa, aghairi, au msimamizi aamue. Muuzaji akikabidhi na mnunuzi asijibu kwa siku {{ order_release_days }}, coin zinaachiliwa kwa muuzaji. Mwenye pingamizi anaweza kuliweka kabla ya hapo.</p>
+
+  <h2>5. Mambo yasiyoruhusiwa</h2>
+  <p>Hairuhusiwi: udanganyifu, kuuza vitu haramu au vilivyoibwa, matusi na unyanyasaji, barua taka, kutumia akaunti ya mtu mwingine, au kujaribu kuvuruga app.</p>
+
+  <h2>6. Hatua tunazoweza kuchukua</h2>
+  <p>Tunaweza kuficha au kufuta maudhui, kubatilisha mikeka, kuachilia au kurudisha coin kwenye mapingamizi, na kusimamisha akaunti zinazovunja masharti haya.</p>
+
+  <h2>7. Dhima</h2>
+  <p>App inatolewa "kama ilivyo". Hatuwajibiki kwa hasara inayotokana na maamuzi ya watumiaji, mikeka, au miamala kati ya watumiaji, kadiri sheria inavyoruhusu.</p>
+
+  <h2>8. Mabadiliko</h2>
+  <p>Tunaweza kubadilisha masharti haya. Ukiendelea kutumia app baada ya mabadiliko, unakubali masharti mapya.</p>
+</article>
+{% endblock %}

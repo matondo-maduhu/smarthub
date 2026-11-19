@@ -69,6 +69,7 @@
 
   <footer class="site-footer">
     <p>{{ icon('shield', 16) }} Umri wa miaka 18 na zaidi tu. Cheza kwa kiasi, usitumie pesa usizoweza kupoteza.</p>
+    <p class="muted footer-links"><a href="{{ url_for('masharti') }}">Masharti</a> · <a href="{{ url_for('faragha') }}">Faragha</a></p>
     {% if coin_mode == 'demo' %}
     <p class="muted">Hali ya majaribio: coin zote ni bandia, hakuna pesa halisi.</p>
     {% endif %}
