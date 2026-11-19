@@ -2,12 +2,13 @@
 {% from "_icons.html" import icon %}
 {% block title %}Kumbukumbu · Usimamizi{% endblock %}
 {% block content %}
-<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Hatua zote za wasimamizi. Hazifutwi.</p></div>
 {% set sec = 'log' %}{% include "_admin_nav.html" %}
-<section class="card list">
+<section class="box">
+  <div class="box-header">Kumbukumbu <span class="counter">{{ rows|length }}</span></div>
   {% for l in rows %}
   <div class="row"><div class="row-main"><strong>{{ l.action }} <span class="muted">{{ l.detail }}</span></strong>
     <span class="muted">@{{ l.username }} · {{ l.created_at|eat }}</span></div></div>
-  {% else %}<p class="muted center pad">Hakuna kumbukumbu bado.</p>{% endfor %}
+  {% else %}<div class="box-empty">Hakuna kumbukumbu bado.</div>{% endfor %}
 </section>
 {% endblock %}

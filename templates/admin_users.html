@@ -2,20 +2,24 @@
 {% from "_icons.html" import icon %}
 {% block title %}Watumiaji · Usimamizi{% endblock %}
 {% block content %}
-<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Tafuta, simamisha au thibitisha akaunti.</p></div>
 {% set sec = 'users' %}{% include "_admin_nav.html" %}
-<form method="get" class="search-form"><label class="field"><span>Tafuta (jina, barua pepe, simu)</span>
-  <input name="q" value="{{ q }}" maxlength="60"></label>
-  <button class="btn" type="submit">Tafuta</button></form>
-<section class="card list">
+
+<form method="get" class="search-form">
+  <label class="field"><span>Tafuta (jina, barua pepe, simu)</span><input name="q" value="{{ q }}" maxlength="60"></label>
+  <button class="btn" type="submit">Tafuta</button>
+</form>
+<section class="box">
+  <div class="box-header">Watumiaji <span class="counter">{{ rows|length }}</span></div>
   {% for u in rows %}
   <div class="row">
     <div class="row-main">
       <strong>{{ u.display_name }} <span class="muted">@{{ u.username }}</span>
         {% if u.is_admin %}<span class="badge ok">Msimamizi</span>{% endif %}
         {% if u.is_banned %}<span class="badge bad">Amesimamishwa</span>{% endif %}
-        {% if u.is_verified %}<span class="badge mute">Amethibitishwa</span>{% endif %}</strong>
-      <span class="muted">{{ u.email or u.phone or '—' }} · coin {{ u.balance|num }} · {{ u.created_at|eat }}</span>
+        {% if u.is_verified %}<span class="badge">Amethibitishwa</span>{% endif %}</strong>
+      <span class="muted">{{ u.email or u.phone or '—' }}</span>
+      <span class="muted">Coin {{ u.balance|num }} · alijiunga {{ u.created_at|eat }}</span>
     </div>
     {% if not u.is_admin and u.id != user.id %}
     <div class="actions-row">
@@ -31,6 +35,6 @@
     </div>
     {% endif %}
   </div>
-  {% else %}<p class="muted center pad">Hakuna aliyepatikana.</p>{% endfor %}
+  {% else %}<div class="box-empty">Hakuna aliyepatikana.</div>{% endfor %}
 </section>
 {% endblock %}

@@ -2,14 +2,15 @@
 {% from "_icons.html" import icon %}
 {% block title %}Ripoti · Usimamizi{% endblock %}
 {% block content %}
-<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Ripoti kutoka kwa watumiaji.</p></div>
 {% set sec = 'reports' %}{% include "_admin_nav.html" %}
 <div class="chips wrap">
   <a class="chip {{ 'on' if hali == 'open' }}" href="{{ url_for('admin.reports') }}">Wazi</a>
   <a class="chip {{ 'on' if hali == 'resolved' }}" href="{{ url_for('admin.reports', hali='resolved') }}">Zilizoshughulikiwa</a>
   <a class="chip {{ 'on' if hali == 'dismissed' }}" href="{{ url_for('admin.reports', hali='dismissed') }}">Zilizopuuzwa</a>
 </div>
-<section class="card list">
+<section class="box">
+  <div class="box-header">Ripoti <span class="counter">{{ rows|length }}</span></div>
   {% for r in rows %}
   <div class="row">
     <div class="row-main">
@@ -28,6 +29,6 @@
     </div>
     {% endif %}
   </div>
-  {% else %}<p class="muted center pad">Hakuna ripoti hapa.</p>{% endfor %}
+  {% else %}<div class="box-empty">Hakuna ripoti hapa.</div>{% endfor %}
 </section>
 {% endblock %}

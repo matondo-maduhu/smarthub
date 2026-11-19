@@ -2,9 +2,10 @@
 {% from "_icons.html" import icon %}
 {% block title %}Bidhaa · Usimamizi{% endblock %}
 {% block content %}
-<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Ficha au onyesha bidhaa za market.</p></div>
 {% set sec = 'products' %}{% include "_admin_nav.html" %}
-<section class="card list">
+<section class="box">
+  <div class="box-header">Bidhaa <span class="counter">{{ rows|length }}</span></div>
   {% for p in rows %}
   <div class="row">
     <div class="row-main">
@@ -18,6 +19,6 @@
       <button class="btn small" type="submit">{{ 'Onyesha' if p.status == 'hidden' else 'Ficha' }}</button></form>
     {% endif %}
   </div>
-  {% else %}<p class="muted center pad">Hakuna bidhaa.</p>{% endfor %}
+  {% else %}<div class="box-empty">Hakuna bidhaa.</div>{% endfor %}
 </section>
 {% endblock %}

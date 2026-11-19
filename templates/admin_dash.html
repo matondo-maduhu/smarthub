@@ -1,29 +1,39 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
-{% block title %}Usimamizi · {{ app_name }}{% endblock %}
+{% block title %}Muhtasari · Usimamizi{% endblock %}
 {% block content %}
-<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Muhtasari wa jukwaa na vitu vinavyosubiri hatua yako.</p></div>
 {% set sec = 'dash' %}{% include "_admin_nav.html" %}
-<div class="stat-tiles">
-  <div class="card tile"><span class="tile-icon blue">{{ icon('user', 20) }}</span><span class="tile-body"><strong>{{ s.users|num }}</strong><span class="muted">Watumiaji</span></span></div>
-  <div class="card tile"><span class="tile-icon red">{{ icon('lock', 20) }}</span><span class="tile-body"><strong>{{ s.banned|num }}</strong><span class="muted">Wasimamishwa</span></span></div>
-  <div class="card tile"><span class="tile-icon purple">{{ icon('ticket', 20) }}</span><span class="tile-body"><strong>{{ s.tips|num }}</strong><span class="muted">Mikeka</span></span></div>
-  <div class="card tile"><span class="tile-icon orange">{{ icon('store', 20) }}</span><span class="tile-body"><strong>{{ s.products|num }}</strong><span class="muted">Bidhaa</span></span></div>
-  <div class="card tile"><span class="tile-icon blue">{{ icon('tag', 20) }}</span><span class="tile-body"><strong>{{ s.orders_open|num }}</strong><span class="muted">Maagizo wazi</span></span></div>
-  <div class="card tile"><span class="tile-icon red">{{ icon('shield', 20) }}</span><span class="tile-body"><strong>{{ s.disputed|num }}</strong><span class="muted">Mapingamizi</span></span></div>
-  <div class="card tile"><span class="tile-icon red">{{ icon('bell', 20) }}</span><span class="tile-body"><strong>{{ s.reports_open|num }}</strong><span class="muted">Ripoti wazi</span></span></div>
-  <div class="card tile"><span class="tile-icon green">{{ icon('coin', 20) }}</span><span class="tile-body"><strong>{{ s.coins|num }}</strong><span class="muted">Coin kwenye pochi</span></span></div>
-  <div class="card tile"><span class="tile-icon orange">{{ icon('wallet', 20) }}</span><span class="tile-body"><strong>{{ s.held|num }}</strong><span class="muted">Coin zinazoshikiliwa</span></span></div>
+
+<section class="box">
+  <div class="box-header">Zinazohitaji hatua</div>
+  <a class="box-row" href="{{ url_for('admin.orders') }}"><span>Mapingamizi ya maagizo</span><span class="counter {{ 'bad' if s.disputed }}">{{ s.disputed|num }}</span></a>
+  <a class="box-row" href="{{ url_for('admin.reports') }}"><span>Ripoti zilizo wazi</span><span class="counter {{ 'bad' if s.reports_open }}">{{ s.reports_open|num }}</span></a>
+</section>
+
+<div class="admin-cols">
+  <section class="box">
+    <div class="box-header">Watumiaji na maudhui</div>
+    <a class="box-row" href="{{ url_for('admin.users') }}"><span>Watumiaji</span><span class="counter">{{ s.users|num }}</span></a>
+    <div class="box-row"><span>Wasimamishwa</span><span class="counter">{{ s.banned|num }}</span></div>
+    <a class="box-row" href="{{ url_for('admin.tips') }}"><span>Mikeka</span><span class="counter">{{ s.tips|num }}</span></a>
+    <a class="box-row" href="{{ url_for('admin.products') }}"><span>Bidhaa</span><span class="counter">{{ s.products|num }}</span></a>
+  </section>
+  <section class="box">
+    <div class="box-header">Coin</div>
+    <div class="box-row"><span>Kwenye pochi za watumiaji</span><strong>{{ s.coins|num }}</strong></div>
+    <div class="box-row"><span>Zinazoshikiliwa kwenye maagizo</span><strong>{{ s.held|num }}</strong></div>
+    <a class="box-row" href="{{ url_for('admin.orders', hali='zote') }}"><span>Maagizo yaliyo wazi</span><span class="counter">{{ s.orders_open|num }}</span></a>
+  </section>
 </div>
-<div class="section-head"><h2>Mapingamizi yanayosubiri</h2><a href="{{ url_for('admin.orders') }}">Yote</a></div>
-{% if disputed %}
-<section class="card list">
+
+<section class="box">
+  <div class="box-header">Mapingamizi yanayosubiri <span class="counter">{{ disputed|length }}</span></div>
   {% for o in disputed %}
-  <a class="row" href="{{ url_for('market.order_detail', order_id=o.id) }}">
-    <div class="row-main"><strong>{{ o.title }}</strong><span class="muted">#{{ o.id }} · {{ o.buyer_name }} → {{ o.seller_name }}</span></div>
+  <a class="box-row" href="{{ url_for('market.order_detail', order_id=o.id) }}">
+    <span class="row-main"><strong>{{ o.title }}</strong><span class="muted">#{{ o.id }} · {{ o.buyer_name }} → {{ o.seller_name }}</span></span>
     <strong>{{ icon('coin', 14) }} {{ o.price|num }}</strong>
   </a>
-  {% endfor %}
+  {% else %}<div class="box-empty">Hakuna pingamizi linalosubiri.</div>{% endfor %}
 </section>
-{% else %}<p class="muted center">Hakuna pingamizi.</p>{% endif %}
 {% endblock %}
