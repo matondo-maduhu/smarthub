@@ -169,7 +169,11 @@ def _decorate(t, viewer_id):
         t["pick"] = None
         t["body"] = None
     start = to_dt(t["starts_at"])
-    t["started"] = bool(start and start <= datetime.now(timezone.utc))
+    now = datetime.now(timezone.utc)
+    t["started"] = bool(start and start <= now)
+    # Hatua ya mkeka: wazi (bado unaweza kununuliwa), imefungwa (mchezo umeanza, inasubiri matokeo), au imekwisha
+    t["phase"] = ("pending" if t["started"] else "open") if t["status"] == "open" else t["status"]
+    t["closes_in"] = int((start - now).total_seconds()) if start and not t["started"] else None
     return t
 
 

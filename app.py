@@ -110,6 +110,19 @@ def create_app():
             "google_enabled": auth.google_enabled(),
         }
 
+    @app.template_filter("closes")
+    def closes(seconds):
+        """Sekunde -> 'siku 2', 'saa 3', 'dakika 20'."""
+        if seconds is None:
+            return ""
+        if seconds >= 86400:
+            return f"siku {seconds // 86400}"
+        if seconds >= 3600:
+            return f"saa {seconds // 3600}"
+        if seconds >= 60:
+            return f"dakika {seconds // 60}"
+        return "chini ya dakika 1"
+
     @app.template_filter("num")
     def num(value):
         return f"{int(value):,}"

@@ -272,6 +272,15 @@ Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara an
 - **Usimamizi**: kila ukurasa una kichwa na maelezo mafupi, kisha tabo, kisha visanduku vyenye vichwa. Muhtasari umepangwa kwa makundi: "Zinazohitaji hatua" (mapingamizi, ripoti), "Watumiaji na maudhui", "Coin", na mapingamizi yanayosubiri. Orodha zote zina kichwa chenye idadi.
 - **Faili zilizobadilika**: `static/css/style.css`, `static/js/app.js`, `templates/admin_dash.html`, `admin_users.html`, `admin_tips.html`, `admin_products.html`, `admin_orders.html`, `admin_reports.html`, `admin_log.html`.
 
+## Mkeka kujifunga muda ukiisha
+
+- Mkeka unafungwa wenyewe mchezo unapoanza (`starts_at`). Hakuna cron wala kazi ya kuendesha: seva inalinganisha saa kila ombi, kwa hiyo unafungwa sekunde ileile.
+- **Kabla ya kuanza**: kadi inasema "Wazi kwa kununua" na "Inafungwa baada ya saa 3" (au siku/dakika).
+- **Baada ya kuanza**: kadi inasema "Imefungwa, inasubiri matokeo"; kitufe cha kununua kinaondoka na seva inakataa ununuzi hata ukijaribu kwa nguvu (coin hazikatwi). Mkeka wa kulipia unabaki umefichwa kwa wasionunua hadi matokeo yawekwe; wa bure unabaki wazi.
+- Mtabiri anaweza kuweka matokeo mchezo ukishaanza (kama hapo awali).
+- **Faili zilizobadilika**: `models.py`, `app.py`, `templates/_cards.html`, `templates/mkeka.html`.
+- Bado hakuna kitu kinachomkumbusha mtabiri asiyeweka matokeo; msimamizi anaweza kuyarekebisha au kubatilisha mkeka.
+
 ## Hatua zinazofuata
 
 8. Malipo halisi
