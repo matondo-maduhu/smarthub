@@ -113,3 +113,9 @@
   }
   setInterval(poll, 8000);
 })();
+
+// Tabo: tab iliyochaguliwa ionekane hata kama orodha inasogezwa
+(function () {
+  var on = document.querySelector(".chips .chip.on");
+  if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
+})();
