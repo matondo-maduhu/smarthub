@@ -29,6 +29,7 @@ market.py         market: bidhaa, picha, utafutaji, maagizo yenye escrow
 chat.py           ujumbe wa moja kwa moja na kuzuia watumiaji
 notifications.py  orodha ya arifa
 admin.py          usimamizi na ripoti za watumiaji
+vercel.json       ratiba ya kazi ya kila siku (cron)
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -249,6 +250,13 @@ Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara an
 
 **Tahadhari ya usalama**: barua pepe na simu bado hazithibitishwi (SMS/barua pepe ni kazi ijayo). Mtu anaweza kujisajili kwa jina, barua pepe au namba ya mtu mwingine kabla yake. Kwa hiyo jisajili wewe kwanza, kisha weka kwenye environment; na usiweke jina linaloweza kuchukuliwa na mtu mwingine kabla yako.
 - Namba za simu zinahifadhiwa kama `+255712345678`; kwenye `ADMIN_PHONES` unaweza kuandika `0712345678` au `+255712345678`.
+
+## Hatua ya 7B: sheria, nenosiri na kazi ya kila siku
+
+- **Kurasa za `/masharti` na `/faragha`**: zinaonekana chini ya kila ukurasa na kwenye fomu ya usajili. **Hizi ni rasimu ya kawaida, si ushauri wa kisheria.** Kabla ya kufungua kwa umma (hasa malipo halisi), mwanasheria wa Tanzania azikague na kuongeza jina la kampuni, anwani ya mawasiliano, na mahitaji ya leseni ya michezo ya kubahatisha na ulinzi wa taarifa binafsi.
+- **Kubadilisha nenosiri** (wasifu): linahitaji nenosiri la sasa, jipya lisilopungua herufi 8 na tofauti na la zamani; majaribio mabaya 5 yanazuia kwa dakika 10. Aliyejisajili kwa Google (hana nenosiri) anaweza kuweka la kwanza. Vikao vilivyofunguliwa kwenye vifaa vingine havifungwi nenosiri likibadilika (tutaongeza hilo baadaye).
+- **Kuachilia coin kila siku (cron)**: `vercel.json` inaita `/cron/release` kila siku saa 3 asubuhi UTC. Ili ifanye kazi, weka kwenye Vercel Environment Variables `CRON_SECRET` (maneno marefu ya siri unayobuni) kisha Redeploy; Vercel hutuma siri hiyo yenyewe. Bila `CRON_SECRET` anwani hiyo inarudisha 404 na haifanyi kitu. Njia ya awali (kuachilia mtumiaji anapofungua maagizo) inabaki kama ziada.
+- **Faili mpya**: `masharti.html`, `faragha.html`, `vercel.json`. Mpangilio mpya: `CRON_SECRET`.
 
 ## Hatua zinazofuata
 

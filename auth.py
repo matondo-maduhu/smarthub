@@ -235,6 +235,37 @@ def login():
     return render_template("auth_login.html", form=form, errors=errors, next=next_url, active="wasifu"), (400 if errors else 200)
 
 
+@bp.route("/wasifu/nenosiri", methods=["POST"])
+@login_required
+def change_password():
+    """Kubadilisha nenosiri. Anayeingia kwa Google tu (hana nenosiri) anaweza kuweka la kwanza."""
+    key = f"pw|{g.user['id']}"
+    current = request.form.get("current", "")
+    new, new2 = request.form.get("new", ""), request.form.get("new2", "")
+    has_pw = bool(g.user["password_hash"])
+    msg = None
+    if len(_recent_fails(key)) >= MAX_FAILS:
+        msg = "Umejaribu mara nyingi mno. Subiri dakika chache kisha ujaribu tena."
+    elif has_pw and not check_password_hash(g.user["password_hash"], current):
+        _FAILS.setdefault(key, []).append(time.time())
+        msg = "Nenosiri la sasa si sahihi."
+    elif len(new) < 8:
+        msg = "Nenosiri jipya liwe na herufi 8 au zaidi."
+    elif len(new) > 128:
+        msg = "Nenosiri ni refu mno."
+    elif new != new2:
+        msg = "Manenosiri mapya hayafanani."
+    elif has_pw and check_password_hash(g.user["password_hash"], new):
+        msg = "Nenosiri jipya liwe tofauti na la sasa."
+    if msg:
+        flash(msg, "error")
+    else:
+        _FAILS.pop(key, None)
+        models.set_password(g.user["id"], generate_password_hash(new))
+        flash("Nenosiri limebadilishwa.", "ok")
+    return redirect(url_for("wasifu"))
+
+
 @bp.route("/toka", methods=["POST"])
 def logout():
     session.clear()

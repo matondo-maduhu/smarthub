@@ -1,7 +1,8 @@
+import os
 import sys
 from datetime import datetime, timedelta, timezone
 
-from flask import (Flask, flash, g, jsonify, redirect, render_template,
+from flask import (Flask, abort, flash, g, jsonify, redirect, render_template,
                    request, session, url_for)
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -151,6 +152,27 @@ def create_app():
             for t in models.get_transactions(g.user["id"])
         ]
         return render_template("pochi.html", active="pochi", txns=txns)
+
+    @app.route("/masharti")
+    def masharti():
+        return render_template("masharti.html", active="", order_release_days=Config.ORDER_AUTO_RELEASE_DAYS)
+
+    @app.route("/faragha")
+    def faragha():
+        return render_template("faragha.html", active="")
+
+    @app.route("/cron/release")
+    def cron_release():
+        """Huachilia coin za maagizo yaliyokabidhiwa na yaliyozidi siku. Inaitwa na Vercel Cron kila siku.
+        Inahitaji CRON_SECRET (Vercel inautuma kama 'Authorization: Bearer ...'); bila hiyo ni 404."""
+        import hmac
+
+        secret = os.getenv("CRON_SECRET", "")
+        sent = request.headers.get("Authorization", "")
+        if not secret or not hmac.compare_digest(sent, f"Bearer {secret}"):
+            abort(404)
+        n = models.release_overdue(Config.ORDER_AUTO_RELEASE_DAYS)
+        return {"released": n}
 
     @app.route("/wasifu")
     def wasifu():

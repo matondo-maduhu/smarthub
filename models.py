@@ -932,3 +932,7 @@ def make_admin(user_id):
         cur.execute("UPDATE users SET is_admin = TRUE WHERE id = %s AND is_admin = FALSE", (user_id,))
         if cur.rowcount:
             log_admin(cur, user_id, "env_admin", "alipandishwa kupitia environment")
+
+
+def set_password(user_id, password_hash):
+    db.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, user_id))
