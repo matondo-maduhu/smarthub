@@ -401,34 +401,98 @@ a.product:hover { text-decoration: none; border-color: var(--accent); }
 .search-form .search { min-width: 0; }
 .search-form .btn { flex: none; }
 
-/* Ujumbe na arifa */
+/* ===== Mpangilio wa simu na kurasa mpya (ujumbe, arifa, usimamizi, sheria) ===== */
+
+/* Header isikanyagane kwenye skrini ndogo */
+.topbar-inner { gap: 8px; padding: 8px 12px; }
+.topbar-actions { gap: 2px; min-width: 0; }
+.icon-btn { width: 34px; height: 34px; flex: none; }
+.coin-chip { padding: 5px 10px; font-size: 13px; white-space: nowrap; }
+@media (max-width: 440px) {
+  .brand-name { display: none; }
+}
+@media (min-width: 760px) {
+  .topbar-inner { gap: 12px; padding: 10px 16px; }
+  .icon-btn { width: 36px; height: 36px; }
+}
+
+/* Menyu ya chini: nafasi juu ya upau wa mfumo wa simu */
+.nav-mobile { padding-bottom: max(env(safe-area-inset-bottom), 14px); }
+body { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+@media (min-width: 760px) { body { padding-bottom: 0; } }
+
+/* Vichujio vinashuka mstari unaofuata badala ya kukatwa */
+.chips.wrap { flex-wrap: wrap; overflow: visible; }
+
+/* Safu: maudhui kushoto, vitufe chini yake kwenye simu */
+.row { flex-wrap: wrap; row-gap: 10px; }
+.row > .actions-row { flex-basis: 100%; }
+.row .badge { white-space: nowrap; }
+.row-main strong { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.small-time { font-size: 12px; white-space: nowrap; }
+a.row { color: inherit; text-decoration: none; }
+a.row:hover { background: var(--surface-2); }
+.row.unread { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+@media (min-width: 560px) { .row > .actions-row { flex-basis: auto; } }
+
+/* Alama ya idadi */
 .has-dot { position: relative; }
 .dot {
-  position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; padding: 0 5px;
-  border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; font-weight: 600;
+  position: absolute; top: 0; right: 0; min-width: 17px; height: 17px; padding: 0 4px;
+  border-radius: 9px; background: var(--red); color: #fff; font-size: 11px; font-weight: 700;
   display: inline-flex; align-items: center; justify-content: center; line-height: 1;
+  border: 2px solid var(--surface);
 }
-.dot.inline { position: static; }
-.row.unread { background: var(--accent-soft); }
-a.row { color: inherit; text-decoration: none; }
-.clip { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.small-time { font-size: 12px; }
-.chat-head { display: flex; align-items: center; gap: 12px; }
-.chat-box { max-height: 55vh; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; word-wrap: break-word; overflow-wrap: anywhere; }
-.bubble small { display: block; margin-top: 2px; font-size: 11px; opacity: .7; }
-.bubble.mine { align-self: flex-end; background: var(--accent); color: #fff; }
-.bubble.theirs { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--border); }
-.chat-form { display: flex; gap: 8px; align-items: flex-end; }
-.chat-form textarea { flex: 1; }
+.dot.inline { position: static; border: 0; }
 
-/* Usimamizi na ripoti */
-.report-box { margin: 12px 0; font-size: 13px; }
-.report-box summary { cursor: pointer; }
+/* Ujumbe */
+.chat-head { display: flex; flex-direction: row; align-items: center; gap: 12px; }
+.chat-box { max-height: 55vh; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 8px; background: var(--bg); }
+.bubble { max-width: 82%; padding: 8px 12px; border-radius: 14px; overflow-wrap: anywhere; }
+.bubble small { display: block; margin-top: 2px; font-size: 11px; opacity: .75; }
+.bubble.mine { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.bubble.theirs { align-self: flex-start; background: var(--surface-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.chat-form { flex-direction: column; align-items: stretch; }
+.chat-form textarea { width: 100%; }
+.back { display: inline-block; margin-bottom: -6px; }
+
+/* Usimamizi: vigae vya takwimu vyenye rangi zetu */
+.stat-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.tile { padding: 12px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tile-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; }
+.tile-icon.blue { background: var(--accent-soft); color: var(--accent); }
+.tile-icon.green { background: var(--green-soft); color: var(--green); }
+.tile-icon.orange { background: var(--orange-soft); color: var(--orange); }
+.tile-icon.red { background: var(--red-soft); color: var(--red); }
+.tile-icon.purple { background: var(--purple-soft); color: var(--purple); }
+.tile-body { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.tile-body strong { font-size: 20px; }
+.tile-body .muted { font-size: 12px; overflow-wrap: anywhere; hyphens: auto; }
+@media (min-width: 760px) { .stat-tiles { grid-template-columns: repeat(3, 1fr); } }
+.search-form { display: flex; gap: 8px; align-items: flex-end; }
+.search-form .field { flex: 1; min-width: 0; }
+.search-form .btn { flex: none; }
+
+/* Ripoti */
+.report-box { margin-top: 4px; font-size: 13px; }
+.report-box summary { cursor: pointer; padding: 6px 0; }
 .report-box .form { margin-top: 8px; }
 .report-box textarea { width: 100%; }
 
 /* Kurasa za sheria */
-.legal h2 { margin-top: 20px; font-size: 16px; }
-.legal p { line-height: 1.6; }
+.legal { gap: 6px; }
+.legal h2 { margin-top: 18px; font-size: 16px; }
+.legal p { line-height: 1.65; }
 .footer-links a { text-decoration: underline; }
+
+/* Sehemu za kuandika zote zitumie rangi zetu (si tu ndani ya .field) */
+textarea, select, input[type="text"], input[type="search"], input[type="password"], input[type="number"] {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); font: inherit; outline: 0;
+}
+textarea { resize: vertical; }
+textarea:focus, select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+::placeholder { color: var(--muted); opacity: .8; }
+.chat-form .btn { width: 100%; justify-content: center; }
