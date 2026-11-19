@@ -4,7 +4,7 @@
 {% block content %}
 <h1>{{ icon('shield', 24) }} Usimamizi</h1>
 {% set sec = 'reports' %}{% include "_admin_nav.html" %}
-<div class="chips">
+<div class="chips wrap">
   <a class="chip {{ 'on' if hali == 'open' }}" href="{{ url_for('admin.reports') }}">Wazi</a>
   <a class="chip {{ 'on' if hali == 'resolved' }}" href="{{ url_for('admin.reports', hali='resolved') }}">Zilizoshughulikiwa</a>
   <a class="chip {{ 'on' if hali == 'dismissed' }}" href="{{ url_for('admin.reports', hali='dismissed') }}">Zilizopuuzwa</a>

@@ -4,7 +4,7 @@
 {% block content %}
 <h1>{{ icon('shield', 24) }} Usimamizi</h1>
 {% set sec = 'orders' %}{% include "_admin_nav.html" %}
-<div class="chips">
+<div class="chips wrap">
   {% for k, label in [('disputed','Mapingamizi'),('paid','Yamelipwa'),('delivered','Yamekabidhiwa'),('completed','Yamekamilika'),('cancelled','Yameghairiwa'),('zote','Yote')] %}
   <a class="chip {{ 'on' if hali == k }}" href="{{ url_for('admin.orders', hali=k) }}">{{ label }}</a>
   {% endfor %}

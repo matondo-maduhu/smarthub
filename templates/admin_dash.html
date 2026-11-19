@@ -4,19 +4,17 @@
 {% block content %}
 <h1>{{ icon('shield', 24) }} Usimamizi</h1>
 {% set sec = 'dash' %}{% include "_admin_nav.html" %}
-<section class="card pad">
-  <div class="stat-grid">
-    <div><strong>{{ s.users|num }}</strong><span class="muted">Watumiaji</span></div>
-    <div><strong>{{ s.banned|num }}</strong><span class="muted">Waliosimamishwa</span></div>
-    <div><strong>{{ s.tips|num }}</strong><span class="muted">Mikeka</span></div>
-    <div><strong>{{ s.products|num }}</strong><span class="muted">Bidhaa</span></div>
-    <div><strong>{{ s.orders_open|num }}</strong><span class="muted">Maagizo wazi</span></div>
-    <div><strong>{{ s.disputed|num }}</strong><span class="muted">Mapingamizi</span></div>
-    <div><strong>{{ s.reports_open|num }}</strong><span class="muted">Ripoti wazi</span></div>
-    <div><strong>{{ s.coins|num }}</strong><span class="muted">Coin kwenye pochi</span></div>
-    <div><strong>{{ s.held|num }}</strong><span class="muted">Coin zinazoshikiliwa</span></div>
-  </div>
-</section>
+<div class="stat-tiles">
+  <div class="card tile"><span class="tile-icon blue">{{ icon('user', 20) }}</span><span class="tile-body"><strong>{{ s.users|num }}</strong><span class="muted">Watumiaji</span></span></div>
+  <div class="card tile"><span class="tile-icon red">{{ icon('lock', 20) }}</span><span class="tile-body"><strong>{{ s.banned|num }}</strong><span class="muted">Wasimamishwa</span></span></div>
+  <div class="card tile"><span class="tile-icon purple">{{ icon('ticket', 20) }}</span><span class="tile-body"><strong>{{ s.tips|num }}</strong><span class="muted">Mikeka</span></span></div>
+  <div class="card tile"><span class="tile-icon orange">{{ icon('store', 20) }}</span><span class="tile-body"><strong>{{ s.products|num }}</strong><span class="muted">Bidhaa</span></span></div>
+  <div class="card tile"><span class="tile-icon blue">{{ icon('tag', 20) }}</span><span class="tile-body"><strong>{{ s.orders_open|num }}</strong><span class="muted">Maagizo wazi</span></span></div>
+  <div class="card tile"><span class="tile-icon red">{{ icon('shield', 20) }}</span><span class="tile-body"><strong>{{ s.disputed|num }}</strong><span class="muted">Mapingamizi</span></span></div>
+  <div class="card tile"><span class="tile-icon red">{{ icon('bell', 20) }}</span><span class="tile-body"><strong>{{ s.reports_open|num }}</strong><span class="muted">Ripoti wazi</span></span></div>
+  <div class="card tile"><span class="tile-icon green">{{ icon('coin', 20) }}</span><span class="tile-body"><strong>{{ s.coins|num }}</strong><span class="muted">Coin kwenye pochi</span></span></div>
+  <div class="card tile"><span class="tile-icon orange">{{ icon('wallet', 20) }}</span><span class="tile-body"><strong>{{ s.held|num }}</strong><span class="muted">Coin zinazoshikiliwa</span></span></div>
+</div>
 <div class="section-head"><h2>Mapingamizi yanayosubiri</h2><a href="{{ url_for('admin.orders') }}">Yote</a></div>
 {% if disputed %}
 <section class="card list">
