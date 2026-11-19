@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
+{% from "_report.html" import report_box with context %}
 {% block title %}{{ other.display_name }} · Ujumbe · {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -34,6 +35,7 @@
   <p class="muted center" id="chat-empty" {% if msgs %}hidden{% endif %}>Anza mazungumzo kwa kutuma ujumbe wa kwanza.</p>
 </section>
 
+{{ report_box("user", other.id) }}
 {% if state.by_me %}
 <p class="notice info">Umemzuia mtumiaji huyu. Muondolee kizuizi ili kumtumia ujumbe.</p>
 {% else %}

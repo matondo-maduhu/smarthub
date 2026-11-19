@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
+{% from "_report.html" import report_box with context %}
 {% set meta = category_meta.get(p.category, category_meta['mengineyo']) %}
 {% block title %}{{ p.title }} · {{ app_name }}{% endblock %}
 
@@ -74,4 +75,5 @@
 {% if user and not is_owner %}
 <a class="btn block" href="{{ url_for('chat.conversation', username=p.username) }}">{{ icon('chat', 18) }} Tuma ujumbe kwa muuzaji</a>
 {% endif %}
+{% if user and not is_owner %}{{ report_box("product", p.id) }}{% endif %}
 {% endblock %}

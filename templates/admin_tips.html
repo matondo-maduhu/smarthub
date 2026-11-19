@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mikeka · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'tips' %}{% include "_admin_nav.html" %}
+<p class="muted">"Batilisha" huwarudishia wanunuzi coin zote; muuzaji anakatwa alichopokea kadiri salio lake linavyoruhusu, upungufu unabebwa na jukwaa. Kuweka matokeo: fungua mkeka.</p>
+<section class="card list">
+  {% for t in rows %}
+  {% set st = status_labels[t.status] %}
+  <div class="row">
+    <div class="row-main">
+      <a href="{{ url_for('tips.detail', tip_id=t.id) }}"><strong>{{ t.title }}</strong></a>
+      <span class="muted">#{{ t.id }} · @{{ t.username }} · coin {{ t.price|num }} · wanunuzi {{ t.buyers }}</span>
+    </div>
+    <span class="badge {{ st[1] }}">{{ st[0] }}</span>
+    <div class="actions-row">
+      {% if t.status != 'void' and t.buyers|int > 0 %}
+      <form method="post" action="{{ url_for('admin.tip_action', tip_id=t.id, action='batilisha') }}" onsubmit="return confirm('Kubatilisha na kurudisha coin kwa wanunuzi?');">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small danger" type="submit">Batilisha</button></form>
+      {% endif %}
+      {% if t.buyers|int == 0 %}
+      <form method="post" action="{{ url_for('admin.tip_action', tip_id=t.id, action='futa') }}" onsubmit="return confirm('Kufuta mkeka?');">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small danger" type="submit">Futa</button></form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}<p class="muted center pad">Hakuna mikeka.</p>{% endfor %}
+</section>
+{% endblock %}

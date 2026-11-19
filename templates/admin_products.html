@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Bidhaa · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'products' %}{% include "_admin_nav.html" %}
+<section class="card list">
+  {% for p in rows %}
+  <div class="row">
+    <div class="row-main">
+      <a href="{{ url_for('market.detail', product_id=p.id) }}"><strong>{{ p.title }}</strong></a>
+      <span class="muted">#{{ p.id }} · @{{ p.username }} · coin {{ p.price|num }}</span>
+    </div>
+    <span class="badge {{ product_status[p.status][1] if p.status in product_status else 'mute' }}">{{ product_status[p.status][0] if p.status in product_status else p.status }}</span>
+    {% if p.status in ('active', 'hidden') %}
+    <form method="post" action="{{ url_for('admin.product_action', pid=p.id, action='onyesha' if p.status == 'hidden' else 'ficha') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <button class="btn small" type="submit">{{ 'Onyesha' if p.status == 'hidden' else 'Ficha' }}</button></form>
+    {% endif %}
+  </div>
+  {% else %}<p class="muted center pad">Hakuna bidhaa.</p>{% endfor %}
+</section>
+{% endblock %}

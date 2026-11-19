@@ -41,6 +41,9 @@
       {% else %}
       <a class="btn small primary" href="{{ url_for('auth.login') }}">Ingia</a>
       {% endif %}
+      {% if user and user.is_admin %}
+      <a class="icon-btn" href="{{ url_for('admin.dashboard') }}" aria-label="Usimamizi">{{ icon('shield', 20) }}</a>
+      {% endif %}
       {% if user %}
       <a class="icon-btn has-dot" href="{{ url_for('chat.inbox') }}" aria-label="Ujumbe">{{ icon('chat', 20) }}{% if unread_messages %}<span class="dot">{{ unread_messages if unread_messages < 100 else '99+' }}</span>{% endif %}</a>
       <a class="icon-btn has-dot" href="{{ url_for('notifications.index') }}" aria-label="Arifa">{{ icon('bell', 20) }}{% if unread_notifications %}<span class="dot">{{ unread_notifications if unread_notifications < 100 else '99+' }}</span>{% endif %}</a>

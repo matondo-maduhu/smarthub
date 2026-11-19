@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
+{% from "_report.html" import report_box with context %}
 {% from "_cards.html" import tip_card with context %}
 {% block title %}{{ person.display_name }} · {{ app_name }}{% endblock %}
 
@@ -16,6 +17,7 @@
   <p class="muted">@{{ person.username }}</p>
   {% if user and user.id != person.id %}
   <a class="btn small" href="{{ url_for('chat.conversation', username=person.username) }}">{{ icon('chat', 16) }} Tuma ujumbe</a>
+  {{ report_box("user", person.id) }}
   {% endif %}
   <div class="stat-grid">
     <div><strong>{{ stats.total }}</strong><span class="muted">Mikeka</span></div>

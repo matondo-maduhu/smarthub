@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Watumiaji · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'users' %}{% include "_admin_nav.html" %}
+<form method="get" class="form"><label class="field"><span>Tafuta (jina, barua pepe, simu)</span>
+  <input name="q" value="{{ q }}" maxlength="60"></label>
+  <button class="btn" type="submit">Tafuta</button></form>
+<section class="card list">
+  {% for u in rows %}
+  <div class="row">
+    <div class="row-main">
+      <strong>{{ u.display_name }} <span class="muted">@{{ u.username }}</span>
+        {% if u.is_admin %}<span class="badge ok">Msimamizi</span>{% endif %}
+        {% if u.is_banned %}<span class="badge bad">Amesimamishwa</span>{% endif %}
+        {% if u.is_verified %}<span class="badge mute">Amethibitishwa</span>{% endif %}</strong>
+      <span class="muted">{{ u.email or u.phone or '—' }} · coin {{ u.balance|num }} · {{ u.created_at|eat }}</span>
+    </div>
+    {% if not u.is_admin and u.id != user.id %}
+    <div class="actions-row">
+      <form method="post" action="{{ url_for('admin.user_action', uid=u.id, action='washa' if u.is_banned else 'simamisha') }}"
+            {% if not u.is_banned %}onsubmit="return confirm('Kusimamisha akaunti hii?');"{% endif %}>
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="q" value="{{ q }}">
+        <button class="btn small {{ '' if u.is_banned else 'danger' }}" type="submit">{{ 'Washa' if u.is_banned else 'Simamisha' }}</button>
+      </form>
+      <form method="post" action="{{ url_for('admin.user_action', uid=u.id, action='ondoa-uthibitisho' if u.is_verified else 'thibitisha') }}">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="q" value="{{ q }}">
+        <button class="btn small" type="submit">{{ 'Ondoa uthibitisho' if u.is_verified else 'Thibitisha' }}</button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}<p class="muted center pad">Hakuna aliyepatikana.</p>{% endfor %}
+</section>
+{% endblock %}

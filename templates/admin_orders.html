@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Maagizo · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'orders' %}{% include "_admin_nav.html" %}
+<div class="chips">
+  {% for k, label in [('disputed','Mapingamizi'),('paid','Yamelipwa'),('delivered','Yamekabidhiwa'),('completed','Yamekamilika'),('cancelled','Yameghairiwa'),('zote','Yote')] %}
+  <a class="chip {{ 'on' if hali == k }}" href="{{ url_for('admin.orders', hali=k) }}">{{ label }}</a>
+  {% endfor %}
+</div>
+<section class="card list">
+  {% for o in rows %}
+  {% set st = order_status[o.status] if order_status is defined else None %}
+  <a class="row" href="{{ url_for('market.order_detail', order_id=o.id) }}">
+    <div class="row-main"><strong>{{ o.title }}</strong><span class="muted">#{{ o.id }} · {{ o.created_at|eat }} · {{ o.buyer_name }} → {{ o.seller_name }}</span></div>
+    <div class="order-side"><strong>{{ icon('coin', 14) }} {{ o.price|num }}</strong><span class="badge mute">{{ o.status }}</span></div>
+  </a>
+  {% else %}<p class="muted center pad">Hakuna maagizo hapa.</p>{% endfor %}
+</section>
+{% endblock %}

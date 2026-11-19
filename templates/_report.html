@@ -1,0 +1,14 @@
+{% macro report_box(kind, target_id) %}
+{% if user %}
+<details class="report-box">
+  <summary class="muted">Ripoti</summary>
+  <form method="post" action="{{ url_for('report.submit') }}" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="aina" value="{{ kind }}"><input type="hidden" name="id" value="{{ target_id }}">
+    <input type="hidden" name="next" value="{{ request.path }}">
+    <textarea name="sababu" rows="2" maxlength="300" required placeholder="Eleza tatizo"></textarea>
+    <button class="btn small danger" type="submit">Tuma ripoti</button>
+  </form>
+</details>
+{% endif %}
+{% endmacro %}

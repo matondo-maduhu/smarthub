@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Usimamizi · {{ app_name }}{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'dash' %}{% include "_admin_nav.html" %}
+<section class="card pad">
+  <div class="stat-grid">
+    <div><strong>{{ s.users|num }}</strong><span class="muted">Watumiaji</span></div>
+    <div><strong>{{ s.banned|num }}</strong><span class="muted">Waliosimamishwa</span></div>
+    <div><strong>{{ s.tips|num }}</strong><span class="muted">Mikeka</span></div>
+    <div><strong>{{ s.products|num }}</strong><span class="muted">Bidhaa</span></div>
+    <div><strong>{{ s.orders_open|num }}</strong><span class="muted">Maagizo wazi</span></div>
+    <div><strong>{{ s.disputed|num }}</strong><span class="muted">Mapingamizi</span></div>
+    <div><strong>{{ s.reports_open|num }}</strong><span class="muted">Ripoti wazi</span></div>
+    <div><strong>{{ s.coins|num }}</strong><span class="muted">Coin kwenye pochi</span></div>
+    <div><strong>{{ s.held|num }}</strong><span class="muted">Coin zinazoshikiliwa</span></div>
+  </div>
+</section>
+<div class="section-head"><h2>Mapingamizi yanayosubiri</h2><a href="{{ url_for('admin.orders') }}">Yote</a></div>
+{% if disputed %}
+<section class="card list">
+  {% for o in disputed %}
+  <a class="row" href="{{ url_for('market.order_detail', order_id=o.id) }}">
+    <div class="row-main"><strong>{{ o.title }}</strong><span class="muted">#{{ o.id }} · {{ o.buyer_name }} → {{ o.seller_name }}</span></div>
+    <strong>{{ icon('coin', 14) }} {{ o.price|num }}</strong>
+  </a>
+  {% endfor %}
+</section>
+{% else %}<p class="muted center">Hakuna pingamizi.</p>{% endif %}
+{% endblock %}

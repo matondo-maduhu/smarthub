@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Kumbukumbu · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'log' %}{% include "_admin_nav.html" %}
+<section class="card list">
+  {% for l in rows %}
+  <div class="row"><div class="row-main"><strong>{{ l.action }} <span class="muted">{{ l.detail }}</span></strong>
+    <span class="muted">@{{ l.username }} · {{ l.created_at|eat }}</span></div></div>
+  {% else %}<p class="muted center pad">Hakuna kumbukumbu bado.</p>{% endfor %}
+</section>
+{% endblock %}

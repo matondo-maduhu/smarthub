@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
+{% from "_report.html" import report_box with context %}
 {% from "_cards.html" import tip_card with context %}
 {% block title %}{{ t.title }} · {{ app_name }}{% endblock %}
 
@@ -98,4 +99,5 @@
     {% endfor %}
   </div>
 </section>
+{% if user and not t.is_owner %}{{ report_box("tip", t.id) }}{% endif %}
 {% endblock %}

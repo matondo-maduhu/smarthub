@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ripoti · Usimamizi{% endblock %}
+{% block content %}
+<h1>{{ icon('shield', 24) }} Usimamizi</h1>
+{% set sec = 'reports' %}{% include "_admin_nav.html" %}
+<div class="chips">
+  <a class="chip {{ 'on' if hali == 'open' }}" href="{{ url_for('admin.reports') }}">Wazi</a>
+  <a class="chip {{ 'on' if hali == 'resolved' }}" href="{{ url_for('admin.reports', hali='resolved') }}">Zilizoshughulikiwa</a>
+  <a class="chip {{ 'on' if hali == 'dismissed' }}" href="{{ url_for('admin.reports', hali='dismissed') }}">Zilizopuuzwa</a>
+</div>
+<section class="card list">
+  {% for r in rows %}
+  <div class="row">
+    <div class="row-main">
+      <strong>
+        {% if r.target_type == 'tip' %}<a href="{{ url_for('tips.detail', tip_id=r.target_id) }}">Mkeka #{{ r.target_id }}</a>
+        {% elif r.target_type == 'product' %}<a href="{{ url_for('market.detail', product_id=r.target_id) }}">Bidhaa #{{ r.target_id }}</a>
+        {% else %}<a href="{{ url_for('admin.users') }}">Mtumiaji #{{ r.target_id }}</a>{% endif %}
+      </strong>
+      <span class="prewrap">{{ r.reason }}</span>
+      <span class="muted">na @{{ r.reporter }} · {{ r.created_at|eat }}</span>
+    </div>
+    {% if r.status == 'open' %}
+    <div class="actions-row">
+      <form method="post" action="{{ url_for('admin.report_action', rid=r.id, action='imeshughulikiwa') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small primary" type="submit">Imeshughulikiwa</button></form>
+      <form method="post" action="{{ url_for('admin.report_action', rid=r.id, action='puuza') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small" type="submit">Puuza</button></form>
+    </div>
+    {% endif %}
+  </div>
+  {% else %}<p class="muted center pad">Hakuna ripoti hapa.</p>{% endfor %}
+</section>
+{% endblock %}
