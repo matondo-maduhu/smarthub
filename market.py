@@ -89,6 +89,9 @@ def new():
         title = " ".join(form["title"].split())
         price = _int(form["price"])
         files = [f for f in request.files.getlist("images") if f and f.filename]
+        if files and not Config.R2_READY:
+            files = []
+            errors.append("Upakiaji wa picha haujawashwa bado (R2 haijawekwa). Ondoa picha kisha uweke bidhaa, au weka mipangilio ya R2.")
 
         if not 3 <= len(title) <= 80:
             errors.append("Jina la bidhaa liwe na herufi 3 hadi 80.")
@@ -136,7 +139,7 @@ def new():
                 flash("Bidhaa yako imewekwa.", "ok")
                 return redirect(url_for("market.detail", product_id=pid))
     return render_template("bidhaa_weka.html", active="market", form=form, errors=errors,
-                           categories=CATEGORIES, max_images=MAX_IMAGES, max_price=Config.MARKET_MAX_PRICE,
+                           categories=CATEGORIES, r2_ready=Config.R2_READY, max_images=MAX_IMAGES, max_price=Config.MARKET_MAX_PRICE,
                            fee=Config.MARKET_FEE_PCT), (400 if errors else 200)
 
 

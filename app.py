@@ -198,6 +198,9 @@ def create_app():
         if not f or not f.filename:
             flash("Chagua picha kwanza.", "error")
             return redirect(url_for("wasifu"))
+        if not Config.R2_READY:
+            flash("Upakiaji wa picha haujawashwa bado (R2 haijawekwa).", "error")
+            return redirect(url_for("wasifu"))
         try:
             url = storage.upload_image(f, folder="avatars")
         except ValueError as e:

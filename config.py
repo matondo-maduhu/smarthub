@@ -20,6 +20,9 @@ class Config:
     R2_BUCKET = os.getenv("R2_BUCKET", "")
     R2_PUBLIC_URL = os.getenv("R2_PUBLIC_URL", "").rstrip("/")
 
+    # Picha zinaweza kupakiwa tu ikiwa R2 imewekwa kikamilifu
+    R2_READY = bool(R2_ACCOUNT_ID and R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY and R2_BUCKET and R2_PUBLIC_URL)
+
     # demo = coin bandia. Malipo halisi yanaongezwa hatua ya 8, baada ya leseni.
     COIN_MODE = os.getenv("COIN_MODE", "demo")
 
