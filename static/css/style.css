@@ -496,3 +496,81 @@ textarea { resize: vertical; }
 textarea:focus, select:focus, input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 ::placeholder { color: var(--muted); opacity: .8; }
 .chat-form .btn { width: 100%; justify-content: center; }
+
+/* ===== Mwonekano tulivu: pembe ndogo, mistari myembamba, vitufe tambarare ===== */
+:root, :root[data-theme="dark"] {
+  --btn-bg: #21262d; --btn-hover: #30363d; --btn-border: rgba(240, 246, 252, .1);
+  --tab: #f78166; --counter-bg: rgba(110, 118, 129, .4);
+  --radius: 6px;
+}
+:root[data-theme="light"] {
+  --btn-bg: #f6f8fa; --btn-hover: #eaeef2; --btn-border: rgba(31, 35, 40, .15);
+  --tab: #fd8c73; --counter-bg: rgba(175, 184, 193, .25);
+}
+.card, .tip-pick, .search, .product { border-radius: var(--radius); box-shadow: none; }
+.brand-mark { background: var(--text); color: var(--bg); border-radius: 50%; font-weight: 700; }
+.quick-icon, .tile-icon, .row-icon { border-radius: var(--radius); }
+
+/* Vitufe */
+.btn {
+  padding: 5px 16px; border-radius: var(--radius); font-size: 14px; font-weight: 500; line-height: 20px;
+  background: var(--btn-bg); border-color: var(--btn-border);
+}
+.btn:hover { background: var(--btn-hover); border-color: var(--btn-border); }
+.btn.primary { background: var(--green-btn); border-color: rgba(240, 246, 252, .1); }
+.btn.primary:hover { background: var(--green-btn); filter: brightness(1.1); }
+.btn.small { padding: 3px 12px; font-size: 12px; line-height: 20px; }
+.btn.danger { color: var(--red); }
+.btn.danger:hover { background: var(--red); border-color: var(--red); color: #fff; }
+
+/* Alama (labels) na vihesabio (counters) */
+.badge {
+  padding: 0 7px; border-radius: 2em; font-size: 12px; font-weight: 500; line-height: 18px;
+  background: transparent; border: 1px solid var(--border); color: var(--muted);
+}
+.badge.ok { background: transparent; color: var(--green); border-color: var(--green); }
+.badge.warn { background: transparent; color: var(--orange); border-color: var(--orange); }
+.badge.bad { background: transparent; color: var(--red); border-color: var(--red); }
+.badge.mute { background: transparent; color: var(--muted); border-color: var(--border); }
+.counter {
+  display: inline-block; min-width: 20px; padding: 0 6px; border-radius: 2em; text-align: center;
+  font-size: 12px; font-weight: 500; line-height: 18px; background: var(--counter-bg); color: var(--text);
+}
+.counter.bad { background: var(--red); color: #fff; }
+.counter.ok { background: var(--green-btn); color: #fff; }
+
+/* Vichujio vinakuwa tabo zenye mstari chini */
+.chips { gap: 0; border-bottom: 1px solid var(--border); padding-bottom: 0; overflow-x: auto; flex-wrap: nowrap; }
+.chip {
+  padding: 8px 14px; border: 0; border-bottom: 2px solid transparent; border-radius: 0;
+  background: transparent; color: var(--text); font-size: 14px; white-space: nowrap; margin-bottom: -1px;
+}
+.chip:hover { background: var(--surface-2); text-decoration: none; border-radius: var(--radius) var(--radius) 0 0; }
+.chip.on { background: transparent; color: var(--text); font-weight: 600; border-bottom-color: var(--tab); }
+.chips.wrap { flex-wrap: nowrap; overflow-x: auto; }
+
+/* Sehemu za kuandika */
+textarea, select, input[type="text"], input[type="search"], input[type="password"], input[type="number"],
+.field input, .field textarea, .field select { border-radius: var(--radius); }
+
+/* Kisanduku chenye kichwa (box) */
+.box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.box-header {
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px;
+  background: var(--surface-2); border-bottom: 1px solid var(--border); font-weight: 600; font-size: 14px;
+}
+.box-header .counter { margin-left: 2px; }
+.box-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 12px 16px; color: var(--text);
+}
+.box-row + .box-row, .box .row + .row { border-top: 1px solid var(--border); }
+a.box-row:hover { background: var(--surface-2); text-decoration: none; }
+.box-row .muted { font-size: 13px; }
+.box-empty { padding: 20px 16px; text-align: center; color: var(--muted); }
+.box .row { padding: 12px 16px; }
+.box .row + .row { border-top: 1px solid var(--border); }
+.page-title { display: flex; flex-direction: column; gap: 2px; }
+.page-title p { color: var(--muted); font-size: 14px; }
+.admin-cols { display: grid; gap: 16px; }
+@media (min-width: 760px) { .admin-cols { grid-template-columns: 1fr 1fr; align-items: start; } }
