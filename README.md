@@ -14,8 +14,8 @@ App ya jamvi la mikeka, market na pochi ya coin. Inatumia Flask (Python), Neon k
 | 4 | Jamvi la mikeka linalofanya kazi | Imekamilika |
 | 5 | Market inayofanya kazi | Imekamilika |
 | 6 | Ujumbe na arifa | Imekamilika |
-| 7 | Usimamizi (admin) | Inafuata |
-| 8 | Malipo halisi (M-Pesa, Tigo Pesa, Airtel Money) | Bado, baada ya leseni |
+| 7 | Usimamizi (admin) | Imekamilika |
+| 8 | Malipo halisi (M-Pesa, Tigo Pesa, Airtel Money) | Inafuata, baada ya leseni |
 | 9 | App ya Android/iPhone | Bado |
 
 ## Muundo wa faili
@@ -28,6 +28,7 @@ tips.py           jamvi la mikeka: kuweka, kununua, maoni, matokeo, viwango
 market.py         market: bidhaa, picha, utafutaji, maagizo yenye escrow
 chat.py           ujumbe wa moja kwa moja na kuzuia watumiaji
 notifications.py  orodha ya arifa
+admin.py          usimamizi na ripoti za watumiaji
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -213,8 +214,28 @@ UPDATE users SET is_admin = TRUE WHERE username = 'jina_la_mtumiaji';
 - **Arifa hazifutwi kiotomatiki**; zinaonyeshwa 50 za mwisho.
 - Ujumbe kati ya mnunuzi na muuzaji sasa unawezekana (tofauti na hatua ya 5).
 
+## Hatua ya 7: usimamizi (admin)
+
+Ukurasa: `/admin` (ikoni ya ngao kwenye header, kwa wasimamizi tu). Asiye msimamizi anapata 403.
+
+- **Muhtasari**: idadi ya watumiaji, mikeka, bidhaa, maagizo wazi, mapingamizi, ripoti wazi, coin zote na zinazoshikiliwa.
+- **Watumiaji**: kutafuta (jina, barua pepe, simu), kusimamisha na kuwasha akaunti, kuthibitisha. Huwezi kujisimamisha wala kumsimamisha msimamizi mwingine. Aliyesimamishwa anatolewa mara moja na hawezi kuingia.
+- **Mikeka**: "Batilisha" huwarudishia wanunuzi bei kamili; muuzaji anakatwa alichopokea (bei toa ada) kadiri salio lake linavyoruhusu, na upungufu unabebwa na jukwaa. Inafanya kazi mara moja tu kwa kila mkeka. Mkeka usio na wanunuzi unaweza kufutwa. Kuweka au kurekebisha matokeo bado kunafanywa kwenye ukurasa wa mkeka.
+- **Bidhaa**: kuficha na kuonyesha (bidhaa yenye agizo haiguswi).
+- **Maagizo**: orodha kwa hali (mapingamizi kwanza); kuachilia au kurudisha coin kunafanywa kwenye ukurasa wa agizo kama hapo awali.
+- **Ripoti**: watumiaji wanaweza kuripoti mtumiaji, mkeka au bidhaa ("Ripoti" kwenye kurasa hizo na kwenye mazungumzo). Ripoti moja wazi kwa kila mtu kwa kila kitu; wasimamizi wanaarifiwa; wanaifunga kama "imeshughulikiwa" au "puuza".
+- **Kumbukumbu**: kila hatua ya msimamizi (kusimamisha, kuthibitisha, kubatilisha, kufuta, kuficha, kuachilia, kurudisha, kufunga ripoti, kurekebisha matokeo) inaandikwa na haifutwi.
+- **Faili mpya**: `admin.py`, `admin_*.html`, `_admin_nav.html`, `_report.html`. Majedwali mapya: `reports`, `admin_log` (yanajitengeneza yenyewe).
+
+### Mambo ya kujua (hatua ya 7)
+
+- Kumfanya mtu msimamizi bado ni kwa SQL (tazama hatua ya 4), kwa makusudi.
+- Kusimamisha akaunti hakughairi maagizo yake yaliyo wazi; shughulikia kwa "Maagizo" (achilia au rudisha).
+- Maoni hayafichwi kwa ripoti bado (mwenye maoni au msimamizi anaweza kuyafuta kwenye ukurasa wa mkeka).
+- Ripoti za ujumbe mmoja mmoja hazipo; unaripoti mtumiaji. Wasimamizi hawasomi ujumbe wa watu kupitia ukurasa huu.
+- Matokeo ya mikeka bado yanawekwa na mtabiri; msimamizi anaweza kuyarekebisha.
+
 ## Hatua zinazofuata
 
-7. Usimamizi (admin)
 8. Malipo halisi
 9. App ya Android/iPhone

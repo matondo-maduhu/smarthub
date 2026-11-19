@@ -733,3 +733,195 @@ def list_notifications(uid, limit=50):
 
 def mark_notifications_read(uid):
     db.execute("UPDATE notifications SET read_at = CURRENT_TIMESTAMP WHERE user_id = %s AND read_at IS NULL", (uid,))
+
+
+# ===================== Usimamizi (admin) =====================
+class AdminError(Exception):
+    """Kosa la hatua ya msimamizi; maandishi yanaonyeshwa."""
+
+
+def log_admin(cur, admin_id, action, detail=""):
+    cur.execute("INSERT INTO admin_log (admin_id, action, detail) VALUES (%s, %s, %s)",
+                (admin_id, action, detail[:300]))
+
+
+def admin_stats():
+    def n(sql):
+        return int(db.query(sql, one=True)["n"])
+    return {
+        "users": n("SELECT COUNT(*) AS n FROM users"),
+        "banned": n("SELECT COUNT(*) AS n FROM users WHERE is_banned = TRUE"),
+        "tips": n("SELECT COUNT(*) AS n FROM tips"),
+        "products": n("SELECT COUNT(*) AS n FROM products"),
+        "orders_open": n("SELECT COUNT(*) AS n FROM orders WHERE status IN ('paid','delivered','disputed')"),
+        "disputed": n("SELECT COUNT(*) AS n FROM orders WHERE status = 'disputed'"),
+        "reports_open": n("SELECT COUNT(*) AS n FROM reports WHERE status = 'open'"),
+        "coins": int(db.query("SELECT COALESCE(SUM(balance), 0) AS n FROM wallets", one=True)["n"]),
+        "held": int(db.query("SELECT COALESCE(SUM(price), 0) AS n FROM orders "
+                             "WHERE status IN ('paid','delivered','disputed')", one=True)["n"]),
+    }
+
+
+def admin_users(q=None, limit=50, offset=0):
+    sql = ("SELECT u.id, u.username, u.display_name, u.email, u.phone, u.is_admin, u.is_banned, "
+           "u.is_verified, u.created_at, COALESCE(w.balance, 0) AS balance "
+           "FROM users u LEFT JOIN wallets w ON w.user_id = u.id")
+    params = []
+    if q:
+        like = f"%{q.lower()}%"
+        sql += (" WHERE LOWER(u.username) LIKE %s OR LOWER(u.display_name) LIKE %s "
+                "OR LOWER(COALESCE(u.email, '')) LIKE %s OR COALESCE(u.phone, '') LIKE %s")
+        params += [like, like, like, f"%{q}%"]
+    sql += " ORDER BY u.id DESC LIMIT %s OFFSET %s"
+    return db.query(sql, tuple(params + [limit, offset]))
+
+
+def admin_set_banned(admin_id, target_id, banned):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT username, is_admin FROM users WHERE id = %s", (target_id,))
+        u = cur.fetchone()
+        if not u:
+            raise AdminError("Mtumiaji hayupo.")
+        if target_id == admin_id:
+            raise AdminError("Huwezi kujisimamisha mwenyewe.")
+        if u["is_admin"]:
+            raise AdminError("Huwezi kumsimamisha msimamizi mwingine.")
+        cur.execute("UPDATE users SET is_banned = %s WHERE id = %s", (bool(banned), target_id))
+        log_admin(cur, admin_id, "ban" if banned else "unban", f"@{u['username']}")
+        return u["username"]
+
+
+def admin_set_verified(admin_id, target_id, verified):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE users SET is_verified = %s WHERE id = %s RETURNING username", (bool(verified), target_id))
+        u = cur.fetchone()
+        if not u:
+            raise AdminError("Mtumiaji hayupo.")
+        log_admin(cur, admin_id, "verify" if verified else "unverify", f"@{u['username']}")
+
+
+def admin_tips(limit=100):
+    return db.query(
+        "SELECT t.id, t.title, t.status, t.price, t.created_at, u.username, "
+        "(SELECT COUNT(*) FROM tip_purchases p WHERE p.tip_id = t.id) AS buyers "
+        "FROM tips t JOIN users u ON u.id = t.user_id ORDER BY t.id DESC LIMIT %s", (limit,))
+
+
+def admin_void_tip(admin_id, tip_id):
+    """Hubatilisha mkeka na kurudisha bei kamili kwa kila aliyenunua.
+    Muuzaji anakatwa alichopokea (bei toa ada) kadiri salio lake linavyoruhusu; upungufu unabebwa na jukwaa.
+    Yote kwa mkupuo mmoja; inafanya kazi mara moja tu kwa kila mkeka."""
+    fee_pct = Config.TIP_FEE_PCT
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE tips SET status = 'void' WHERE id = %s AND status <> 'void' "
+                    "RETURNING user_id, title, price", (tip_id,))
+        t = cur.fetchone()
+        if not t:
+            raise AdminError("Mkeka haupo au umeshabatilishwa.")
+        cur.execute("SELECT user_id FROM tip_purchases WHERE tip_id = %s", (tip_id,))
+        buyers = [r["user_id"] for r in cur.fetchall()]
+        price, seller = t["price"], t["user_id"]
+        net = price - price * fee_pct // 100
+        for b in buyers:
+            cur.execute("UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+                        (price, b))
+            cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_purchase', %s, %s)",
+                        (b, price, f"Marejesho ya mkeka uliobatilishwa: {t['title']}"))
+            notify(cur, b, "tip", f"Mkeka ulionunua umebatilishwa, umerudishiwa coin {price}: {t['title']}", f"/jamvi/{tip_id}")
+            cur.execute("SELECT balance FROM wallets WHERE user_id = %s", (seller,))
+            bal = cur.fetchone()["balance"]
+            take = min(net, bal)
+            if take > 0:
+                cur.execute("UPDATE wallets SET balance = balance - %s, updated_at = CURRENT_TIMESTAMP "
+                            "WHERE user_id = %s", (take, seller))
+                cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_sale', %s, %s)",
+                            (seller, -take, f"Mauzo ya mkeka uliobatilishwa yamerudishwa: {t['title']}"))
+        if buyers:
+            notify(cur, seller, "tip", f"Mkeka wako umebatilishwa na msimamizi: {t['title']}", f"/jamvi/{tip_id}")
+        log_admin(cur, admin_id, "void_tip", f"#{tip_id} wanunuzi {len(buyers)}")
+        return len(buyers)
+
+
+def admin_delete_tip(admin_id, tip_id):
+    """Kufuta mkeka kabisa kunaruhusiwa kama hakuna aliyeununua (vinginevyo tumia 'batilisha')."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM tips WHERE id = %s AND NOT EXISTS "
+                    "(SELECT 1 FROM tip_purchases WHERE tip_id = %s)", (tip_id, tip_id))
+        if cur.rowcount == 0:
+            raise AdminError("Mkeka una wanunuzi au haupo. Tumia 'Batilisha na rudisha coin'.")
+        log_admin(cur, admin_id, "delete_tip", f"#{tip_id}")
+
+
+def admin_products(limit=100):
+    return db.query(
+        "SELECT p.id, p.title, p.status, p.price, u.username FROM products p "
+        "JOIN users u ON u.id = p.seller_id ORDER BY p.id DESC LIMIT %s", (limit,))
+
+
+def admin_hide_product(admin_id, product_id, hide=True):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        if hide:
+            cur.execute("UPDATE products SET status = 'hidden' WHERE id = %s AND status = 'active' RETURNING id", (product_id,))
+        else:
+            cur.execute("UPDATE products SET status = 'active' WHERE id = %s AND status = 'hidden' RETURNING id", (product_id,))
+        if cur.fetchone() is None:
+            raise AdminError("Hali ya bidhaa hairuhusu hatua hii (bidhaa yenye agizo haiguswi hapa).")
+        log_admin(cur, admin_id, "hide_product" if hide else "show_product", f"#{product_id}")
+
+
+def admin_orders(status=None, limit=100):
+    sql = _ORDER_SELECT
+    params = []
+    if status:
+        sql += " WHERE o.status = %s"
+        params.append(status)
+    return db.query(sql + " ORDER BY o.id DESC LIMIT %s", tuple(params + [limit]))
+
+
+def log_order_action(admin_id, action, order_id):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        log_admin(cur, admin_id, action, f"#{order_id}")
+
+
+def create_report(reporter_id, target_type, target_id, reason):
+    """Inarudisha True ikiwa ripoti mpya imewekwa, False ikiwa ya awali bado iko wazi."""
+    if target_type not in ("user", "tip", "product"):
+        raise AdminError("Aina ya ripoti si sahihi.")
+    table = {"user": "users", "tip": "tips", "product": "products"}[target_type]
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute(f"SELECT id FROM {table} WHERE id = %s", (target_id,))
+        if cur.fetchone() is None:
+            raise AdminError("Unachoripoti hakipo.")
+        if target_type == "user" and target_id == reporter_id:
+            raise AdminError("Huwezi kujiripoti mwenyewe.")
+        cur.execute("SELECT 1 AS x FROM reports WHERE reporter_id = %s AND target_type = %s "
+                    "AND target_id = %s AND status = 'open'", (reporter_id, target_type, target_id))
+        if cur.fetchone():
+            return False
+        cur.execute("INSERT INTO reports (reporter_id, target_type, target_id, reason) VALUES (%s, %s, %s, %s)",
+                    (reporter_id, target_type, target_id, reason))
+        cur.execute("INSERT INTO notifications (user_id, kind, text, url) "
+                    "SELECT id, 'report', %s, %s FROM users WHERE is_admin = TRUE",
+                    ("Ripoti mpya imewekwa", "/admin/ripoti"))
+        return True
+
+
+def admin_reports(status="open", limit=100):
+    return db.query(
+        "SELECT r.*, u.username AS reporter FROM reports r JOIN users u ON u.id = r.reporter_id "
+        "WHERE r.status = %s ORDER BY r.id DESC LIMIT %s", (status, limit))
+
+
+def admin_resolve_report(admin_id, report_id, status):
+    assert status in ("resolved", "dismissed")
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE reports SET status = %s, handled_by = %s, handled_at = CURRENT_TIMESTAMP "
+                    "WHERE id = %s AND status = 'open' RETURNING id", (status, admin_id, report_id))
+        if cur.fetchone() is None:
+            raise AdminError("Ripoti imeshashughulikiwa.")
+        log_admin(cur, admin_id, f"report_{status}", f"#{report_id}")
+
+
+def admin_log_list(limit=100):
+    return db.query("SELECT l.*, u.username FROM admin_log l JOIN users u ON u.id = l.admin_id "
+                    "ORDER BY l.id DESC LIMIT %s", (limit,))

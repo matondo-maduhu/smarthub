@@ -278,8 +278,10 @@ def order_action(order_id, action):
             models.open_dispute(order_id, uid)
         elif action == "achilia" and is_admin:
             models.admin_release(order_id)
+            models.log_order_action(uid, "release_order", order_id)
         elif action == "rudisha" and is_admin:
             models.admin_refund(order_id)
+            models.log_order_action(uid, "refund_order", order_id)
         else:
             abort(403)
     except models.MarketError as e:

@@ -165,3 +165,30 @@ CREATE TABLE IF NOT EXISTS notifications (
 );
 CREATE INDEX IF NOT EXISTS idx_notif_user ON notifications(user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_notif_unread ON notifications(user_id, read_at);
+
+-- Ripoti za watumiaji kuhusu mtumiaji, mkeka, bidhaa au ujumbe
+CREATE TABLE IF NOT EXISTS reports (
+    id          BIGSERIAL PRIMARY KEY,
+    reporter_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    target_type TEXT NOT NULL,                 -- user | tip | product
+    target_id   BIGINT NOT NULL,
+    reason      TEXT NOT NULL,
+    status      TEXT NOT NULL DEFAULT 'open',  -- open | resolved | dismissed
+    handled_by  BIGINT REFERENCES users(id),
+    handled_at  TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status, id DESC);
+-- Mtu mmoja hawezi kuripoti kitu kilekile mara mbili ikiwa ripoti ya awali bado iko wazi
+CREATE UNIQUE INDEX IF NOT EXISTS ux_reports_open ON reports(reporter_id, target_type, target_id)
+    WHERE status = 'open';
+
+-- Kumbukumbu ya hatua zote za wasimamizi (haifutwi)
+CREATE TABLE IF NOT EXISTS admin_log (
+    id         BIGSERIAL PRIMARY KEY,
+    admin_id   BIGINT NOT NULL REFERENCES users(id),
+    action     TEXT NOT NULL,
+    detail     TEXT NOT NULL DEFAULT '',
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_admin_log ON admin_log(id DESC);

@@ -5,6 +5,7 @@ from flask import (Flask, flash, g, jsonify, redirect, render_template,
                    request, session, url_for)
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+import admin
 import auth
 import chat
 import db
@@ -49,6 +50,8 @@ def create_app():
     app.register_blueprint(market.bp)
     app.register_blueprint(chat.bp)
     app.register_blueprint(notifications.bp)
+    app.register_blueprint(admin.bp)
+    app.register_blueprint(admin.report_bp)
 
     @app.before_request
     def load_user():

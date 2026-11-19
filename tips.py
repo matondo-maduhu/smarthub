@@ -226,6 +226,8 @@ def settle(tip_id):
     else:
         abort(403)
     models.set_tip_status(tip_id, result)
+    if g.user["is_admin"] and not tip["is_owner"]:
+        models.log_order_action(g.user["id"], f"set_tip_{result}", tip_id)
     flash("Matokeo yamewekwa.", "ok")
     return _back(tip_id)
 
