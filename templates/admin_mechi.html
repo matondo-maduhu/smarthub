@@ -8,6 +8,7 @@
 {% if not configured %}
 <p class="notice warn">{{ icon('shield', 16) }} <code>APIFOOTBALL_KEY</code> haijawekwa. Mikeka inawekwa kwa mkono hadi ufunguo uwekwe kwenye Vercel.</p>
 {% else %}
+{% if sync_note %}<p class="notice warn">{{ icon('shield', 16) }} Usasishaji wa mwisho ulisimama mapema: {{ sync_note }} Mpango wa bure wa API-Football unaruhusu tarehe za jana hadi kesho tu, kwa hiyo mechi za siku za mbele zaidi hazionekani hadi uboreshe mpango.</p>{% endif %}
 <section class="box">
   <div class="box-header">Hali</div>
   <div class="box-row"><span>Maombi yaliyobaki leo</span><strong>{{ left if left is not none else '—' }}</strong></div>
