@@ -258,6 +258,14 @@ Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara an
 - **Kuachilia coin kila siku (cron)**: `vercel.json` inaita `/cron/release` kila siku saa 3 asubuhi UTC. Ili ifanye kazi, weka kwenye Vercel Environment Variables `CRON_SECRET` (maneno marefu ya siri unayobuni) kisha Redeploy; Vercel hutuma siri hiyo yenyewe. Bila `CRON_SECRET` anwani hiyo inarudisha 404 na haifanyi kitu. Njia ya awali (kuachilia mtumiaji anapofungua maagizo) inabaki kama ziada.
 - **Faili mpya**: `masharti.html`, `faragha.html`, `vercel.json`. Mpangilio mpya: `CRON_SECRET`.
 
+## Marekebisho ya mpangilio (baada ya hatua ya 7B)
+
+- **Header ya simu**: jina la app linafichwa kwenye skrini nyembamba ili ikoni zisikanyagane; ikoni na kiputo cha salio vimepunguzwa kidogo.
+- **Menyu ya chini**: ina nafasi juu ya upau wa mfumo wa simu ili maandishi yasifunikwe.
+- **Usimamizi**: vigae vya takwimu vyenye rangi zetu (bluu, kijani, machungwa, nyekundu, zambarau) badala ya jedwali lililobanana; vichujio vinashuka mstari unaofuata badala ya kukatwa; vitufe vya kila safu vinashuka chini ya maelezo kwenye simu.
+- **Sehemu za kuandika** (ujumbe, ripoti, nenosiri): sasa zinatumia rangi za mandhari yetu kila mahali.
+- **Faili zilizobadilika**: `static/css/style.css`, `templates/admin_dash.html`, `templates/_admin_nav.html`, `templates/admin_users.html`, `templates/admin_orders.html`, `templates/admin_reports.html`.
+
 ## Hatua zinazofuata
 
 8. Malipo halisi
