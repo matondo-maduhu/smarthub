@@ -56,6 +56,17 @@ class Config:
     ADMIN_EMAILS = [x.strip().lower() for x in os.getenv("ADMIN_EMAILS", "").split(",") if x.strip()]
     ADMIN_PHONES = [x.strip() for x in os.getenv("ADMIN_PHONES", "").split(",") if x.strip()]
 
+    # Mechi na odds halisi (API-Football). Bila ufunguo, mikeka inawekwa kwa mkono kama zamani.
+    APIFOOTBALL_KEY = os.getenv("APIFOOTBALL_KEY", "")
+    FOOTBALL_LEAGUES = [int(x) for x in os.getenv(
+        "FOOTBALL_LEAGUES", "567,39,140,135,78,61,2,3,12").replace(" ", "").split(",") if x.isdigit()]
+    FEATURED_BOOKMAKERS = [x.strip().lower() for x in os.getenv(
+        "FEATURED_BOOKMAKERS", "betpawa,betway,sportpesa,1xbet,bet365").split(",") if x.strip()]
+    ALLOW_MANUAL_TIPS = os.getenv("ALLOW_MANUAL_TIPS", "0") == "1"  # 1 = ruhusu mikeka ya mkono hata API ikiwa imewashwa
+    ODDS_CACHE_MINUTES = int(os.getenv("ODDS_CACHE_MINUTES", "30"))
+    FIXTURE_SYNC_HOURS = int(os.getenv("FIXTURE_SYNC_HOURS", "6"))
+    FIXTURE_DAYS_AHEAD = int(os.getenv("FIXTURE_DAYS_AHEAD", "3"))
+
     # Ujumbe
     MESSAGES_PER_MINUTE = int(os.getenv("MESSAGES_PER_MINUTE", "10"))  # ujumbe kwa dakika kwa kila mtumiaji
     MAX_MESSAGE_LEN = 1000

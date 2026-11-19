@@ -8,6 +8,7 @@ from flask import (Blueprint, abort, flash, g, redirect, render_template,
 
 import auth
 import db
+import football
 import models
 from config import Config
 
@@ -53,6 +54,7 @@ def _back(tip_id):
 # ---------- Orodha ----------
 @bp.route("")
 def index():
+    football.maybe_settle()
     hali = request.args.get("hali", "zote")
     if hali not in STATUS_FILTERS:
         hali = "zote"
@@ -84,6 +86,8 @@ def tipster(username):
 @bp.route("/weka", methods=["GET", "POST"])
 @auth.login_required
 def new():
+    if football.configured() and not Config.ALLOW_MANUAL_TIPS:
+        return _new_api()
     form, errors = {"price": "0"}, []
     if request.method == "POST":
         form = {k: request.form.get(k, "").strip()
@@ -130,14 +134,83 @@ def new():
                            leagues=LEAGUES, max_price=Config.TIP_MAX_PRICE, fee=Config.TIP_FEE_PCT), (400 if errors else 200)
 
 
+def _new_api():
+    """Kuweka mkeka kwa mechi halisi: mechi -> chaguo -> kampuni -> bei. Odds zinatoka kwenye huduma, si kwa mtumiaji."""
+    now = datetime.now(timezone.utc)
+    q = request.values.get("q", "").strip()[:40]
+    fid = _int(request.values.get("mechi"))
+    ctx = dict(active="jamvi", api_mode=True, q=q, fixtures=[], fixture=None, markets=[], books=[],
+               chosen=None, svc_error=None, errors=[], form={"price": "0", "body": ""},
+               max_price=Config.TIP_MAX_PRICE, fee=Config.TIP_FEE_PCT, leagues=[])
+    if fid is None:
+        ctx["svc_error"] = football.ensure_fixtures()
+        ctx["fixtures"] = football.list_fixtures(q)
+        return render_template("jamvi_weka.html", **ctx)
+
+    fx = football.get_fixture(fid)
+    if not fx or fx["status"] != "NS" or fx["kickoff"] <= now + timedelta(minutes=5):
+        flash("Mechi hii haipatikani tena kwa mikeka (imeanza au imeondolewa). Chagua nyingine.", "error")
+        return redirect(url_for("tips.new"))
+    ctx["fixture"] = fx
+    rows = []
+    try:
+        rows = football.get_odds(fid)
+    except football.FootballError as e:
+        ctx["svc_error"] = str(e)
+    ctx["markets"] = football.options(rows, fx["home"], fx["away"])
+    valid = {o["key"]: o for mk in ctx["markets"] for o in mk["options"]}
+    chosen = request.values.get("chaguo", "")
+    if chosen in valid:
+        market, selection = chosen.split(":", 1)
+        ctx["chosen"] = valid[chosen]
+        ctx["books"] = football.bookmakers_for(rows, market, selection)
+
+    if request.method == "POST":
+        errors = ctx["errors"]
+        price = _int(request.form.get("price", "0") or "0")
+        body = request.form.get("body", "").strip()
+        book = _int(request.form.get("bookmaker", ""))
+        ctx["form"] = {"price": request.form.get("price", "0"), "body": body, "bookmaker": book}
+        picked = next((b for b in ctx["books"] if b["id"] == book), None)
+        if not ctx["chosen"]:
+            errors.append("Chagua mkeka wako kwenye orodha.")
+        elif picked is None:
+            errors.append("Chagua kampuni ya kubashiri ambayo odds zake umetumia.")
+        if len(body) > 500:
+            errors.append("Maelezo ya ziada yasizidi herufi 500.")
+        if price is None or (price != 0 and not 5 <= price <= Config.TIP_MAX_PRICE):
+            errors.append(f"Bei iwe 0 (bure) au kati ya coin 5 na {Config.TIP_MAX_PRICE}.")
+        if not errors:
+            times = models.recent_times("tips", g.user["id"], Config.MAX_TIPS_PER_DAY)
+            if len(times) >= Config.MAX_TIPS_PER_DAY and times[-1] > now - timedelta(hours=24):
+                errors.append(f"Umefikia kikomo cha mikeka {Config.MAX_TIPS_PER_DAY} kwa siku. Jaribu kesho.")
+        if not errors and db.query(
+                "SELECT 1 AS x FROM tips WHERE user_id = %s AND fixture_id = %s AND market = %s AND selection = %s",
+                (g.user["id"], fid, market, selection), one=True):
+            errors.append("Tayari umeshaweka mkeka huu kwa mechi hii.")
+        if not errors:
+            tip_id = models.create_tip(
+                g.user["id"], title=f"{fx['home']} vs {fx['away']}", league=fx["league_name"][:40],
+                pick=ctx["chosen"]["label"], body=body, odds=picked["odd"], price=price,
+                starts_at=fx["kickoff"], fixture_id=fid, market=market, selection=selection,
+                bookmaker=picked["name"])
+            flash(f"Mkeka umewekwa kwa odds {picked['odd']:.2f} ({picked['name']}).", "ok")
+            return _back(tip_id)
+        return render_template("jamvi_weka.html", **ctx), 400
+    return render_template("jamvi_weka.html", **ctx)
+
+
 # ---------- Ukurasa wa mkeka ----------
 @bp.route("/<int:tip_id>")
 def detail(tip_id):
+    football.maybe_settle()
     tip = _get_or_404(tip_id)
     is_admin = bool(g.user and g.user["is_admin"])
+    auto = bool(tip["fixture_id"])  # mkeka wa mechi halisi unahukumiwa na mfumo
     return render_template(
         "mkeka.html", active="jamvi", t=tip, comments=models.list_comments(tip_id),
-        can_settle=(tip["is_owner"] and tip["status"] == "open" and tip["started"]) or is_admin,
+        fixture=football.get_fixture(tip["fixture_id"]) if auto else None, auto=auto,
+        can_settle=is_admin or (not auto and tip["is_owner"] and tip["status"] == "open" and tip["started"]),
         can_delete=tip["is_owner"] and tip["buyers"] == 0,
         is_admin=is_admin, fee=Config.TIP_FEE_PCT,
     )
@@ -216,6 +289,9 @@ def settle(tip_id):
         return _back(tip_id)
     if g.user["is_admin"]:
         pass  # msimamizi anaweza kuweka au kurekebisha wakati wowote
+    elif tip["fixture_id"]:
+        flash("Matokeo ya mechi halisi yanawekwa na mfumo kiotomatiki.", "info")
+        return _back(tip_id)
     elif tip["is_owner"]:
         if tip["status"] != "open":
             flash("Matokeo yameshawekwa. Wasiliana na msimamizi kuyarekebisha.", "error")

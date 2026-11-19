@@ -200,11 +200,13 @@ def get_tip(tip_id, viewer_id):
     return rows[0] if rows else None
 
 
-def create_tip(uid, *, title, league, pick, body, odds, price, starts_at):
+def create_tip(uid, *, title, league, pick, body, odds, price, starts_at,
+               fixture_id=None, market=None, selection=None, bookmaker=None):
     row = db.query(
-        "INSERT INTO tips (user_id, title, league, pick, body, odds, price, starts_at) "
-        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-        (uid, title, league, pick, body or None, odds, price, starts_at),
+        "INSERT INTO tips (user_id, title, league, pick, body, odds, price, starts_at, "
+        "fixture_id, market, selection, bookmaker) "
+        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+        (uid, title, league, pick, body or None, odds, price, starts_at, fixture_id, market, selection, bookmaker),
         one=True,
     )
     return row["id"]
@@ -811,39 +813,50 @@ def admin_tips(limit=100):
         "FROM tips t JOIN users u ON u.id = t.user_id ORDER BY t.id DESC LIMIT %s", (limit,))
 
 
-def admin_void_tip(admin_id, tip_id):
-    """Hubatilisha mkeka na kurudisha bei kamili kwa kila aliyenunua.
+def _void_tip(cur, tip_id):
+    """Hubatilisha mkeka na kurudisha bei kamili kwa kila aliyenunua (ndani ya muamala uliopo).
     Muuzaji anakatwa alichopokea (bei toa ada) kadiri salio lake linavyoruhusu; upungufu unabebwa na jukwaa.
-    Yote kwa mkupuo mmoja; inafanya kazi mara moja tu kwa kila mkeka."""
+    Inafanya kazi mara moja tu kwa kila mkeka. Inarudisha idadi ya wanunuzi."""
     fee_pct = Config.TIP_FEE_PCT
+    cur.execute("UPDATE tips SET status = 'void' WHERE id = %s AND status <> 'void' "
+                "RETURNING user_id, title, price", (tip_id,))
+    t = cur.fetchone()
+    if not t:
+        raise AdminError("Mkeka haupo au umeshabatilishwa.")
+    cur.execute("SELECT user_id FROM tip_purchases WHERE tip_id = %s", (tip_id,))
+    buyers = [r["user_id"] for r in cur.fetchall()]
+    price, seller = t["price"], t["user_id"]
+    net = price - price * fee_pct // 100
+    for b in buyers:
+        cur.execute("UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
+                    (price, b))
+        cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_purchase', %s, %s)",
+                    (b, price, f"Marejesho ya mkeka uliobatilishwa: {t['title']}"))
+        notify(cur, b, "tip", f"Mkeka ulionunua umebatilishwa, umerudishiwa coin {price}: {t['title']}", f"/jamvi/{tip_id}")
+        cur.execute("SELECT balance FROM wallets WHERE user_id = %s", (seller,))
+        bal = cur.fetchone()["balance"]
+        take = min(net, bal)
+        if take > 0:
+            cur.execute("UPDATE wallets SET balance = balance - %s, updated_at = CURRENT_TIMESTAMP "
+                        "WHERE user_id = %s", (take, seller))
+            cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_sale', %s, %s)",
+                        (seller, -take, f"Mauzo ya mkeka uliobatilishwa yamerudishwa: {t['title']}"))
+    if buyers:
+        notify(cur, seller, "tip", f"Mkeka wako umebatilishwa: {t['title']}", f"/jamvi/{tip_id}")
+    return len(buyers)
+
+
+def admin_void_tip(admin_id, tip_id):
     with db.get_conn() as conn, conn.cursor() as cur:
-        cur.execute("UPDATE tips SET status = 'void' WHERE id = %s AND status <> 'void' "
-                    "RETURNING user_id, title, price", (tip_id,))
-        t = cur.fetchone()
-        if not t:
-            raise AdminError("Mkeka haupo au umeshabatilishwa.")
-        cur.execute("SELECT user_id FROM tip_purchases WHERE tip_id = %s", (tip_id,))
-        buyers = [r["user_id"] for r in cur.fetchall()]
-        price, seller = t["price"], t["user_id"]
-        net = price - price * fee_pct // 100
-        for b in buyers:
-            cur.execute("UPDATE wallets SET balance = balance + %s, updated_at = CURRENT_TIMESTAMP WHERE user_id = %s",
-                        (price, b))
-            cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_purchase', %s, %s)",
-                        (b, price, f"Marejesho ya mkeka uliobatilishwa: {t['title']}"))
-            notify(cur, b, "tip", f"Mkeka ulionunua umebatilishwa, umerudishiwa coin {price}: {t['title']}", f"/jamvi/{tip_id}")
-            cur.execute("SELECT balance FROM wallets WHERE user_id = %s", (seller,))
-            bal = cur.fetchone()["balance"]
-            take = min(net, bal)
-            if take > 0:
-                cur.execute("UPDATE wallets SET balance = balance - %s, updated_at = CURRENT_TIMESTAMP "
-                            "WHERE user_id = %s", (take, seller))
-                cur.execute("INSERT INTO transactions (user_id, kind, amount, note) VALUES (%s, 'tip_sale', %s, %s)",
-                            (seller, -take, f"Mauzo ya mkeka uliobatilishwa yamerudishwa: {t['title']}"))
-        if buyers:
-            notify(cur, seller, "tip", f"Mkeka wako umebatilishwa na msimamizi: {t['title']}", f"/jamvi/{tip_id}")
-        log_admin(cur, admin_id, "void_tip", f"#{tip_id} wanunuzi {len(buyers)}")
-        return len(buyers)
+        n = _void_tip(cur, tip_id)
+        log_admin(cur, admin_id, "void_tip", f"#{tip_id} wanunuzi {n}")
+        return n
+
+
+def void_tip_system(tip_id):
+    """Mchezo umeahirishwa au kufutwa: mfumo unabatilisha na kurudisha coin."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        return _void_tip(cur, tip_id)
 
 
 def admin_delete_tip(admin_id, tip_id):
@@ -940,3 +953,11 @@ def make_admin(user_id):
 
 def set_password(user_id, password_hash):
     db.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, user_id))
+
+
+def admin_waiting_tips(limit=30):
+    """Mikeka ya mechi halisi iliyoanza lakini bado haijahukumiwa."""
+    return db.query(
+        "SELECT t.id, t.title, t.market, t.selection, f.status, f.kickoff FROM tips t "
+        "JOIN fixtures f ON f.id = t.fixture_id WHERE t.status = 'open' AND t.fixture_id IS NOT NULL "
+        "ORDER BY f.kickoff ASC LIMIT %s", (limit,))

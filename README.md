@@ -30,6 +30,7 @@ chat.py           ujumbe wa moja kwa moja na kuzuia watumiaji
 notifications.py  orodha ya arifa
 admin.py          usimamizi na ripoti za watumiaji
 vercel.json       ratiba ya kazi ya kila siku (cron)
+football.py       mechi halisi, odds na matokeo (API-Football)
 models.py         maswali ya database (watumiaji, pochi, miamala)
 config.py         mipangilio kutoka .env
 db.py             muunganisho wa Neon na utengenezaji wa majedwali
@@ -280,6 +281,35 @@ Orodha zinatenganishwa kwa koma. Mtumiaji anayelingana anakuwa msimamizi mara an
 - Mtabiri anaweza kuweka matokeo mchezo ukishaanza (kama hapo awali).
 - **Faili zilizobadilika**: `models.py`, `app.py`, `templates/_cards.html`, `templates/mkeka.html`.
 - Bado hakuna kitu kinachomkumbusha mtabiri asiyeweka matokeo; msimamizi anaweza kuyarekebisha au kubatilisha mkeka.
+
+## Odds halisi na hukumu ya kiotomatiki (API-Football)
+
+Mikeka sasa inawekwa kwa **mechi halisi** na **odds halisi za kampuni za kubashiri**. Mtabiri hawezi kuandika odds wala matokeo kwa mkono.
+
+**Jinsi inavyofanya kazi**
+1. Mtabiri anachagua mechi (zinazofuata siku chache, ligi zilizochaguliwa) kwenye "Weka mkeka".
+2. Anachagua mkeka: matokeo ya dakika 90 (nyumbani/sare/ugenini), nafasi mbili, timu zote kufunga, au jumla ya magoli (mistari 0.5 hadi 4.5). Odds bora inaonyeshwa kwa kila chaguo.
+3. Anachagua kampuni ya kubashiri (zilizopendelezwa kwanza, orodha ya `FEATURED_BOOKMAKERS`; mfano Betpawa ikiwa huduma ina odds zake kwa mechi hiyo). Odds zinazorekodiwa ni zile za seva wakati wa kuweka mkeka, si za fomu.
+4. Mchezo ukiisha (dakika 105 baada ya kuanza), mfumo unachukua matokeo na kuhukumu: umeshinda au umepoteza. Wanunuzi na mtabiri wanaarifiwa. Mechi iliyofutwa (CANC, ABD, AWD, WO) au iliyoahirishwa zaidi ya siku 5 inabatilisha mkeka na wanunuzi wanarudishiwa coin zote (muuzaji anakatwa alichopokea kadiri salio linavyoruhusu; upungufu unabebwa na jukwaa).
+5. Mtabiri hawezi tena kuweka matokeo ya mkeka wa mechi halisi (hatari ya kudanganya imeondoka). Msimamizi bado anaweza kurekebisha.
+
+**Kuwasha**: jisajili API-Football (api-sports.io), pata ufunguo, kisha kwenye Vercel weka `APIFOOTBALL_KEY` na Redeploy. Mpango wa bure ni maombi 100 kwa siku. Bila ufunguo, fomu ya mkono ya zamani inaendelea kufanya kazi.
+
+**Mipangilio** (zote hiari): `FOOTBALL_LEAGUES` (ID za ligi, chaguo-msingi `567,39,140,135,78,61,2,3,12`), `FEATURED_BOOKMAKERS`, `ODDS_CACHE_MINUTES` (30), `FIXTURE_SYNC_HOURS` (6), `FIXTURE_DAYS_AHEAD` (3), `ALLOW_MANUAL_TIPS` (1 = ruhusu mikeka ya mkono hata ufunguo ukiwepo).
+
+**Matumizi ya maombi** (kuweka ndani ya 100 kwa siku): mechi ni ombi moja kwa siku ya mbele kila saa 6; odds ni ombi moja kwa mechi, zinahifadhiwa dakika 30; matokeo ni ombi moja kwa mechi hadi 20, mara moja kila dakika 10 kwa kiwango cha juu. Maombi yakibaki chini ya 4, app inaacha kuomba hadi kesho. Hukumu inaendeshwa mtu anapofungua kurasa za jamvi, na pia na cron ya kila siku.
+
+**Ukurasa wa admin "Mechi"**: maombi yaliyobaki, idadi ya mechi, "Sasisha mechi sasa", "Hukumu mikeka sasa", mikeka inayosubiri hukumu, na **kutafuta ligi** ili kupata ID.
+
+### Mambo ya kujua (odds halisi)
+
+- **Sijaijaribu kwenye API halisi** (hakuna mtandao hapa); nimejaribu kwa majibu bandia yenye muundo wa nyaraka. Baada ya kuweka ufunguo, hakikisha kwenye `/admin/mechi` kuwa mechi zinaonekana. Majina ya masoko yanayotumika: "Match Winner", "Double Chance", "Both Teams Score", "Goals Over/Under".
+- **ID za ligi** (hasa Ligi Kuu Tanzania `567`) ni za kukisia: thibitisha kwa kutafuta ligi kwenye admin na ubadilishe `FOOTBALL_LEAGUES` ikihitajika. Jina la ligi linaonekana kwenye kila mechi, kwa hiyo kosa ni rahisi kuliona.
+- **Kampuni zinazopatikana ni zile ambazo API ina**. Si lazima Betpawa au kampuni nyingine ya hapa iwepo; ikikosekana, mtabiri anachagua kampuni nyingine. App haichukui odds kutoka tovuti za kampuni kwa kuzisoma moja kwa moja.
+- Odds za kabla ya mechi zinasasishwa na huduma kila masaa 3 hivi, na zinapatikana kwa takribani siku 1 hadi 14 kabla ya mechi.
+- Matokeo ni ya **dakika 90** (bila muda wa nyongeza wala penalti).
+- Mikeka ya zamani ya mkono inabaki kama ilivyo (inahukumiwa na mtabiri).
+- **Faili zilizobadilika**: `football.py` (mpya), `config.py`, `schema.sql`, `models.py`, `tips.py`, `admin.py`, `app.py`, `templates/jamvi_weka.html`, `jamvi_weka_mechi.html` (mpya), `admin_mechi.html` (mpya), `_admin_nav.html`, `_cards.html`, `mkeka.html`, `static/css/style.css`, `.env.example`. Majedwali mapya: `fixtures`, `odds_cache`, `kv`; safu mpya kwenye `tips`: `fixture_id`, `market`, `selection`, `bookmaker` (zinajitengeneza zenyewe).
 
 ## Hatua zinazofuata
 

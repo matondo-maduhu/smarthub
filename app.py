@@ -140,6 +140,20 @@ def create_app():
             value = value.replace(tzinfo=timezone.utc)
         return value.astimezone(EAT).strftime("%d/%m/%Y %H:%M")
 
+    @app.template_filter("eat_time")
+    def eat_time(value):
+        return value.astimezone(EAT).strftime("%H:%M") if value else ""
+
+    @app.template_filter("eat_date")
+    def eat_date(value):
+        if not value:
+            return ""
+        d = value.astimezone(EAT)
+        days = ["Jumatatu", "Jumanne", "Jumatano", "Alhamisi", "Ijumaa", "Jumamosi", "Jumapili"]
+        today = datetime.now(timezone.utc).astimezone(EAT).date()
+        tag = "Leo" if d.date() == today else ("Kesho" if (d.date() - today).days == 1 else days[d.weekday()])
+        return f"{tag}, {d.strftime('%d/%m/%Y')}"
+
     # ----- Kurasa -----
     @app.route("/")
     def home():
@@ -185,7 +199,14 @@ def create_app():
         if not secret or not hmac.compare_digest(sent, f"Bearer {secret}"):
             abort(404)
         n = models.release_overdue(Config.ORDER_AUTO_RELEASE_DAYS)
-        return {"released": n}
+        out = {"released": n}
+        try:
+            import football
+            if football.configured():
+                out.update(football.run_cron())
+        except Exception as e:  # hitilafu ya huduma ya mechi isizuie kuachilia coin
+            print(f"ONYO: cron ya mechi imeshindwa: {e}", file=sys.stderr)
+        return out
 
     @app.route("/wasifu")
     def wasifu():

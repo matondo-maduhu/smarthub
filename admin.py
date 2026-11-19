@@ -131,6 +131,47 @@ def report_action(rid, action):
     return redirect(url_for("admin.reports"))
 
 
+@bp.route("/mechi")
+@admin_required
+def fixtures():
+    import football
+
+    q = request.args.get("q", "").strip()[:40]
+    found, err = [], None
+    if q and len(q) >= 3 and football.configured():
+        try:
+            found = football.search_leagues(q)
+        except football.FootballError as e:
+            err = str(e)
+    return render_template(
+        "admin_mechi.html", active="admin", configured=football.configured(), q=q, found=found, err=err,
+        leagues=Config.FOOTBALL_LEAGUES, left=football.requests_left() if football.configured() else None,
+        synced=football.kv_get("fixtures_synced") if football.configured() else None,
+        upcoming=len(football.list_fixtures(limit=600)) if football.configured() else 0,
+        waiting=models.admin_waiting_tips())
+
+
+@bp.route("/mechi/<action>", methods=["POST"])
+@admin_required
+def fixtures_action(action):
+    import football
+
+    try:
+        if action == "sasisha":
+            n = football.sync_fixtures(force=True)
+            models.log_order_action(g.user["id"], "sync_fixtures", n)
+            flash(f"Mechi {n} zimesasishwa.", "ok")
+        elif action == "hukumu":
+            n = football.settle_due(force=True)
+            models.log_order_action(g.user["id"], "settle_fixtures", n)
+            flash(f"Mikeka {n} imehukumiwa.", "ok")
+        else:
+            abort(404)
+    except football.FootballError as e:
+        flash(str(e), "error")
+    return redirect(url_for("admin.fixtures"))
+
+
 @bp.route("/kumbukumbu")
 @admin_required
 def log():

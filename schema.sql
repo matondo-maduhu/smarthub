@@ -55,8 +55,16 @@ CREATE TABLE IF NOT EXISTS tips (
     status      TEXT NOT NULL DEFAULT 'open',    -- open | won | lost | void
     image_url   TEXT,
     starts_at   TIMESTAMPTZ,
+    fixture_id  BIGINT,                          -- mechi halisi (API-Football); NULL = mkeka wa mkono
+    market      TEXT,                            -- h2h | dc | btts | ou
+    selection   TEXT,                            -- mfano home, 1x, yes, over_2.5
+    bookmaker   TEXT,                            -- kampuni ambayo odds zilichukuliwa
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS fixture_id BIGINT;
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS market TEXT;
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS selection TEXT;
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS bookmaker TEXT;
 -- Kwa database iliyotengenezwa kabla ya hatua ya 4
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT '';
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS pick TEXT NOT NULL DEFAULT '';
@@ -192,3 +200,35 @@ CREATE TABLE IF NOT EXISTS admin_log (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_admin_log ON admin_log(id DESC);
+
+-- Mechi halisi (nakala ya ndani kutoka API-Football ili kupunguza maombi)
+CREATE TABLE IF NOT EXISTS fixtures (
+    id          BIGINT PRIMARY KEY,
+    league_id   BIGINT NOT NULL,
+    league_name TEXT NOT NULL,
+    country     TEXT,
+    home        TEXT NOT NULL,
+    away        TEXT NOT NULL,
+    home_logo   TEXT,
+    away_logo   TEXT,
+    kickoff     TIMESTAMPTZ NOT NULL,
+    status      TEXT NOT NULL DEFAULT 'NS',    -- NS | FT | AET | PEN | PST | CANC ...
+    home_goals  INT,                           -- magoli ya dakika 90
+    away_goals  INT,
+    updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_fixtures_kickoff ON fixtures(kickoff);
+
+-- Odds zilizohifadhiwa kwa muda mfupi (JSON)
+CREATE TABLE IF NOT EXISTS odds_cache (
+    fixture_id BIGINT PRIMARY KEY,
+    data       TEXT NOT NULL,
+    fetched_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+-- Thamani ndogo za mfumo (muda wa usasishaji wa mwisho, maombi yaliyobaki)
+CREATE TABLE IF NOT EXISTS kv (
+    key        TEXT PRIMARY KEY,
+    value      TEXT NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
