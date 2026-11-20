@@ -584,3 +584,11 @@ a.box-row:hover { background: var(--surface-2); text-decoration: none; }
 .radio-row input { width: auto; flex: none; }
 .box > .pad { padding: 16px; }
 .odds-book { display: block; font-size: 10px; font-weight: 500; opacity: .75; line-height: 1.1; text-align: center; }
+
+/* ===== Marekebisho madogo ya simu ===== */
+.search-form .search input { flex: 1; min-width: 0; width: 100%; }
+.section-head h1 { min-width: 0; font-size: 20px; }
+.section-head .btn { flex: none; white-space: nowrap; }
+.search input { border: 0; background: transparent; box-shadow: none; padding-left: 0; outline: none; }
+.search input:focus { box-shadow: none; }
+.search:focus-within { border-color: var(--accent); }
