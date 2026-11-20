@@ -617,3 +617,9 @@ a.box-row:hover { background: var(--surface-2); text-decoration: none; }
 .row-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 .row-actions form { margin: 0; }
 @media (prefers-reduced-motion: reduce) { .ads-track { scroll-behavior: auto; } }
+.guest-row { display: flex; gap: 8px; }
+.guest-row .btn { flex: 1; justify-content: center; }
+/* Matangazo: maandishi yasikatwe na yasomeke kwenye picha yoyote */
+.ad { justify-content: flex-start; aspect-ratio: 16 / 7; min-height: 150px; }
+.ad-text { box-sizing: border-box; min-width: 0; max-width: 100%; text-align: left; overflow-wrap: anywhere; text-shadow: 0 1px 3px rgba(0,0,0,.55); }
+.ad.has-img::before { background: linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,.25) 65%, rgba(0,0,0,.1)); }
