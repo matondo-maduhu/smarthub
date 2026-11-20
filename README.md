@@ -336,3 +336,6 @@ Kubofya tangazo kunapitia `/tangazo/<id>` (kuhesabu) kisha kumpeleka mtumiaji kw
 
 ### Matangazo: kuchagua kiungo bila kunakili
 Kwenye fomu ya tangazo, orodha ya "Kinapeleka wapi" sasa ina makundi: **Kurasa**, **Kundi za market**, **Bidhaa maalum** (40 za hivi karibuni zilizo wazi) na **Mikeka maalum** (40 ya hivi karibuni). Kiungo cha mkono bado kinapatikana kwa tovuti za nje au kurasa nyingine.
+
+### Ukurasa wa nyumbani: umesafishwa
+Kadi ya "Karibu Jamvi" na vigae vya Jamvi/Market/Pochi/Wasifu vimeondolewa (vipo kwenye menyu ya chini). Juu kunabaki matangazo, kisha mikeka ya hivi karibuni na bidhaa za market. Mgeni asiyeingia anaona vitufe vya "Jisajili" na "Ingia" tu. Maandishi ya matangazo yamepewa kivuli na giza la chini ili yasomeke hata kwenye picha nyeupe.
