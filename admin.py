@@ -212,12 +212,22 @@ def _banner_image():
         raise models.AdminError("Imeshindwa kupakia picha. Jaribu tena.")
 
 
+def _banner_targets():
+    """Bidhaa na mikeka ya hivi karibuni, ili admin achague badala ya kunakili kiungo."""
+    prods = models.db.query("SELECT id, title FROM products WHERE status = 'active' ORDER BY id DESC LIMIT 40")
+    tips = models.db.query("SELECT id, title FROM tips ORDER BY id DESC LIMIT 40")
+    picked = [p for p, _ in models.BANNER_LINKS]
+    picked += [f"/market?aina={c}" for c in ("simu", "nguo", "nyumbani", "magari", "chakula", "huduma", "mengineyo")]
+    picked += [f"/market/{p['id']}" for p in prods] + [f"/jamvi/{t['id']}" for t in tips]
+    return prods, tips, picked
+
+
 @bp.route("/matangazo")
 @admin_required
 def banners():
     return render_template("admin_matangazo.html", active="admin", rows=models.admin_banners(),
                            links=models.BANNER_LINKS, themes=models.BANNER_THEMES, r2_ready=Config.R2_READY,
-                           max_banners=models.MAX_BANNERS, edit=None)
+                           max_banners=models.MAX_BANNERS, edit=None, targets=_banner_targets())
 
 
 @bp.route("/matangazo/<int:bid>/hariri")
@@ -228,7 +238,7 @@ def banner_edit(bid):
         abort(404)
     return render_template("admin_matangazo.html", active="admin", rows=models.admin_banners(),
                            links=models.BANNER_LINKS, themes=models.BANNER_THEMES, r2_ready=Config.R2_READY,
-                           max_banners=models.MAX_BANNERS, edit=b)
+                           max_banners=models.MAX_BANNERS, edit=b, targets=_banner_targets())
 
 
 @bp.route("/matangazo/hifadhi", methods=["POST"])

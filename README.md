@@ -333,3 +333,6 @@ Admin anaweka matangazo yanayoonekana juu ya ukurasa wa nyumbani kama slaidi zin
 - Unaweza kuhariri, kuzima/kuwasha, na kufuta. Kila mbofyo unahesabiwa (unaonekana kwenye orodha). Hatua zote zinaingia kwenye Kumbukumbu.
 
 Kubofya tangazo kunapitia `/tangazo/<id>` (kuhesabu) kisha kumpeleka mtumiaji kwenye kiungo. Hadi matangazo 10 yanaonyeshwa kwa wakati mmoja. Jedwali jipya (`banners`) linatengenezwa lenyewe app ikianza.
+
+### Matangazo: kuchagua kiungo bila kunakili
+Kwenye fomu ya tangazo, orodha ya "Kinapeleka wapi" sasa ina makundi: **Kurasa**, **Kundi za market**, **Bidhaa maalum** (40 za hivi karibuni zilizo wazi) na **Mikeka maalum** (40 ya hivi karibuni). Kiungo cha mkono bado kinapatikana kwa tovuti za nje au kurasa nyingine.
