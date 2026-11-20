@@ -20,10 +20,21 @@
     <label class="field"><span>Kinapeleka wapi</span>
       <select name="link_pick">
         <option value="">Hakuna kiungo</option>
+        <optgroup label="Kurasa">
         {% for path, name in links %}<option value="{{ path }}" {{ 'selected' if edit and edit.link == path }}>{{ name }}</option>{% endfor %}
+        </optgroup>
+        <optgroup label="Kundi za market">
+        {% for slug, name in [('simu','Simu na umeme'),('nguo','Nguo na viatu'),('nyumbani','Nyumbani'),('magari','Magari na pikipiki'),('chakula','Chakula'),('huduma','Huduma'),('mengineyo','Mengineyo')] %}<option value="/market?aina={{ slug }}" {{ 'selected' if edit and edit.link == '/market?aina=' ~ slug }}>{{ name }}</option>{% endfor %}
+        </optgroup>
+        {% if targets[0] %}<optgroup label="Bidhaa maalum">
+        {% for p in targets[0] %}<option value="/market/{{ p.id }}" {{ 'selected' if edit and edit.link == '/market/' ~ p.id }}>{{ p.title[:40] }}</option>{% endfor %}
+        </optgroup>{% endif %}
+        {% if targets[1] %}<optgroup label="Mikeka maalum">
+        {% for t in targets[1] %}<option value="/jamvi/{{ t.id }}" {{ 'selected' if edit and edit.link == '/jamvi/' ~ t.id }}>{{ t.title[:40] }}</option>{% endfor %}
+        </optgroup>{% endif %}
       </select></label>
     <label class="field"><span>Au kiungo kingine (/… au https://…)</span>
-      <input name="link_custom" maxlength="300" value="{{ edit.link if edit and edit.link not in links|map(attribute=0)|list }}" placeholder="mfano /market?aina=simu"></label>
+      <input name="link_custom" maxlength="300" value="{{ edit.link if edit and edit.link and edit.link not in targets[2] else '' }}" placeholder="mfano /market?aina=simu"></label>
     <label class="field"><span>Maandishi ya kitufe (hiari)</span>
       <input name="cta" maxlength="20" value="{{ edit.cta if edit }}" placeholder="mfano Angalia"></label>
     <label class="field"><span>Picha ya nyuma (hiari, MB 5)</span>
