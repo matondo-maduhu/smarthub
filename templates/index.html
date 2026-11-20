@@ -2,7 +2,9 @@
 {% from "_icons.html" import icon %}
 {% from "_cards.html" import tip_card, product_card with context %}
 
+{% from "_matangazo.html" import slider %}
 {% block content %}
+{{ slider(banners) }}
 <section class="hero card">
   <div>
     <p class="eyebrow">Karibu {{ app_name }}</p>

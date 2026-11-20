@@ -1,0 +1,24 @@
+{# Kisliderisha cha matangazo: kila slaidi ni kiungo kinachopitia /tangazo/<id> #}
+{% macro slider(banners) %}
+{% if banners %}
+<section class="ads" data-ads aria-label="Matangazo">
+  <div class="ads-track">
+    {% for b in banners %}
+    <a class="ad ad-{{ b.theme }}{{ ' has-img' if b.image_url }}" href="{{ url_for('banner_go', bid=b.id) if b.link else '#' }}"
+       {% if not b.link %}aria-disabled="true" tabindex="-1"{% endif %}
+       {% if b.link and b.link.startswith('http') %}rel="noopener"{% endif %}>
+      {% if b.image_url %}<img src="{{ b.image_url }}" alt="" loading="{{ 'eager' if loop.first else 'lazy' }}">{% endif %}
+      <span class="ad-text">
+        <strong>{{ b.title }}</strong>
+        {% if b.subtitle %}<span>{{ b.subtitle }}</span>{% endif %}
+        {% if b.link and b.cta %}<em class="ad-cta">{{ b.cta }} &rarr;</em>{% endif %}
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+  {% if banners|length > 1 %}
+  <div class="ads-dots" aria-hidden="true">{% for b in banners %}<i class="{{ 'on' if loop.first }}"></i>{% endfor %}</div>
+  {% endif %}
+</section>
+{% endif %}
+{% endmacro %}

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_matangazo.html" import slider %}
+{% block title %}Matangazo · Usimamizi{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Matangazo yanayoonekana juu ya ukurasa wa nyumbani.</p></div>
+{% set sec = 'banners' %}{% include "_admin_nav.html" %}
+
+<section class="box">
+  <div class="box-header">{{ 'Hariri tangazo #' ~ edit.id if edit else 'Tangazo jipya' }}</div>
+  <form method="post" action="{{ url_for('admin.banner_save') }}" enctype="multipart/form-data" class="form" style="padding:14px">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <input type="hidden" name="id" value="{{ edit.id if edit }}">
+    <label class="field"><span>Kichwa (herufi 60)</span>
+      <input name="title" required minlength="2" maxlength="60" value="{{ edit.title if edit }}" placeholder="mfano Mikeka ya wikiendi"></label>
+    <label class="field"><span>Maelezo mafupi (hiari)</span>
+      <input name="subtitle" maxlength="120" value="{{ edit.subtitle if edit }}" placeholder="mfano Angalia odds mpya leo"></label>
+    <label class="field"><span>Rangi</span>
+      <select name="theme">{% for t in themes %}<option value="{{ t }}" {{ 'selected' if edit and edit.theme == t }}>{{ {'green':'Kijani','blue':'Samawati','amber':'Njano','purple':'Zambarau','dark':'Nyeusi'}[t] }}</option>{% endfor %}</select></label>
+    <label class="field"><span>Kinapeleka wapi</span>
+      <select name="link_pick">
+        <option value="">Hakuna kiungo</option>
+        {% for path, name in links %}<option value="{{ path }}" {{ 'selected' if edit and edit.link == path }}>{{ name }}</option>{% endfor %}
+      </select></label>
+    <label class="field"><span>Au kiungo kingine (/… au https://…)</span>
+      <input name="link_custom" maxlength="300" value="{{ edit.link if edit and edit.link not in links|map(attribute=0)|list }}" placeholder="mfano /market?aina=simu"></label>
+    <label class="field"><span>Maandishi ya kitufe (hiari)</span>
+      <input name="cta" maxlength="20" value="{{ edit.cta if edit }}" placeholder="mfano Angalia"></label>
+    <label class="field"><span>Picha ya nyuma (hiari, MB 5)</span>
+      <input type="file" name="image" accept="image/png,image/jpeg,image/webp" {{ 'disabled' if not r2_ready }}></label>
+    {% if not r2_ready %}<p class="muted small">Upakiaji wa picha haujawashwa (R2). Tangazo litatumia rangi tu.</p>{% endif %}
+    {% if edit and edit.image_url %}<label class="check"><input type="checkbox" name="drop_image" value="1"> Ondoa picha ya sasa</label>{% endif %}
+    <label class="field"><span>Mpangilio (0 = kwanza)</span>
+      <input name="position" inputmode="numeric" value="{{ edit.position if edit else 0 }}"></label>
+    <label class="field"><span>Linaisha lini (hiari)</span>
+      <input type="date" name="ends_on"></label>
+    <div class="actions">
+      <button class="btn primary" type="submit">Hifadhi</button>
+      {% if edit %}<a class="btn" href="{{ url_for('admin.banners') }}">Ghairi</a>{% endif %}
+    </div>
+  </form>
+</section>
+
+<section class="box">
+  <div class="box-header">Matangazo <span class="counter">{{ rows|length }}</span></div>
+  {% for b in rows %}
+  <div class="row">
+    <div class="row-main">
+      <strong>{{ b.title }} {% if not b.active %}<span class="badge">Limezimwa</span>{% endif %}</strong>
+      <span class="muted">{{ b.link or 'Hakuna kiungo' }} · mbofyo {{ b.clicks }} · nafasi {{ b.position }}{% if b.ends_at %} · hadi {{ b.ends_at|eat }}{% endif %}</span>
+    </div>
+    <div class="row-actions">
+      <a class="btn small" href="{{ url_for('admin.banner_edit', bid=b.id) }}">Hariri</a>
+      <form method="post" action="{{ url_for('admin.banner_action', bid=b.id, action='toggle') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small">{{ 'Zima' if b.active else 'Washa' }}</button></form>
+      <form method="post" action="{{ url_for('admin.banner_action', bid=b.id, action='futa') }}" onsubmit="return confirm('Kufuta tangazo hili?')"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn small danger">Futa</button></form>
+    </div>
+  </div>
+  {% else %}<div class="box-empty">Hakuna matangazo bado.</div>{% endfor %}
+</section>
+{% endblock %}
