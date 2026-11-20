@@ -592,3 +592,28 @@ a.box-row:hover { background: var(--surface-2); text-decoration: none; }
 .search input { border: 0; background: transparent; box-shadow: none; padding-left: 0; outline: none; }
 .search input:focus { box-shadow: none; }
 .search:focus-within { border-color: var(--accent); }
+
+/* ===== Matangazo (kisliderisha cha nyumbani) ===== */
+.ads { position: relative; }
+.ads-track { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; -webkit-overflow-scrolling: touch; border-radius: 10px; }
+.ads-track::-webkit-scrollbar { display: none; }
+.ad { position: relative; flex: 0 0 100%; scroll-snap-align: center; min-height: 130px; border-radius: 10px; overflow: hidden; display: flex; align-items: flex-end; color: #fff; text-decoration: none; border: 1px solid var(--border); }
+.ad:hover { text-decoration: none; color: #fff; }
+.ad[aria-disabled="true"] { cursor: default; }
+.ad-green { background: linear-gradient(135deg, #1a7f37, #2da44e); }
+.ad-blue { background: linear-gradient(135deg, #0550ae, #218bff); }
+.ad-amber { background: linear-gradient(135deg, #9a6700, #d4a72c); }
+.ad-purple { background: linear-gradient(135deg, #6639ba, #a475f9); }
+.ad-dark { background: linear-gradient(135deg, #161b22, #30363d); }
+.ad img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ad.has-img::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.05) 70%); }
+.ad-text { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 4px; padding: 16px; width: 100%; }
+.ad-text strong { font-size: 20px; line-height: 1.2; }
+.ad-text span { font-size: 14px; opacity: .92; }
+.ad-cta { align-self: flex-start; margin-top: 4px; font-style: normal; font-size: 13px; font-weight: 600; padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4); }
+.ads-dots { display: flex; justify-content: center; gap: 6px; padding-top: 8px; }
+.ads-dots i { width: 6px; height: 6px; border-radius: 50%; background: var(--border); transition: width .2s, background .2s; }
+.ads-dots i.on { width: 18px; border-radius: 3px; background: var(--accent); }
+.row-actions { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.row-actions form { margin: 0; }
+@media (prefers-reduced-motion: reduce) { .ads-track { scroll-behavior: auto; } }
