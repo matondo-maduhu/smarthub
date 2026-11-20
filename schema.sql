@@ -232,3 +232,19 @@ CREATE TABLE IF NOT EXISTS kv (
     value      TEXT NOT NULL,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Matangazo ya ukurasa wa nyumbani (huwekwa na admin)
+CREATE TABLE IF NOT EXISTS banners (
+    id         BIGSERIAL PRIMARY KEY,
+    title      TEXT NOT NULL,
+    subtitle   TEXT NOT NULL DEFAULT '',
+    image_url  TEXT,
+    theme      TEXT NOT NULL DEFAULT 'green',   -- green | blue | amber | purple | dark
+    link       TEXT NOT NULL DEFAULT '',        -- "/market" au "https://..."
+    cta        TEXT NOT NULL DEFAULT '',        -- maandishi ya kitufe
+    position   INT NOT NULL DEFAULT 0,
+    active     BOOLEAN NOT NULL DEFAULT TRUE,
+    ends_at    TIMESTAMPTZ,
+    clicks     INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);

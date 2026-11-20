@@ -320,3 +320,16 @@ Mikeka sasa inawekwa kwa **mechi halisi** na **odds halisi za kampuni za kubashi
 - Kisanduku cha kutafuta kwenye Market kilikuwa na mpaka maradufu na maandishi yalikatwa; sasa ni mpaka mmoja na kinajaza nafasi.
 - Kichwa cha ukurasa na kitufe cha "Weka mkeka/bidhaa" havigawanyiki tena mistari miwili kwenye skrini ndogo.
 - Faili lililobadilika: `static/css/style.css`.
+
+## Matangazo (kisliderisha cha ukurasa wa nyumbani)
+Admin anaweka matangazo yanayoonekana juu ya ukurasa wa nyumbani kama slaidi zinazoteleza zenyewe kila sekunde 5 (mtumiaji anaweza kuburuta kwa kidole; vitone vinaonyesha slaidi ya sasa).
+
+**Kuweka:** Usimamizi → tabo **Matangazo**. Kila tangazo lina:
+- Kichwa, maelezo mafupi na maandishi ya kitufe (hiari).
+- Rangi: kijani, samawati, njano, zambarau au nyeusi.
+- Kinapeleka wapi: chaguo la haraka (Jamvi, Market, Pochi, Weka mkeka, Weka bidhaa, Viwango, Usajili) au kiungo chochote (`/market?aina=simu` au `https://…`). Viungo vingine (`javascript:`, `http://`, `//`) vinakataliwa.
+- Picha ya nyuma (hiari, inahitaji R2; bila R2 tangazo linatumia rangi tu).
+- Mpangilio (0 = kwanza) na tarehe ya kuisha (hiari; linaondoka lenyewe).
+- Unaweza kuhariri, kuzima/kuwasha, na kufuta. Kila mbofyo unahesabiwa (unaonekana kwenye orodha). Hatua zote zinaingia kwenye Kumbukumbu.
+
+Kubofya tangazo kunapitia `/tangazo/<id>` (kuhesabu) kisha kumpeleka mtumiaji kwenye kiungo. Hadi matangazo 10 yanaonyeshwa kwa wakati mmoja. Jedwali jipya (`banners`) linatengenezwa lenyewe app ikianza.

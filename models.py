@@ -961,3 +961,118 @@ def admin_waiting_tips(limit=30):
         "SELECT t.id, t.title, t.market, t.selection, f.status, f.kickoff FROM tips t "
         "JOIN fixtures f ON f.id = t.fixture_id WHERE t.status = 'open' AND t.fixture_id IS NOT NULL "
         "ORDER BY f.kickoff ASC LIMIT %s", (limit,))
+
+
+# ---------- Matangazo (banners) ----------
+BANNER_THEMES = ("green", "blue", "amber", "purple", "dark")
+BANNER_LINKS = [  # chaguo za haraka kwa admin
+    ("/jamvi", "Jamvi la mikeka"), ("/market", "Market"), ("/pochi", "Pochi"),
+    ("/jamvi/weka", "Weka mkeka"), ("/market/weka", "Weka bidhaa"),
+    ("/jamvi/viwango", "Viwango vya watabiri"), ("/jisajili", "Usajili"),
+]
+MAX_BANNERS = 10
+
+
+def clean_banner_link(raw):
+    """Kiungo cha ndani (/...) au https://... tu. Vingine vinakataliwa."""
+    raw = (raw or "").strip()
+    if not raw:
+        return ""
+    if raw.startswith("/") and not raw.startswith("//") and "\\" not in raw:
+        return raw[:300]
+    if raw.lower().startswith("https://") and len(raw) > 10 and " " not in raw:
+        return raw[:300]
+    raise AdminError("Kiungo lazima kianze na / (ndani ya app) au https:// (nje).")
+
+
+def _banner_alive(b):
+    e = b.get("ends_at")
+    if not e:
+        return True
+    if isinstance(e, str):
+        try:
+            e = datetime.fromisoformat(e)
+        except ValueError:
+            return True
+    if e.tzinfo is None:
+        e = e.replace(tzinfo=timezone.utc)
+    return e > datetime.now(timezone.utc)
+
+
+def banners_active():
+    rows = db.query("SELECT * FROM banners WHERE active = TRUE ORDER BY position, id DESC")
+    return [b for b in rows if _banner_alive(b)][:MAX_BANNERS]
+
+
+def admin_banners():
+    return db.query("SELECT * FROM banners ORDER BY active DESC, position, id DESC")
+
+
+def get_banner(bid):
+    return db.query("SELECT * FROM banners WHERE id = %s", (bid,), one=True)
+
+
+def banner_save(admin_id, bid, title, subtitle, theme, link, cta, position, ends_at, image_url=None, drop_image=False):
+    title, subtitle, cta = (title or "").strip(), (subtitle or "").strip(), (cta or "").strip()
+    if not 2 <= len(title) <= 60:
+        raise AdminError("Kichwa cha tangazo kiwe herufi 2 hadi 60.")
+    if len(subtitle) > 120:
+        raise AdminError("Maelezo mafupi yasizidi herufi 120.")
+    if len(cta) > 20:
+        raise AdminError("Maandishi ya kitufe yasizidi herufi 20.")
+    if theme not in BANNER_THEMES:
+        theme = "green"
+    link = clean_banner_link(link)
+    try:
+        position = max(0, min(99, int(position or 0)))
+    except (TypeError, ValueError):
+        position = 0
+    with db.get_conn() as conn, conn.cursor() as cur:
+        if bid is None:
+            cur.execute("SELECT COUNT(*) AS n FROM banners")
+            if int(cur.fetchone()["n"]) >= 30:
+                raise AdminError("Matangazo ni mengi mno. Futa ya zamani kwanza.")
+            cur.execute("INSERT INTO banners (title, subtitle, image_url, theme, link, cta, position, ends_at) "
+                        "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+                        (title, subtitle, image_url, theme, link, cta, position, ends_at))
+            log_admin(cur, admin_id, "banner_add", title)
+        else:
+            cur.execute("SELECT image_url FROM banners WHERE id = %s", (bid,))
+            old = cur.fetchone()
+            if old is None:
+                raise AdminError("Tangazo halipo.")
+            img = image_url or (None if drop_image else old["image_url"])
+            cur.execute("UPDATE banners SET title=%s, subtitle=%s, image_url=%s, theme=%s, link=%s, cta=%s, "
+                        "position=%s, ends_at=%s WHERE id=%s",
+                        (title, subtitle, img, theme, link, cta, position, ends_at, bid))
+            log_admin(cur, admin_id, "banner_edit", f"#{bid} {title}")
+
+
+def banner_toggle(admin_id, bid):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT active FROM banners WHERE id = %s", (bid,))
+        b = cur.fetchone()
+        if b is None:
+            raise AdminError("Tangazo halipo.")
+        cur.execute("UPDATE banners SET active = %s WHERE id = %s", (not b["active"], bid))
+        log_admin(cur, admin_id, "banner_on" if not b["active"] else "banner_off", f"#{bid}")
+
+
+def banner_delete(admin_id, bid):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT image_url FROM banners WHERE id = %s", (bid,))
+        b = cur.fetchone()
+        if b is None:
+            raise AdminError("Tangazo halipo.")
+        cur.execute("DELETE FROM banners WHERE id = %s", (bid,))
+        log_admin(cur, admin_id, "banner_delete", f"#{bid}")
+        return b["image_url"]
+
+
+def banner_click(bid):
+    """Huongeza hesabu na kurudisha kiungo (au None)."""
+    b = get_banner(bid)
+    if b is None or not b["active"] or not b["link"]:
+        return None
+    db.execute("UPDATE banners SET clicks = clicks + 1 WHERE id = %s", (bid,))
+    return b["link"]

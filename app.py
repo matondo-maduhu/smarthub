@@ -159,12 +159,22 @@ def create_app():
     def home():
         viewer = g.user["id"] if g.user else None
         try:  # ukurasa wa nyumbani ufunguke hata database ikikosekana
+            banners = models.banners_active()
             latest = models.list_tips(viewer, limit=3)
             products = models.list_products(limit=4)
         except Exception as e:
             print(f"ONYO: imeshindwa kusoma nyumbani: {e}", file=sys.stderr)
-            latest, products = [], []
-        return render_template("index.html", active="home", tips=latest, products=products)
+            latest, products, banners = [], [], []
+        return render_template("index.html", active="home", tips=latest, products=products, banners=banners)
+
+    @app.route("/tangazo/<int:bid>")
+    def banner_go(bid):
+        """Huhesabu mbofyo kisha humpeleka mtumiaji kwenye kiungo cha tangazo."""
+        try:
+            link = models.banner_click(bid)
+        except Exception:
+            link = None
+        return redirect(link or url_for("home"))
 
     @app.route("/pochi")
     @auth.login_required

@@ -179,6 +179,98 @@ def log():
     return render_template("admin_log.html", active="admin", rows=models.admin_log_list())
 
 
+# ---------- Matangazo ----------
+def _banner_form():
+    """Husoma fomu ya tangazo. Kiungo: chaguo la haraka au maandishi ya mkono."""
+    from datetime import datetime, timedelta, timezone
+    f = request.form
+    link = f.get("link_custom", "").strip() or f.get("link_pick", "").strip()
+    ends = None
+    raw = f.get("ends_on", "").strip()
+    if raw:
+        try:  # mwisho wa siku hiyo kwa saa za Tanzania (UTC+3)
+            ends = datetime.strptime(raw, "%Y-%m-%d").replace(tzinfo=timezone(timedelta(hours=3))) + timedelta(days=1)
+        except ValueError:
+            raise models.AdminError("Tarehe ya mwisho si sahihi.")
+    return dict(title=f.get("title"), subtitle=f.get("subtitle"), theme=f.get("theme"), link=link,
+                cta=f.get("cta"), position=f.get("position"), ends_at=ends)
+
+
+def _banner_image():
+    """Inarudisha URL ya picha mpya (au None). Inahitaji R2."""
+    file = request.files.get("image")
+    if not file or not file.filename:
+        return None
+    if not Config.R2_READY:
+        raise models.AdminError("Picha haziwezi kupakiwa: R2 haijawekwa. Tumia rangi bila picha au weka R2.")
+    import storage
+    try:
+        return storage.upload_image(file, folder="banners")
+    except ValueError as e:
+        raise models.AdminError(str(e))
+    except Exception:
+        raise models.AdminError("Imeshindwa kupakia picha. Jaribu tena.")
+
+
+@bp.route("/matangazo")
+@admin_required
+def banners():
+    return render_template("admin_matangazo.html", active="admin", rows=models.admin_banners(),
+                           links=models.BANNER_LINKS, themes=models.BANNER_THEMES, r2_ready=Config.R2_READY,
+                           max_banners=models.MAX_BANNERS, edit=None)
+
+
+@bp.route("/matangazo/<int:bid>/hariri")
+@admin_required
+def banner_edit(bid):
+    b = models.get_banner(bid)
+    if b is None:
+        abort(404)
+    return render_template("admin_matangazo.html", active="admin", rows=models.admin_banners(),
+                           links=models.BANNER_LINKS, themes=models.BANNER_THEMES, r2_ready=Config.R2_READY,
+                           max_banners=models.MAX_BANNERS, edit=b)
+
+
+@bp.route("/matangazo/hifadhi", methods=["POST"])
+@admin_required
+def banner_save():
+    raw = request.form.get("id", "")
+    bid = int(raw) if raw.isdigit() else None
+    try:
+        data = _banner_form()
+        img = _banner_image()
+        models.banner_save(g.user["id"], bid, image_url=img, drop_image=bool(request.form.get("drop_image")), **data)
+    except models.AdminError as e:
+        flash(str(e), "error")
+        return redirect(url_for("admin.banner_edit", bid=bid) if bid else url_for("admin.banners"))
+    flash("Tangazo limehifadhiwa.", "ok")
+    return redirect(url_for("admin.banners"))
+
+
+@bp.route("/matangazo/<int:bid>/<action>", methods=["POST"])
+@admin_required
+def banner_action(bid, action):
+    if action == "toggle":
+        _do(models.banner_toggle, "Hali ya tangazo imebadilishwa.", g.user["id"], bid)
+    elif action == "futa":
+        try:
+            img = models.banner_delete(g.user["id"], bid)
+            if img:
+                try:
+                    import storage
+                    key = storage.key_from_url(img)
+                    if key:
+                        storage.delete_key(key)
+                except Exception:
+                    pass
+            flash("Tangazo limefutwa.", "ok")
+        except models.AdminError as e:
+            flash(str(e), "error")
+    else:
+        abort(404)
+    return redirect(url_for("admin.banners"))
+
+
 # ---------- Ripoti za watumiaji (si za msimamizi) ----------
 report_bp = Blueprint("report", __name__)
 
