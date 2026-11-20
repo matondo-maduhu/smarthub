@@ -315,3 +315,8 @@ Mikeka sasa inawekwa kwa **mechi halisi** na **odds halisi za kampuni za kubashi
 
 8. Malipo halisi
 9. App ya Android/iPhone
+
+## Marekebisho ya mpangilio wa simu (Market na Jamvi)
+- Kisanduku cha kutafuta kwenye Market kilikuwa na mpaka maradufu na maandishi yalikatwa; sasa ni mpaka mmoja na kinajaza nafasi.
+- Kichwa cha ukurasa na kitufe cha "Weka mkeka/bidhaa" havigawanyiki tena mistari miwili kwenye skrini ndogo.
+- Faili lililobadilika: `static/css/style.css`.
