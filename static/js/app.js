@@ -119,3 +119,29 @@
   var on = document.querySelector(".chips .chip.on");
   if (on && on.scrollIntoView) on.scrollIntoView({ inline: "center", block: "nearest" });
 })();
+
+// Matangazo: kuteleza kiotomatiki kila sekunde 5; kugusa/kuburuta kunasimamisha kwa muda
+(function () {
+  var box = document.querySelector("[data-ads]");
+  if (!box) return;
+  var track = box.querySelector(".ads-track");
+  var slides = track.children, dots = box.querySelectorAll(".ads-dots i");
+  var paused = false, timer = null, resume = null;
+  function cur() { return Math.round(track.scrollLeft / (slides[0].offsetWidth + 10)); }
+  function go(i) { track.scrollTo({ left: i * (slides[0].offsetWidth + 10), behavior: "smooth" }); }
+  track.addEventListener("scroll", function () {
+    var c = cur();
+    for (var i = 0; i < dots.length; i++) dots[i].className = i === c ? "on" : "";
+  }, { passive: true });
+  if (slides.length < 2) return;
+  function hold() {
+    paused = true; clearTimeout(resume);
+    resume = setTimeout(function () { paused = false; }, 8000);
+  }
+  ["touchstart", "pointerdown", "wheel", "mouseenter"].forEach(function (e) { track.addEventListener(e, hold, { passive: true }); });
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  timer = setInterval(function () {
+    if (paused || document.hidden) return;
+    go((cur() + 1) % slides.length);
+  }, 5000);
+})();
