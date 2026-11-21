@@ -654,3 +654,19 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .countdown.urgent b, .countdown-box.urgent b { color: var(--red); }
 .countdown-box { margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--counter-bg); font-weight: 600; }
 .countdown-box b { font-size: 20px; font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+/* ===== Odds zilizopangwa kama kampuni za kubashiri ===== */
+.odds-grid { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 8px; padding: 12px; }
+.odd-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-width: 0; min-height: 52px; padding: 6px 4px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--btn-bg); color: var(--text); font: inherit; cursor: pointer; }
+.odd-btn:hover { background: var(--btn-hover); }
+.odd-btn .odd-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; color: var(--muted); }
+.odd-btn b { font-size: 16px; font-variant-numeric: tabular-nums; color: var(--green); }
+.odd-btn.on { background: var(--accent); border-color: var(--accent); }
+.odd-btn.on b, .odd-btn.on .odd-name { color: #fff; }
+.odd-btn.off { color: var(--muted); cursor: default; }
+.odds-ou { padding: 8px 12px 12px; display: grid; gap: 8px; }
+.ou-head, .ou-row { display: grid; grid-template-columns: 44px repeat(2, minmax(0, 1fr)); gap: 8px; align-items: center; }
+.ou-head { font-size: 12px; color: var(--muted); text-align: center; }
+.ou-line { font-weight: 600; color: var(--muted); text-align: center; }
+.odds-form .box + .box { margin-top: 10px; }
+.odds-form > p { margin-bottom: 10px; }
