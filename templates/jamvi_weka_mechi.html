@@ -1,3 +1,4 @@
+{% from "_menu.html" import select_menu %}
 {% macro slip_panel(slip, finish=False) %}
 {% if slip %}
 <section class="box slip">
@@ -43,10 +44,10 @@
 </div>
 {% endif %}
 {% if league_list|length > 1 %}
-<div class="chips" aria-label="Ligi">
-  <a class="chip {{ 'on' if not ligi }}" href="{{ url_for('tips.new', siku=siku, q=q or None) }}">Ligi zote</a>
-  {% for l in league_list %}<a class="chip {{ 'on' if ligi == l.id }}" href="{{ url_for('tips.new', siku=siku, ligi=l.id, q=q or None) }}">{{ l.name }} <span class="counter">{{ l.n }}</span></a>{% endfor %}
-</div>
+{% set li = [(url_for('tips.new', siku=siku, q=q or None), 'Ligi zote', 'globe', not ligi, none)] %}
+{% set ns = namespace(cur='Ligi zote') %}
+{% for l in league_list %}{% set _ = li.append((url_for('tips.new', siku=siku, ligi=l.id, q=q or None), l.name, 'ball', ligi == l.id, l.n)) %}{% if ligi == l.id %}{% set ns.cur = l.name %}{% endif %}{% endfor %}
+{{ select_menu(li, ns.cur, 'ball', "Ligi") }}
 {% endif %}
 {% for g in groups %}
 <section class="box">

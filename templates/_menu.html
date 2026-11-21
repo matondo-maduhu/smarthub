@@ -1,0 +1,15 @@
+{# Menyu ya kuchagua: kitufe kinachoonyesha chaguo la sasa, kikifunguka orodha yenye ikoni.
+   items = [(href, jina, ikoni, imechaguliwa, idadi_au_None)] #}
+{% from "_icons.html" import icon %}
+{% macro select_menu(items, label, current_icon=None, title="") -%}
+<nav class="menu" data-menu aria-label="{{ title or label }}">
+  <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
+    {% if current_icon %}{{ icon(current_icon, 18) }}{% endif %}<span>{{ label }}</span>{{ icon('chevron-down', 16) }}
+  </button>
+  <div class="menu-pop" role="menu" hidden>
+    {% for href, name, ic, on, n in items %}
+    <a class="menu-item {{ 'on' if on }}" role="menuitem" href="{{ href }}">{% if ic %}{{ icon(ic, 20) }}{% endif %}<span>{{ name }}</span>{% if n is not none %}<span class="counter">{{ n }}</span>{% endif %}</a>
+    {% endfor %}
+  </div>
+</nav>
+{%- endmacro %}

@@ -1,4 +1,4 @@
-{% from "_icons.html" import icon %}
+{% from "_menu.html" import select_menu %}
 {% set items = [
   ('dash', 'Muhtasari', 'grid', 'admin.dashboard'),
   ('users', 'Watumiaji', 'users', 'admin.users'),
@@ -11,13 +11,6 @@
   ('log', 'Kumbukumbu', 'list', 'admin.log'),
 ] %}
 {% set cur = items|selectattr(0, 'equalto', sec)|first %}
-<nav class="menu" data-menu aria-label="Usimamizi">
-  <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
-    {{ icon(cur[2], 18) }}<span>{{ cur[1] }}</span>{{ icon('chevron-down', 16) }}
-  </button>
-  <div class="menu-pop" role="menu" hidden>
-    {% for key, name, ic, ep in items %}
-    <a class="menu-item {{ 'on' if key == sec }}" role="menuitem" href="{{ url_for(ep) }}">{{ icon(ic, 20) }}<span>{{ name }}</span></a>
-    {% endfor %}
-  </div>
-</nav>
+{% set menu_items = [] %}
+{% for key, name, ic, ep in items %}{% set _ = menu_items.append((url_for(ep), name, ic, key == sec, none)) %}{% endfor %}
+{{ select_menu(menu_items, cur[1], cur[2], "Usimamizi") }}

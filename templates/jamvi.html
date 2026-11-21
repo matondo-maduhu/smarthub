@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
 {% from "_cards.html" import tip_card with context %}
+{% from "_menu.html" import select_menu %}
 {% block title %}Jamvi · {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -9,11 +10,13 @@
   <a class="btn primary small" href="{{ url_for('tips.new') }}">{{ icon('plus', 16) }} Weka mkeka</a>
 </div>
 
-<div class="chips">
-  {% for key, label in [('zote', 'Zote'), ('open', 'Zinazosubiri'), ('won', 'Zilizoshinda'), ('lost', 'Zilizopoteza')] %}
-  <a class="chip {{ 'on' if hali == key }}" href="{{ url_for('tips.index', hali=key) }}">{{ label }}</a>
-  {% endfor %}
-  <a class="chip" href="{{ url_for('tips.leaderboard') }}">{{ icon('trend', 14) }} Viwango</a>
+{% set opts = [('zote', 'Zote', 'list'), ('open', 'Zinazosubiri', 'ticket'), ('won', 'Zilizoshinda', 'trend'), ('lost', 'Zilizopoteza', 'flag')] %}
+{% set mi = [] %}
+{% set ns = namespace(name='Zote', ic='list') %}
+{% for key, label, ic in opts %}{% set _ = mi.append((url_for('tips.index', hali=key), label, ic, hali == key, none)) %}{% if hali == key %}{% set ns.name = label %}{% set ns.ic = ic %}{% endif %}{% endfor %}
+<div class="filter-row">
+  {{ select_menu(mi, ns.name, ns.ic, "Hali ya mikeka") }}
+  <a class="btn" href="{{ url_for('tips.leaderboard') }}">{{ icon('trend', 16) }} Viwango</a>
 </div>
 
 {% if tips %}

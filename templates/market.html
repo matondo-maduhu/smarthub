@@ -3,6 +3,7 @@
 {% from "_cards.html" import product_card with context %}
 {% block title %}Market · {{ app_name }}{% endblock %}
 
+{% from "_menu.html" import select_menu %}
 {% block content %}
 <div class="section-head">
   <h1>{{ icon('store', 24) }} Market</h1>
@@ -12,18 +13,22 @@
 <form class="search-form" method="get" action="{{ url_for('market.index') }}">
   <label class="search">
     {{ icon('search', 18) }}
-    <input type="search" name="q" value="{{ q }}" placeholder="Tafuta bidhaa au huduma" autocomplete="off" maxlength="60">
+    <input type="search" name="q" value="{{ q }}" placeholder="Tafuta bidhaa" autocomplete="off" maxlength="60">
   </label>
   {% if aina != 'zote' %}<input type="hidden" name="aina" value="{{ aina }}">{% endif %}
   <button class="btn" type="submit">Tafuta</button>
 </form>
 
-<div class="chips">
-  <a class="chip {{ 'on' if aina == 'zote' }}" href="{{ url_for('market.index', q=q or None) }}">Zote</a>
-  {% for slug, name in categories %}
-  <a class="chip {{ 'on' if aina == slug }}" href="{{ url_for('market.index', aina=slug, q=q or None) }}">{{ name }}</a>
-  {% endfor %}
-  {% if user %}<a class="chip" href="{{ url_for('market.orders') }}">{{ icon('ticket', 14) }} Maagizo yangu</a>{% endif %}
+{% set mi = [(url_for('market.index', q=q or None), 'Zote', 'grid', aina == 'zote', none)] %}
+{% set ns = namespace(name='Zote', ic='grid') %}
+{% for slug, name in categories %}
+  {% set meta = category_meta.get(slug, category_meta['mengineyo']) %}
+  {% set _ = mi.append((url_for('market.index', aina=slug, q=q or None), name, meta.icon, aina == slug, none)) %}
+  {% if aina == slug %}{% set ns.name = name %}{% set ns.ic = meta.icon %}{% endif %}
+{% endfor %}
+<div class="filter-row">
+  {{ select_menu(mi, ns.name, ns.ic, "Kundi la bidhaa") }}
+  {% if user %}<a class="btn" href="{{ url_for('market.orders') }}">{{ icon('ticket', 16) }} Maagizo yangu</a>{% endif %}
 </div>
 
 {% if products %}
