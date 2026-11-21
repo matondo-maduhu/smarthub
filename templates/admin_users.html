@@ -32,6 +32,10 @@
         <input type="hidden" name="_csrf" value="{{ csrf_token() }}"><input type="hidden" name="q" value="{{ q }}">
         <button class="btn small" type="submit">{{ 'Ondoa uthibitisho' if u.is_verified else 'Thibitisha' }}</button>
       </form>
+      <form method="post" action="{{ url_for('admin.user_reset_link', uid=u.id) }}" onsubmit="return confirm('Kutengeneza kiungo kipya cha nenosiri kwa @{{ u.username }}? Kiungo cha awali kitaacha kufanya kazi.');">
+        <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+        <button class="btn small" type="submit">Kiungo cha nenosiri</button>
+      </form>
     </div>
     {% endif %}
   </div>

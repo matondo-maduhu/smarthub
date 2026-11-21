@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Weka nenosiri jipya · {{ app_name }}{% endblock %}
+{% block content %}
+<section class="card auth">
+  {% if state == 'form' %}
+  <h1>{{ icon('user', 24) }} Nenosiri jipya</h1>
+  <p class="muted">Habari {{ user.display_name }} (@{{ user.username }}). Weka nenosiri jipya la akaunti yako.</p>
+  {% include "_errors.html" %}
+  <form method="post" class="form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="field"><span>Nenosiri jipya (herufi 8 au zaidi)</span><input type="password" name="password" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+    <label class="field"><span>Rudia nenosiri</span><input type="password" name="password2" required minlength="8" maxlength="128" autocomplete="new-password"></label>
+    <button class="btn primary block" type="submit">Hifadhi nenosiri</button>
+  </form>
+  {% elif state == 'limit' %}
+  <h1>{{ icon('shield', 24) }} Subiri kidogo</h1>
+  <p class="muted">Umejaribu mara nyingi. Subiri dakika chache kisha ujaribu tena.</p>
+  {% else %}
+  <h1>{{ icon('shield', 24) }} Kiungo hakifanyi kazi</h1>
+  <p class="muted">Kiungo hiki kimetumika tayari, kimeisha muda wake au si sahihi. Tuma ombi jipya kupitia Msaada.</p>
+  <a class="btn block" href="{{ url_for('msaada') }}">Nenda Msaada</a>
+  {% endif %}
+</section>
+{% endblock %}

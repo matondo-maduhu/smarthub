@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Kiungo cha nenosiri · Usimamizi{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('shield', 24) }} Kiungo cha nenosiri</h1><p>Kwa @{{ uname }}</p></div>
+<section class="box">
+  <div class="box-header">Mtumie mtumiaji kiungo hiki</div>
+  <div class="pad form">
+    <label class="field"><span>Kiungo (kinafanya kazi mara moja tu, kwa saa {{ hours }})</span>
+      <input id="reset-link" value="{{ link }}" readonly onclick="this.select()"></label>
+    <button class="btn primary block" type="button" onclick="var i=document.getElementById('reset-link');i.select();try{navigator.clipboard.writeText(i.value)}catch(e){document.execCommand('copy')}this.textContent='Kimenakiliwa';">Nakili kiungo</button>
+    <p class="notice warn">Hiki ndicho kitu pekee kinachomruhusu mtu kuweka nenosiri la akaunti hii. Kitume kwa mmiliki tu, ukiwa umethibitisha ni yeye (mfano kupitia namba ya simu aliyojisajili nayo). Hakitaonyeshwa tena.</p>
+  </div>
+</section>
+<a class="btn block" href="{{ url_for('admin.users') }}">Rudi kwa watumiaji</a>
+{% endblock %}
