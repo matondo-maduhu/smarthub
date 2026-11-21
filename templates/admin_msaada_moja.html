@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Ombi #{{ t.id }} · Usimamizi{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('shield', 24) }} Ombi #{{ t.id }}</h1><p>{{ t.subject }}</p></div>
+{% set sec = 'support' %}{% include "_admin_nav.html" %}
+<section class="box">
+  <div class="box-header">Mtumaji</div>
+  <div class="box-row"><span>Aina</span><span class="muted">{{ cats.get(t.category, 'Jingine') }}</span></div>
+  <div class="box-row"><span>Mtumiaji</span><span>{% if t.username %}<a href="{{ url_for('admin.users', q=t.username) }}">@{{ t.username }}</a>{% else %}<span class="muted">Mgeni</span>{% endif %}</span></div>
+  {% if t.name %}<div class="box-row"><span>Jina</span><span>{{ t.name }}</span></div>{% endif %}
+  {% if t.contact %}<div class="box-row"><span>Mawasiliano</span><strong>{{ t.contact }}</strong></div>{% endif %}
+  <div class="box-row"><span>Tarehe</span><span class="muted">{{ t.created_at|eat }}</span></div>
+  <div class="box-row"><span>Hali</span><span class="badge">{{ {'open': 'Linasubiri', 'answered': 'Limejibiwa', 'closed': 'Limefungwa'}[t.status] }}</span></div>
+</section>
+<section class="box">
+  <div class="box-header">Ujumbe</div>
+  <p class="pad prewrap">{{ t.body }}</p>
+</section>
+{% if t.reply %}
+<section class="box">
+  <div class="box-header">Jibu lililotumwa</div>
+  <p class="pad prewrap">{{ t.reply }}</p>
+  <div class="box-row"><span class="muted">{{ t.replied_at|eat }}</span></div>
+</section>
+{% endif %}
+<form method="post" class="form box" action="{{ url_for('admin.support_reply', tid=t.id) }}">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="box-header">{{ 'Badilisha jibu' if t.reply else 'Jibu' }}</div>
+  <div class="pad form">
+    {% if not t.username %}<p class="notice warn">Huyu ni mgeni: hatapata arifa. Mjibu kupitia {{ t.contact }}, kisha weka jibu hapa kwa kumbukumbu.</p>{% endif %}
+    <label class="field"><span>Jibu</span><textarea name="jibu" rows="5" required maxlength="1500">{{ t.reply or '' }}</textarea></label>
+    <label class="check"><input type="checkbox" name="funga" value="1" checked> Funga ombi baada ya kujibu</label>
+    <button class="btn primary block" type="submit">Tuma jibu</button>
+  </div>
+</form>
+{% if t.status != 'closed' %}
+<form method="post" action="{{ url_for('admin.support_close', tid=t.id) }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button class="btn block" type="submit">Funga bila kujibu</button></form>
+{% endif %}
+{% endblock %}

@@ -9,6 +9,7 @@
   <div class="box-header">Zinazohitaji hatua</div>
   <a class="box-row" href="{{ url_for('admin.orders') }}"><span>Mapingamizi ya maagizo</span><span class="counter {{ 'bad' if s.disputed }}">{{ s.disputed|num }}</span></a>
   <a class="box-row" href="{{ url_for('admin.reports') }}"><span>Ripoti zilizo wazi</span><span class="counter {{ 'bad' if s.reports_open }}">{{ s.reports_open|num }}</span></a>
+  <a class="box-row" href="{{ url_for('admin.support') }}"><span>Maombi ya msaada</span><span class="counter {{ 'bad' if s.support_open }}">{{ s.support_open|num }}</span></a>
 </section>
 
 <div class="admin-cols">

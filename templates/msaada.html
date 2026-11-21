@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Msaada · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('mail', 24) }} Msaada</h1><p>Pata jibu la haraka, au tutumie ombi lako.</p></div>
+
+<section class="box">
+  <div class="box-header">Maswali ya mara kwa mara</div>
+  <details class="faq"><summary>Coin ni nini, na ni za kweli?</summary><p>Coin za Jamvi ni za majaribio (demo) kwa sasa. Malipo halisi bado hayajawashwa.</p></details>
+  <details class="faq"><summary>Nitapata lini malipo ya mauzo ya market?</summary><p>Mnunuzi akithibitisha kupokea bidhaa, au siku zikipita bila pingamizi, coin zinaingia kwenye pochi yako kiotomatiki (ada ya jukwaa inakatwa).</p></details>
+  <details class="faq"><summary>Kwa nini siwezi kununua mkeka?</summary><p>Mkeka unafungwa dakika 10 kabla ya mechi ya kwanza kuanza, na huwezi kununua mkeka wako mwenyewe. Pia salio lako liwe la kutosha.</p></details>
+  <details class="faq"><summary>Nimesahau nenosiri langu</summary><p>Huduma ya kurejesha nenosiri bado haijawashwa. Tuma ombi hapa chini ukiwa na namba ya simu au barua pepe uliyojisajili nayo, kisha tutakusaidia.</p></details>
+  <details class="faq"><summary>Mkeka wangu haujahukumiwa</summary><p>Mikeka ya mechi halisi inahukumiwa kiotomatiki mechi ikiisha. Ukiona umechelewa sana, tuma ombi na namba ya mkeka.</p></details>
+</section>
+
+<form method="post" class="form box" action="{{ url_for('msaada') }}">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="box-header">Tuma ombi la msaada</div>
+  <div class="pad form">
+    {% if err %}<p class="notice warn">{{ err }}</p>{% endif %}
+    <label class="field"><span>Kuhusu nini?</span>
+      <select name="category">{% for k, n in cats %}<option value="{{ k }}" {{ 'selected' if form.category == k }}>{{ n }}</option>{% endfor %}</select></label>
+    <label class="field"><span>Kichwa</span>
+      <input name="subject" required minlength="3" maxlength="80" value="{{ form.subject }}" placeholder="mfano Agizo #12 halijafika"></label>
+    <label class="field"><span>Maelezo</span>
+      <textarea name="body" rows="5" required minlength="10" maxlength="1500" placeholder="Eleza tatizo kwa kifupi. Weka namba ya mkeka au agizo ukiwa nayo.">{{ form.body }}</textarea></label>
+    {% if not g.user %}
+    <label class="field"><span>Jina (hiari)</span><input name="name" maxlength="60" value="{{ form.name }}"></label>
+    <label class="field"><span>Namba ya simu au barua pepe</span>
+      <input name="contact" required maxlength="80" value="{{ form.contact }}" placeholder="ili tukujibu"></label>
+    {% endif %}
+    <button class="btn primary block" type="submit">Tuma ombi</button>
+  </div>
+</form>
+
+{% if g.user %}
+<section class="box">
+  <div class="box-header">Maombi yangu <span class="counter">{{ mine|length }}</span></div>
+  {% for t in mine %}
+  <a class="box-row" href="{{ url_for('msaada_moja', tid=t.id) }}">
+    <span class="row-main"><strong>{{ t.subject }}</strong><span class="muted">{{ t.created_at|eat }}</span></span>
+    <span class="badge">{{ {'open': 'Linasubiri', 'answered': 'Limejibiwa', 'closed': 'Limefungwa'}[t.status] }}</span>
+  </a>
+  {% else %}<div class="box-empty">Bado hujatuma ombi lolote.</div>{% endfor %}
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Msaada · Usimamizi{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Maombi ya msaada kutoka kwa watumiaji.</p></div>
+{% set sec = 'support' %}{% include "_admin_nav.html" %}
+<div class="chips wrap">
+  <a class="chip {{ 'on' if hali == 'open' }}" href="{{ url_for('admin.support') }}">Yanayosubiri</a>
+  <a class="chip {{ 'on' if hali == 'answered' }}" href="{{ url_for('admin.support', hali='answered') }}">Yaliyojibiwa</a>
+  <a class="chip {{ 'on' if hali == 'closed' }}" href="{{ url_for('admin.support', hali='closed') }}">Yaliyofungwa</a>
+  <a class="chip {{ 'on' if hali == 'zote' }}" href="{{ url_for('admin.support', hali='zote') }}">Yote</a>
+</div>
+<section class="box">
+  <div class="box-header">Maombi <span class="counter">{{ rows|length }}</span></div>
+  {% for t in rows %}
+  <a class="box-row" href="{{ url_for('admin.support_detail', tid=t.id) }}">
+    <span class="row-main"><strong>{{ t.subject }}</strong><span class="muted">{{ ('@' ~ t.username) if t.username else ('Mgeni · ' ~ t.contact) }} · {{ t.created_at|eat }}</span></span>
+    <span class="badge">{{ {'open': 'Linasubiri', 'answered': 'Limejibiwa', 'closed': 'Limefungwa'}[t.status] }}</span>
+  </a>
+  {% else %}<div class="box-empty">Hakuna maombi hapa.</div>{% endfor %}
+</section>
+{% endblock %}
