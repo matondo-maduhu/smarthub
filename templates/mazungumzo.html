@@ -1,9 +1,23 @@
 {% extends "base.html" %}
 {% from "_icons.html" import icon %}
-{% block title %}Ujumbe · {{ app_name }}{% endblock %}
+{% block title %}Ujumbe · {{ app_name }}{% if people %}
+<section class="box">
+  <div class="box-header">Anza mazungumzo na <span class="counter">{{ people|length }}</span></div>
+  {% for p in people %}
+  <a class="box-row" href="{{ url_for('chat.conversation', username=p.username) }}">
+    <span class="row-main"><strong>{{ p.display_name }}</strong><span class="muted">@{{ p.username }}</span></span><span class="muted">{{ icon('chat', 16) }}</span>
+  </a>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="section-head"><h1>{{ icon('chat', 24) }} Ujumbe</h1></div>
+<form method="get" class="search-form" role="search">
+  <label class="field"><span>Tafuta mazungumzo au mtu (jina au @jina)</span><input name="q" value="{{ q }}" maxlength="40" placeholder="mfano ann"></label>
+  <button class="btn" type="submit">Tafuta</button>
+</form>
 {% if convs %}
 <section class="card">
   {% for c in convs %}
@@ -22,9 +36,21 @@
   </a>
   {% endfor %}
 </section>
+{% elif q %}
+<section class="card pad center"><p class="muted">Hakuna mazungumzo yanayolingana na "{{ q }}".</p></section>
 {% else %}
 <section class="card pad center">
   <p class="muted">Huna mazungumzo bado. Fungua bidhaa au wasifu wa mtabiri kisha bonyeza "Tuma ujumbe".</p>
+</section>
+{% endif %}
+{% if people %}
+<section class="box">
+  <div class="box-header">Anza mazungumzo na <span class="counter">{{ people|length }}</span></div>
+  {% for p in people %}
+  <a class="box-row" href="{{ url_for('chat.conversation', username=p.username) }}">
+    <span class="row-main"><strong>{{ p.display_name }}</strong><span class="muted">@{{ p.username }}</span></span><span class="muted">{{ icon('chat', 16) }}</span>
+  </a>
+  {% endfor %}
 </section>
 {% endif %}
 {% endblock %}
