@@ -358,3 +358,10 @@ Mtabiri sasa anaweza kuunda mkeka wenye mechi zaidi ya moja (hadi 10, `MAX_SLIP_
 
 ### Kosa la "internal error" kwenye baadhi ya mechi (limerekebishwa)
 Odds halisi za API zina masoko mengine yenye thamani za namba au tupu; msimbo ulijaribu kuzisoma kama maandishi na kuvunja ukurasa wa mechi zenye odds (mechi zisizo na odds, kama za Tanzania, zilifunguka). Sasa thamani zisizotarajiwa zinarukwa, na hitilafu yoyote ya kusoma odds inaonyesha ujumbe badala ya ukurasa wa kosa.
+
+## Orodha ya mechi iliyopangwa (kuweka mkeka kwa urahisi)
+Ukurasa wa "Weka mkeka" sasa umepangwa:
+- **Tabo za siku** juu (Leo, Kesho, …) zenye idadi ya mechi; inafunguka siku ya kwanza yenye mechi.
+- **Tabo za ligi** za siku hiyo (Ligi Kuu Tanzania na ligi ulizoweka kwenye `FOOTBALL_LEAGUES` zinakuja kwanza, kwa mpangilio huo huo), ukibonyeza moja unaona ligi hiyo tu.
+- Mechi zimekundikwa chini ya kila ligi, saa ya kuanza kushoto na timu mbili chini ya nyingine; mechi uliyoichagua kwenye mkeka inaonyesha "Imechaguliwa".
+- **Kutafuta** (timu au ligi) kunatafuta siku zote.

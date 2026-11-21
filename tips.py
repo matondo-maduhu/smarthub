@@ -237,6 +237,44 @@ def _combos(view):
     return out
 
 
+def _browse(ctx, q, now):
+    """Mechi zimepangwa kwa siku na ligi: chagua siku, chuja ligi, kisha mechi zimekundikwa kwa ligi."""
+    EAT = timezone(timedelta(hours=3))
+    order = {lid: i for i, lid in enumerate(Config.FOOTBALL_LEAGUES)}
+    rows = football.list_fixtures(q, limit=400)
+    for f in rows:
+        f["day"] = f["kickoff"].astimezone(EAT).date().isoformat()
+    days = []
+    for f in rows:
+        if not days or days[-1]["key"] != f["day"]:
+            days.append({"key": f["day"], "kickoff": f["kickoff"], "n": 0})
+        days[-1]["n"] += 1
+    siku = request.args.get("siku", "")
+    if q or siku == "yote":  # kutafuta kunatafuta siku zote
+        siku = "yote"
+    elif siku not in {d["key"] for d in days}:
+        siku = days[0]["key"] if days else "yote"
+    day_rows = [f for f in rows if siku == "yote" or f["day"] == siku]
+    leagues = {}
+    for f in day_rows:
+        l = leagues.setdefault(f["league_id"], {"id": f["league_id"], "name": f["league_name"],
+                                                "country": f["country"], "n": 0})
+        l["n"] += 1
+    league_list = sorted(leagues.values(), key=lambda l: (order.get(l["id"], 999), l["name"]))
+    ligi = _int(request.args.get("ligi"))
+    if ligi not in leagues:
+        ligi = None
+    shown = [f for f in day_rows if ligi is None or f["league_id"] == ligi]
+    groups = []
+    for l in league_list:
+        items = [f for f in shown if f["league_id"] == l["id"]]
+        if items:
+            items.sort(key=lambda f: f["kickoff"])
+            groups.append({"league": l, "items": items})
+    ctx.update(days=days, siku=siku, league_list=league_list, ligi=ligi, groups=groups, total=len(shown),
+               slip_ids={x["f"] for x in ctx["slip"]})
+
+
 def _new_api():
     """Kuweka mkeka kwa mechi halisi (moja au nyingi): chagua mechi -> chaguo -> ongeza kwenye kapu
     -> kamilisha (kampuni na bei). Odds zinatoka kwenye huduma, si kwa mtumiaji."""
@@ -254,7 +292,7 @@ def _new_api():
 
     if fid is None:
         ctx["svc_error"] = football.ensure_fixtures()
-        ctx["fixtures"] = football.list_fixtures(q)
+        _browse(ctx, q, now)
         return render_template("jamvi_weka.html", **ctx)
 
     fx = football.get_fixture(fid)
