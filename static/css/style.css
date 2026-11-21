@@ -143,7 +143,7 @@ p { margin: 0; }
 .section-head a { font-size: 14px; }
 .stack { display: flex; flex-direction: column; gap: 12px; }
 .stack.tight { gap: 8px; margin: 14px 0 10px; }
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 
 /* ===== Kadi ===== */
 .card {
@@ -157,7 +157,7 @@ p { margin: 0; }
 .eyebrow { color: var(--accent); font-weight: 600; font-size: 13px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 
-.quick { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.quick { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .quick-item { padding: 14px; display: flex; flex-direction: column; gap: 4px; color: var(--text); }
 .quick-item:hover { text-decoration: none; border-color: var(--accent); }
 .quick-item .muted { font-size: 13px; }
@@ -294,14 +294,14 @@ p { margin: 0; }
   body { padding-bottom: 0; }
   .nav-mobile { display: none; }
   .nav-desktop { display: flex; }
-  .grid { grid-template-columns: repeat(3, 1fr); }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .quick { grid-template-columns: repeat(4, 1fr); }
   .hero { flex-direction: row; align-items: center; justify-content: space-between; padding: 28px; }
   .hero > div:first-child { max-width: 560px; }
-  #tips-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  #tips-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 }
 @media (min-width: 1000px) {
-  .grid { grid-template-columns: repeat(4, 1fr); }
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
 /* ===== Fomu na akaunti ===== */
@@ -458,7 +458,7 @@ a.row:hover { background: var(--surface-2); }
 .back { display: inline-block; margin-bottom: -6px; }
 
 /* Usimamizi: vigae vya takwimu vyenye rangi zetu */
-.stat-tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.stat-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .tile { padding: 12px; display: flex; align-items: center; gap: 10px; min-width: 0; }
 .tile-icon { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; flex: none; }
 .tile-icon.blue { background: var(--accent-soft); color: var(--accent); }
@@ -623,3 +623,20 @@ a.box-row:hover { background: var(--surface-2); text-decoration: none; }
 .ad { justify-content: flex-start; aspect-ratio: 16 / 7; min-height: 150px; }
 .ad-text { box-sizing: border-box; min-width: 0; max-width: 100%; text-align: left; overflow-wrap: anywhere; text-shadow: 0 1px 3px rgba(0,0,0,.55); }
 .ad.has-img::before { background: linear-gradient(to top, rgba(0,0,0,.8), rgba(0,0,0,.25) 65%, rgba(0,0,0,.1)); }
+
+/* ===== Marekebisho: kurasa zisitoke nje ya skrini ===== */
+html, body { max-width: 100%; overflow-x: hidden; }
+.card, .box, .product, .product-body { min-width: 0; }
+.tip-foot { flex-wrap: wrap; row-gap: 8px; }
+.tip-foot .spacer { flex: 1 1 0; min-width: 0; }
+.product-img { overflow: hidden; }
+.product-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.product-body h3, .tip-match { overflow-wrap: anywhere; }
+
+/* ===== Kapu la mechi (mkeka wa mechi nyingi) ===== */
+.slip { border-color: var(--accent); }
+.slip .box-row form { margin: 0; }
+.slip-total { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; gap: 10px; }
+.leg-pick { color: var(--muted); font-size: 13px; }
+.badge.legs { background: var(--counter-bg); }
+.link-btn.danger { color: var(--danger, #cf222e); }
