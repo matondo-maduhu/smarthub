@@ -695,3 +695,22 @@ html, body { max-width: 100%; overflow-x: hidden; }
 /* Kuchagua faili: kitufe kiendane na mandhari */
 input[type="file"]::file-selector-button { margin-right: 10px; padding: 5px 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--btn-bg); color: var(--text); font: inherit; cursor: pointer; }
 input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
+
+/* ===== Wasifu na mipangilio ===== */
+.profile .bio { margin: 6px 0 0; max-width: 34ch; margin-left: auto; margin-right: auto; overflow-wrap: anywhere; }
+.profile-meta { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 10px 0; }
+.profile-meta .muted { display: inline-flex; align-items: center; gap: 4px; }
+.profile-actions { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 12px 0 4px; }
+.avatar-edit { display: flex; gap: 14px; align-items: center; }
+.avatar-edit .grow { min-width: 0; display: grid; gap: 6px; }
+.seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--btn-border); border-radius: 8px; overflow: hidden; }
+.seg button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 6px; border: 0; border-right: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text); font: inherit; cursor: pointer; }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+.check.switch { display: flex; gap: 12px; align-items: flex-start; }
+.check.switch input { margin-top: 4px; width: 18px; height: 18px; flex: none; }
+.box a.box-row { color: inherit; text-decoration: none; }
+.box a.box-row:hover { background: var(--btn-hover); }
+.box-row .row-icon { flex: none; color: var(--muted); display: inline-flex; margin-right: 12px; }
+.stack + .box, .box + form { margin-top: 12px; }
+@media (max-width: 480px) { .avatar-edit { flex-direction: column; align-items: stretch; text-align: center; } .avatar-edit .avatar { align-self: center; } .avatar-edit .field { text-align: left; } }
