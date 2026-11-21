@@ -682,3 +682,16 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .menu-item:hover { background: var(--btn-hover); text-decoration: none; color: var(--text); }
 .menu-item.on { background: var(--counter-bg); font-weight: 600; }
 .menu-item .icon { flex: none; }
+
+.filter-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 4px 0 12px; }
+.filter-row .menu { margin: 0; }
+.menu-item .counter { margin-left: auto; }
+.menu-pop { max-height: min(70vh, 480px); overflow-y: auto; }
+
+/* Kitufe cha kutafuta kikae katikati ya kisanduku (si juu wala chini) */
+.search-form { align-items: center; }
+.search-form .btn { align-self: center; }
+.section-head h1 { display: flex; align-items: center; gap: 8px; }
+/* Kuchagua faili: kitufe kiendane na mandhari */
+input[type="file"]::file-selector-button { margin-right: 10px; padding: 5px 10px; border: 1px solid var(--btn-border); border-radius: 6px; background: var(--btn-bg); color: var(--text); font: inherit; cursor: pointer; }
+input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
