@@ -87,6 +87,43 @@ def update_display_name(uid, name):
     db.execute("UPDATE users SET display_name = %s WHERE id = %s", (name, uid))
 
 
+class ProfileError(Exception):
+    pass
+
+
+def _one_line(text, limit, what):
+    text = " ".join((text or "").split())
+    if len(text) > limit:
+        raise ProfileError(f"{what} lisizidi herufi {limit}.")
+    return text
+
+
+def update_profile(uid, display_name, bio, location, avatar_url=None, drop_avatar=False):
+    name = _one_line(display_name, 40, "Jina")
+    if len(name) < 2:
+        raise ProfileError("Jina liwe na herufi 2 hadi 40.")
+    bio = _one_line(bio, 160, "Maelezo yako")
+    location = _one_line(location, 40, "Mahali")
+    if avatar_url:
+        db.execute("UPDATE users SET display_name = %s, bio = %s, location = %s, avatar_url = %s WHERE id = %s",
+                   (name, bio, location, avatar_url, uid))
+    elif drop_avatar:
+        db.execute("UPDATE users SET display_name = %s, bio = %s, location = %s, avatar_url = NULL WHERE id = %s",
+                   (name, bio, location, uid))
+    else:
+        db.execute("UPDATE users SET display_name = %s, bio = %s, location = %s WHERE id = %s",
+                   (name, bio, location, uid))
+
+
+def set_allow_messages(uid, allow):
+    db.execute("UPDATE users SET allow_messages = %s WHERE id = %s", (bool(allow), uid))
+
+
+def list_blocked(uid):
+    return db.query("SELECT u.id, u.username, u.display_name, u.avatar_url FROM blocks b "
+                    "JOIN users u ON u.id = b.blocked_id WHERE b.blocker_id = %s ORDER BY b.created_at DESC", (uid,))
+
+
 def update_avatar(uid, url):
     db.execute("UPDATE users SET avatar_url = %s WHERE id = %s", (url, uid))
 
@@ -694,6 +731,9 @@ def send_message(sender, recipient, body):
     if st["by_me"]:
         raise ChatError("Umemzuia mtumiaji huyu. Muondolee kizuizi ili kumtumia ujumbe.")
     if st["by_them"]:
+        raise ChatError("Ujumbe haukutumwa. Mtumiaji huyu hapokei ujumbe kwa sasa.")
+    rec = db.query("SELECT allow_messages FROM users WHERE id = %s", (recipient,), one=True)
+    if rec is not None and not rec["allow_messages"]:
         raise ChatError("Ujumbe haukutumwa. Mtumiaji huyu hapokei ujumbe kwa sasa.")
     row = db.query(
         "INSERT INTO messages (sender_id, recipient_id, body) VALUES (%s, %s, %s) RETURNING id",

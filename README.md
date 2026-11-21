@@ -392,3 +392,10 @@ Tabo tisa za admin zilisogezwa kando kwenye simu. Sasa kuna kitufe kimoja kinach
 - Kurasa za Ujumbe na Arifa zina ikoni kwenye kichwa kama kurasa nyingine; hali tupu za Viwango na Mtabiri zimepangwa kwa kisanduku kimoja.
 - Kitufe cha "Choose File" kinafuata rangi za mandhari (mwanga na giza).
 - Nimekagua kurasa kuu kwa picha za simu (mwanga na giza), ikiwemo admin.
+
+## Wasifu, kuhariri wasifu na mipangilio
+- **Wasifu** (`/wasifu`): picha, jina, `@jina_la_mtumiaji`, maelezo mafupi, mahali, takwimu (coin, mikeka, ushindi), vitufe vya **Hariri wasifu** na **Mipangilio**, njia za mkato (Pochi, Mikeka yangu, Maagizo, Ujumbe, Arifa, Usimamizi kwa admin), na taarifa za akaunti.
+- **Hariri wasifu** (`/wasifu/hariri`): kubadilisha picha (au kuiondoa), jina la kuonyesha, "Kuhusu mimi" (herufi 160) na mahali. Maelezo na mahali vinaonekana pia kwenye wasifu wa umma wa mtabiri. **Jina la mtumiaji halibadiliki** kwa makusudi: linatumika kwenye viungo na kwenye `ADMIN_USERNAMES`, kwa hiyo kuliruhusu kubadilika kungeweza kuruhusu mtu kuchukua jina la admin.
+- **Mipangilio** (`/wasifu/mipangilio`): **Mwonekano** (Mfumo / Mwanga / Giza, unahifadhiwa kwenye kifaa), **Faragha** (kuruhusu au kuzima ujumbe mpya), **Waliozuiwa** (orodha na kuondoa kizuizi), kubadilisha **nenosiri**, viungo vya Masharti na Faragha, na kutoka kwenye akaunti.
+- Safu mpya kwenye `users`: `bio`, `location`, `allow_messages` (zinatengenezwa lenyewe baada ya Redeploy).
+- Bado hakuna: kufuta akaunti, kubadilisha barua pepe/simu (zinahitaji uthibitisho, ulioahirishwa).

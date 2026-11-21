@@ -220,7 +220,57 @@ def create_app():
 
     @app.route("/wasifu")
     def wasifu():
-        return render_template("wasifu.html", active="wasifu")
+        stats = models.tipster_stats(g.user["id"]) if g.user else None
+        return render_template("wasifu.html", active="wasifu", stats=stats)
+
+    @app.route("/wasifu/hariri", methods=["GET", "POST"])
+    @auth.login_required
+    def wasifu_hariri():
+        if request.method == "POST":
+            f = request.files.get("avatar")
+            url, drop = None, bool(request.form.get("drop_avatar"))
+            try:
+                if f and f.filename:
+                    import storage
+                    if not Config.R2_READY:
+                        raise models.ProfileError("Upakiaji wa picha haujawashwa bado (R2 haijawekwa).")
+                    try:
+                        url = storage.upload_image(f, folder="avatars")
+                    except ValueError as e:
+                        raise models.ProfileError(str(e))
+                    except Exception:
+                        raise models.ProfileError("Hatukuweza kupakia picha sasa. Jaribu tena baadaye.")
+                models.update_profile(g.user["id"], request.form.get("display_name"), request.form.get("bio"),
+                                      request.form.get("location"), avatar_url=url, drop_avatar=drop)
+            except models.ProfileError as e:
+                flash(str(e), "error")
+                return render_template("wasifu_hariri.html", active="wasifu", r2_ready=Config.R2_READY,
+                                       form=request.form), 400
+            flash("Wasifu umehifadhiwa.", "ok")
+            return redirect(url_for("wasifu"))
+        return render_template("wasifu_hariri.html", active="wasifu", r2_ready=Config.R2_READY, form=None)
+
+    @app.route("/wasifu/mipangilio")
+    def mipangilio():
+        blocked = models.list_blocked(g.user["id"]) if g.user else []
+        return render_template("mipangilio.html", active="wasifu", blocked=blocked)
+
+    @app.route("/wasifu/mipangilio/faragha", methods=["POST"])
+    @auth.login_required
+    def mipangilio_faragha():
+        models.set_allow_messages(g.user["id"], bool(request.form.get("allow_messages")))
+        flash("Mipangilio ya faragha imehifadhiwa.", "ok")
+        return redirect(url_for("mipangilio"))
+
+    @app.route("/wasifu/mipangilio/ruhusu", methods=["POST"])
+    @auth.login_required
+    def mipangilio_ruhusu():
+        try:
+            models.unblock_user(g.user["id"], int(request.form.get("user_id", "")))
+            flash("Kizuizi kimeondolewa.", "ok")
+        except ValueError:
+            pass
+        return redirect(url_for("mipangilio"))
 
     @app.route("/wasifu/jina", methods=["POST"])
     @auth.login_required

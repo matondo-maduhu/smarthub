@@ -14,10 +14,16 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin      BOOLEAN NOT NULL DEFAULT FALSE,
     is_banned     BOOLEAN NOT NULL DEFAULT FALSE,
     age_confirmed_at TIMESTAMPTZ,
+    bio           TEXT NOT NULL DEFAULT '',
+    location      TEXT NOT NULL DEFAULT '',
+    allow_messages BOOLEAN NOT NULL DEFAULT TRUE,
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- Kwa database iliyotengenezwa hatua ya 1
 ALTER TABLE users ADD COLUMN IF NOT EXISTS age_confirmed_at TIMESTAMPTZ;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio TEXT NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS location TEXT NOT NULL DEFAULT '';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS allow_messages BOOLEAN NOT NULL DEFAULT TRUE;
 
 -- Salio la coin la kila mtumiaji
 CREATE TABLE IF NOT EXISTS wallets (
