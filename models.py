@@ -922,6 +922,21 @@ def admin_void_tip(admin_id, tip_id):
         return n
 
 
+def void_stale_manual_tips(days=14):
+    """Mikeka ya mkono yenye saa ambayo mtabiri hakuweka matokeo kwa siku nyingi: inabatilishwa na
+    wanunuzi wanarudishiwa coin. Mikeka ya mechi halisi inahukumiwa na football.py."""
+    cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+    rows = db.query("SELECT id FROM tips WHERE status = 'open' AND fixture_id IS NULL AND legs <= 1 "
+                    "AND starts_at IS NOT NULL AND starts_at <= %s LIMIT 50", (cutoff,))
+    n = 0
+    for r in rows:
+        try:
+            void_tip_system(r["id"]); n += 1
+        except Exception:
+            continue
+    return n
+
+
 def void_tip_system(tip_id):
     """Mchezo umeahirishwa au kufutwa: mfumo unabatilisha na kurudisha coin."""
     with db.get_conn() as conn, conn.cursor() as cur:

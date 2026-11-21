@@ -408,3 +408,6 @@ Orodha ya "Mikeka inayosubiri hukumu" sasa inaonyesha mikeka yote iliyo wazi amb
 
 ## Kusimamisha akaunti ya muuzaji
 Admin akimsimamisha mtumiaji, maagizo yote ya market yaliyo wazi ya muuzaji huyo (yaliyolipwa, yaliyowasilishwa au yenye mgogoro) yanafutwa na wanunuzi wanarudishiwa coin zao zote mara moja (wanapata arifa), na bidhaa zake zilizo hewani zinafichwa. Kumwasha tena hakurudishi bidhaa; ziweke tena mwenyewe. Maagizo ambapo aliyesimamishwa ni mnunuzi hayaguswi: muuzaji anaweza kukamilisha, au admin aamue.
+
+## Mikeka ya mkono iliyosahaulika
+Mkeka wa mkono wenye saa, ambao mtabiri hakuweka matokeo kwa siku 14 baada ya saa hiyo, unabatilishwa na cron ya kila siku (`/cron/release`), na wanunuzi wanarudishiwa coin zote (muuzaji anakatwa alichopokea kadiri salio lake linavyoruhusu). Mikeka ya mechi halisi na ya mechi nyingi tayari ilikuwa inabatilishwa kiotomatiki baada ya siku 7 bila matokeo.

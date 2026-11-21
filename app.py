@@ -217,6 +217,10 @@ def create_app():
         n = models.release_overdue(Config.ORDER_AUTO_RELEASE_DAYS)
         out = {"released": n}
         try:
+            models.void_stale_manual_tips()
+        except Exception as e:
+            print(f"ONYO: kubatilisha mikeka ya mkono kumeshindwa: {e}", file=sys.stderr)
+        try:
             import football
             if football.configured():
                 out.update(football.run_cron())
