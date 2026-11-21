@@ -22,6 +22,10 @@
     <button class="btn small danger" type="submit">Mzuie</button>
   </form>
   {% endif %}
+  <form method="post" action="{{ url_for('chat.hide', username=other.username) }}" onsubmit="return confirm('Kuondoa mazungumzo haya kwenye orodha yako? Mwenzako ataendelea kuyaona.');">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn small" type="submit">Ondoa</button>
+  </form>
 </section>
 
 <section class="card chat-box" id="chat-box"
