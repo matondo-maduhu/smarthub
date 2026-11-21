@@ -204,6 +204,33 @@ def create_app():
     def faragha():
         return render_template("faragha.html", active="")
 
+    @app.route("/msaada", methods=["GET", "POST"])
+    def msaada():
+        import hashlib
+        form, err = {}, None
+        if request.method == "POST":
+            form = {k: request.form.get(k, "") for k in ("category", "subject", "body", "name", "contact")}
+            iph = hashlib.sha256((request.remote_addr or "-").encode()).hexdigest()[:24]
+            try:
+                tid = models.support_create(g.user["id"] if g.user else None, form["name"] or (g.user["display_name"] if g.user else ""),
+                                            form["contact"], form["category"], form["subject"], form["body"], iph)
+            except models.SupportError as e:
+                err = str(e)
+            else:
+                flash("Ombi lako limetumwa. Tutakujibu hivi karibuni.", "ok")
+                return redirect(url_for("msaada_moja", tid=tid) if g.user else url_for("msaada"))
+        mine = models.support_for_user(g.user["id"]) if g.user else []
+        return render_template("msaada.html", active="wasifu", form=form, err=err, mine=mine,
+                               cats=models.SUPPORT_CATEGORIES), (400 if err else 200)
+
+    @app.route("/msaada/<int:tid>")
+    @auth.login_required
+    def msaada_moja(tid):
+        t = models.support_get(tid)
+        if not t or t["user_id"] != g.user["id"]:
+            abort(404)
+        return render_template("msaada_moja.html", active="wasifu", t=t, cats=dict(models.SUPPORT_CATEGORIES))
+
     @app.route("/cron/release")
     def cron_release():
         """Huachilia coin za maagizo yaliyokabidhiwa na yaliyozidi siku. Inaitwa na Vercel Cron kila siku.

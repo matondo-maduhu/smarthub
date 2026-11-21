@@ -821,6 +821,7 @@ def admin_stats():
         "orders_open": n("SELECT COUNT(*) AS n FROM orders WHERE status IN ('paid','delivered','disputed')"),
         "disputed": n("SELECT COUNT(*) AS n FROM orders WHERE status = 'disputed'"),
         "reports_open": n("SELECT COUNT(*) AS n FROM reports WHERE status = 'open'"),
+        "support_open": n("SELECT COUNT(*) AS n FROM support_tickets WHERE status = 'open'"),
         "coins": int(db.query("SELECT COALESCE(SUM(balance), 0) AS n FROM wallets", one=True)["n"]),
         "held": int(db.query("SELECT COALESCE(SUM(price), 0) AS n FROM orders "
                              "WHERE status IN ('paid','delivered','disputed')", one=True)["n"]),
@@ -1161,3 +1162,88 @@ def banner_click(bid):
         return None
     db.execute("UPDATE banners SET clicks = clicks + 1 WHERE id = %s", (bid,))
     return b["link"]
+
+
+# ---------- Msaada ----------
+SUPPORT_CATEGORIES = [
+    ("akaunti", "Akaunti na kuingia"), ("coin", "Pochi na coin"), ("market", "Market na maagizo"),
+    ("mikeka", "Jamvi na mikeka"), ("hitilafu", "Hitilafu ya app"), ("pendekezo", "Pendekezo"),
+    ("nyingine", "Jingine"),
+]
+SUPPORT_LIMIT_PER_HOUR = 3
+
+
+class SupportError(Exception):
+    """Kosa la ombi la msaada; maandishi yanaonyeshwa kwa mtumiaji."""
+
+
+def support_create(user_id, name, contact, category, subject, body, ip_hash=""):
+    subject, body = (subject or "").strip(), (body or "").strip()
+    name, contact = (name or "").strip()[:60], (contact or "").strip()[:80]
+    if category not in dict(SUPPORT_CATEGORIES):
+        category = "nyingine"
+    if not user_id and len(contact) < 5:
+        raise SupportError("Weka namba ya simu au barua pepe ili tukujibu.")
+    if not 3 <= len(subject) <= 80:
+        raise SupportError("Kichwa cha ombi kiwe na herufi 3 hadi 80.")
+    if not 10 <= len(body) <= 1500:
+        raise SupportError("Maelezo yawe na herufi 10 hadi 1500.")
+    since = datetime.now(timezone.utc) - timedelta(hours=1)
+    if user_id:
+        n = db.query("SELECT COUNT(*) AS n FROM support_tickets WHERE user_id = %s AND created_at >= %s",
+                     (user_id, since), one=True)["n"]
+    else:
+        n = db.query("SELECT COUNT(*) AS n FROM support_tickets WHERE user_id IS NULL AND created_at >= %s "
+                     "AND (ip_hash = %s OR contact = %s)", (since, ip_hash, contact), one=True)["n"]
+    if int(n) >= SUPPORT_LIMIT_PER_HOUR:
+        raise SupportError("Umetuma maombi mengi ndani ya saa moja. Subiri kidogo kisha ujaribu tena.")
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("INSERT INTO support_tickets (user_id, name, contact, category, subject, body, ip_hash) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id",
+                    (user_id, name, contact, category, subject, body, ip_hash))
+        tid = cur.fetchone()["id"]
+        cur.execute("SELECT id FROM users WHERE is_admin = TRUE")
+        for a in cur.fetchall():
+            notify(cur, a["id"], "support", f"Ombi jipya la msaada: {subject}", f"/admin/msaada/{tid}")
+        return tid
+
+
+def support_for_user(user_id, limit=50):
+    return db.query("SELECT * FROM support_tickets WHERE user_id = %s ORDER BY id DESC LIMIT %s", (user_id, limit))
+
+
+def support_get(ticket_id):
+    return db.query("SELECT t.*, u.username FROM support_tickets t LEFT JOIN users u ON u.id = t.user_id "
+                    "WHERE t.id = %s", (ticket_id,), one=True)
+
+
+def admin_support(status="open", limit=100):
+    sql = ("SELECT t.*, u.username FROM support_tickets t LEFT JOIN users u ON u.id = t.user_id ")
+    if status == "zote":
+        return db.query(sql + "ORDER BY t.id DESC LIMIT %s", (limit,))
+    return db.query(sql + "WHERE t.status = %s ORDER BY t.id DESC LIMIT %s", (status, limit))
+
+
+def admin_support_reply(admin_id, ticket_id, reply, close=True):
+    reply = (reply or "").strip()
+    if not 2 <= len(reply) <= 1500:
+        raise AdminError("Jibu liwe na herufi 2 hadi 1500.")
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE support_tickets SET reply = %s, replied_by = %s, replied_at = CURRENT_TIMESTAMP, "
+                    "status = %s WHERE id = %s RETURNING user_id, subject",
+                    (reply, admin_id, "closed" if close else "answered", ticket_id))
+        t = cur.fetchone()
+        if not t:
+            raise AdminError("Ombi halipo.")
+        log_admin(cur, admin_id, "support_reply", f"#{ticket_id}")
+        if t["user_id"]:
+            notify(cur, t["user_id"], "support", f"Umejibiwa: {t['subject']}", f"/msaada/{ticket_id}")
+
+
+def admin_support_close(admin_id, ticket_id):
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE support_tickets SET status = 'closed' WHERE id = %s AND status <> 'closed' RETURNING id",
+                    (ticket_id,))
+        if cur.fetchone() is None:
+            raise AdminError("Ombi limeshafungwa au halipo.")
+        log_admin(cur, admin_id, "support_close", f"#{ticket_id}")

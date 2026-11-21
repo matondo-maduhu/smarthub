@@ -131,6 +131,39 @@ def report_action(rid, action):
     return redirect(url_for("admin.reports"))
 
 
+@bp.route("/msaada")
+@admin_required
+def support():
+    hali = request.args.get("hali", "open")
+    if hali not in ("open", "answered", "closed", "zote"):
+        hali = "open"
+    return render_template("admin_msaada.html", active="admin", rows=models.admin_support(hali), hali=hali)
+
+
+@bp.route("/msaada/<int:tid>")
+@admin_required
+def support_detail(tid):
+    t = models.support_get(tid)
+    if not t:
+        abort(404)
+    return render_template("admin_msaada_moja.html", active="admin", t=t, cats=dict(models.SUPPORT_CATEGORIES))
+
+
+@bp.route("/msaada/<int:tid>/jibu", methods=["POST"])
+@admin_required
+def support_reply(tid):
+    _do(models.admin_support_reply, "Jibu limetumwa.", g.user["id"], tid,
+        request.form.get("jibu", ""), request.form.get("funga") == "1")
+    return redirect(url_for("admin.support_detail", tid=tid))
+
+
+@bp.route("/msaada/<int:tid>/funga", methods=["POST"])
+@admin_required
+def support_close(tid):
+    _do(models.admin_support_close, "Ombi limefungwa.", g.user["id"], tid)
+    return redirect(url_for("admin.support"))
+
+
 @bp.route("/mechi")
 @admin_required
 def fixtures():

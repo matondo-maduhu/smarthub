@@ -414,3 +414,10 @@ Mkeka wa mkono wenye saa, ambao mtabiri hakuweka matokeo kwa siku 14 baada ya sa
 
 ## Kuzuia kubahatisha nenosiri (sasa kwenye database)
 Majaribio 5 yasiyo sahihi ndani ya dakika 10 (kwa kila kifaa/anwani na jina la kuingia, na pia kwa kubadilisha nenosiri) yanafunga kuingia kwa muda. Awali hesabu ilikaa kwenye kumbukumbu ya app, jambo ambalo kwenye Vercel halifanyi kazi vizuri kwa sababu kila nakala ya app ina kumbukumbu yake; sasa inahifadhiwa kwenye jedwali `kv` (ufunguo unaoanza na `fail|`, anwani ikiwa imefichwa kwa hash), kwa hiyo kikomo kinashikilia kila nakala. Database ikishindwa, inarudi kwenye kumbukumbu ili kuingia kusisimame.
+
+## Msaada (maombi ya msaada kwa admin)
+- **Kwa mtumiaji** (`/msaada`, kiungo kiko kwenye Wasifu → Mipangilio → Taarifa): maswali ya mara kwa mara (yanayofunguka), fomu ya kutuma ombi (aina, kichwa, maelezo hadi herufi 1500) na orodha ya "Maombi yangu" yenye hali (Linasubiri / Limejibiwa / Limefungwa). Kila ombi lina ukurasa wake (`/msaada/<id>`) unaoonyesha jibu; ni mwenye ombi tu anayeliona.
+- **Mgeni** (ambaye hajaingia, mfano amesahau nenosiri) anaweza kutuma ombi akiweka namba ya simu au barua pepe; hapati arifa, kwa hiyo admin anamjibu kupitia mawasiliano hayo.
+- **Kikomo:** maombi 3 kwa saa (kwa mtumiaji, au kwa anwani/mawasiliano kwa mgeni) ili kuzuia kero.
+- **Admin** (Usimamizi → Msaada): orodha yenye vichujio (Yanayosubiri, Yaliyojibiwa, Yaliyofungwa, Yote), ukurasa wa ombi lenye taarifa za mtumaji, fomu ya jibu (na chaguo la kufunga), na "Funga bila kujibu". Admin wote wanapata arifa ombi jipya likiingia; mtumiaji anapata arifa akijibiwa; dashibodi inaonyesha idadi ya yanayosubiri. Kila jibu na kufunga vinaandikwa kwenye Kumbukumbu.
+- Jedwali jipya `support_tickets` linatengenezwa lenyewe baada ya Redeploy.

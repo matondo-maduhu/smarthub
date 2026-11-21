@@ -273,3 +273,22 @@ CREATE TABLE IF NOT EXISTS tip_legs (
     UNIQUE (tip_id, fixture_id)
 );
 CREATE INDEX IF NOT EXISTS idx_tip_legs_tip ON tip_legs(tip_id);
+
+-- Msaada: maombi ya msaada kutoka kwa watumiaji (na wageni wenye mawasiliano)
+CREATE TABLE IF NOT EXISTS support_tickets (
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     BIGINT REFERENCES users(id) ON DELETE SET NULL,
+    name        TEXT NOT NULL DEFAULT '',
+    contact     TEXT NOT NULL DEFAULT '',
+    category    TEXT NOT NULL DEFAULT 'nyingine',
+    subject     TEXT NOT NULL,
+    body        TEXT NOT NULL,
+    ip_hash     TEXT NOT NULL DEFAULT '',
+    status      TEXT NOT NULL DEFAULT 'open',    -- open | answered | closed
+    reply       TEXT,
+    replied_by  BIGINT REFERENCES users(id),
+    replied_at  TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_support_status ON support_tickets(status, id DESC);
+CREATE INDEX IF NOT EXISTS idx_support_user ON support_tickets(user_id, id DESC);
