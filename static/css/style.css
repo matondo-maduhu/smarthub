@@ -648,3 +648,9 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .match-row .row-main strong { font-weight: 500; overflow-wrap: anywhere; }
 .match-row .row-main strong:first-child { font-weight: 600; }
 .chips + .chips, .chips + .box, .box + .box { margin-top: 10px; }
+
+/* ===== Kaunta ya kufungwa kwa mkeka ===== */
+.countdown b { font-variant-numeric: tabular-nums; color: var(--accent); }
+.countdown.urgent b, .countdown-box.urgent b { color: var(--red); }
+.countdown-box { margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--counter-bg); font-weight: 600; }
+.countdown-box b { font-size: 20px; font-variant-numeric: tabular-nums; margin-left: 4px; }
