@@ -88,6 +88,17 @@ def poll(username):
     return resp
 
 
+@bp.route("/<username>/ficha", methods=["POST"])
+@auth.login_required
+def hide(username):
+    other = models.get_user_by_username(username)
+    if not other:
+        abort(404)
+    models.hide_conversation(g.user["id"], other["id"])
+    flash("Mazungumzo yameondolewa kwenye orodha yako. Mwenzako anabaki nayo.", "ok")
+    return redirect(url_for("chat.inbox"))
+
+
 @bp.route("/<username>/zuia", methods=["POST"])
 @auth.login_required
 def block(username):

@@ -302,3 +302,11 @@ CREATE TABLE IF NOT EXISTS password_resets (
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_pwreset_user ON password_resets(user_id);
+
+-- Kuficha mazungumzo kwenye orodha ya mtumiaji mmoja tu (mwenzake anabaki na nakala yake)
+CREATE TABLE IF NOT EXISTS conv_hides (
+    user_id  BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    other_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    up_to_id BIGINT NOT NULL,
+    PRIMARY KEY (user_id, other_id)
+);

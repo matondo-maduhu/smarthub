@@ -743,8 +743,9 @@ def send_message(sender, recipient, body):
 
 def thread(uid, other_id, after_id=None, limit=100):
     """Ujumbe kati ya watu wawili tu. Bila after_id: ujumbe 100 wa mwisho; vinginevyo mpya zaidi ya after_id."""
-    pair = ("((sender_id = %s AND recipient_id = %s) OR (sender_id = %s AND recipient_id = %s))")
-    p = (uid, other_id, other_id, uid)
+    pair = ("((sender_id = %s AND recipient_id = %s) OR (sender_id = %s AND recipient_id = %s)) "
+            "AND id > COALESCE((SELECT up_to_id FROM conv_hides WHERE user_id = %s AND other_id = %s), 0)")
+    p = (uid, other_id, other_id, uid, uid, other_id)
     if after_id:
         return db.query(
             f"SELECT id, sender_id, body, read_at, created_at FROM messages WHERE {pair} AND id > %s "
@@ -760,6 +761,19 @@ def mark_thread_read(uid, other_id):
                "WHERE recipient_id = %s AND sender_id = %s AND read_at IS NULL", (uid, other_id))
 
 
+def hide_conversation(uid, other_id):
+    """Inaficha mazungumzo kwenye orodha ya uid (na historia yake) hadi ujumbe wa mwisho wa sasa.
+    Mwenzake haathiriwi; ujumbe mpya ukija mazungumzo yanarudi yakiwa na ujumbe mpya tu."""
+    row = db.query("SELECT MAX(id) AS m FROM messages WHERE (sender_id = %s AND recipient_id = %s) "
+                   "OR (sender_id = %s AND recipient_id = %s)", (uid, other_id, other_id, uid), one=True)
+    last = int(row["m"] or 0)
+    if not last:
+        return
+    db.execute("INSERT INTO conv_hides (user_id, other_id, up_to_id) VALUES (%s, %s, %s) "
+               "ON CONFLICT (user_id, other_id) DO UPDATE SET up_to_id = EXCLUDED.up_to_id", (uid, other_id, last))
+    mark_thread_read(uid, other_id)
+
+
 def inbox(uid, limit=50):
     """Mazungumzo yote: mwenzi, ujumbe wa mwisho na idadi ya ambazo hazijasomwa."""
     groups = db.query(
@@ -769,6 +783,9 @@ def inbox(uid, limit=50):
         "FROM messages WHERE sender_id = %s OR recipient_id = %s "
         "GROUP BY CASE WHEN sender_id = %s THEN recipient_id ELSE sender_id END "
         "ORDER BY last_id DESC LIMIT %s", (uid, uid, uid, uid, uid, limit))
+    hides = {r["other_id"]: int(r["up_to_id"]) for r in
+             db.query("SELECT other_id, up_to_id FROM conv_hides WHERE user_id = %s", (uid,))}
+    groups = [g for g in groups if int(g["last_id"]) > hides.get(g["other_id"], 0)]
     if not groups:
         return []
     last = {r["id"]: r for r in db.query(

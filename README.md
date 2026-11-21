@@ -434,3 +434,6 @@ Kurejesha nenosiri kwa barua pepe/SMS bado hakujawashwa (kunahitaji uthibitisho 
 
 ## Kutafuta kwenye Ujumbe
 Ukurasa wa Ujumbe una kisanduku cha kutafuta: unaweza kutafuta mazungumzo yaliyopo kwa jina, `@jina` au maneno ya ujumbe wa mwisho, na pia kupata mtu mpya (jina la mtumiaji au jina la kuonyesha, herufi 2+) kisha kubonyeza "Anza mazungumzo na". Hautaonekana wewe mwenyewe, wala watumiaji waliosimamishwa, wala wale ambao tayari una mazungumzo nao.
+
+## Kuondoa mazungumzo kwenye orodha yako
+Kwenye ukurasa wa mazungumzo kuna kitufe cha **Ondoa**. Kinaficha mazungumzo na historia yake kwako tu; mwenzako anabaki na nakala yake kamili. Akitumia ujumbe mpya, mazungumzo yanarudi kwenye orodha yako yakiwa na ujumbe mpya tu (ya zamani hayarudi). Ujumbe ambao haujasomwa kwenye mazungumzo hayo unahesabiwa kama umesomwa unapoondoa. Hii ni kuficha, si kufuta: ujumbe unabaki kwenye database kwa ajili ya ripoti na usimamizi. Jedwali jipya: `conv_hides`.
