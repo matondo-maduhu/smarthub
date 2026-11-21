@@ -421,3 +421,13 @@ Majaribio 5 yasiyo sahihi ndani ya dakika 10 (kwa kila kifaa/anwani na jina la k
 - **Kikomo:** maombi 3 kwa saa (kwa mtumiaji, au kwa anwani/mawasiliano kwa mgeni) ili kuzuia kero.
 - **Admin** (Usimamizi → Msaada): orodha yenye vichujio (Yanayosubiri, Yaliyojibiwa, Yaliyofungwa, Yote), ukurasa wa ombi lenye taarifa za mtumaji, fomu ya jibu (na chaguo la kufunga), na "Funga bila kujibu". Admin wote wanapata arifa ombi jipya likiingia; mtumiaji anapata arifa akijibiwa; dashibodi inaonyesha idadi ya yanayosubiri. Kila jibu na kufunga vinaandikwa kwenye Kumbukumbu.
 - Jedwali jipya `support_tickets` linatengenezwa lenyewe baada ya Redeploy.
+
+## Kusahau nenosiri: kiungo cha mara moja kutoka kwa admin
+Kurejesha nenosiri kwa barua pepe/SMS bado hakujawashwa (kunahitaji uthibitisho wa simu/barua pepe, ulioahirishwa). Kwa sasa njia ni hii:
+1. Mtumiaji anatuma ombi kupitia **Msaada** (`/msaada`) akiweka namba ya simu au barua pepe aliyojisajili nayo.
+2. Admin anamthibitisha (mfano kwa kumpigia namba hiyo), kisha anaenda **Usimamizi → Watumiaji** na kubonyeza **Kiungo cha nenosiri** kwa mtumiaji huyo. Ukurasa unaonyesha kiungo (`/weka-nenosiri/<token>`) mara moja tu, chenye kitufe cha kukinakili.
+3. Admin anamtumia mtumiaji kiungo; mtumiaji anaweka nenosiri jipya (herufi 8+), kinaisha kutumika, na anaelekezwa kuingia.
+- Kiungo kinafanya kazi **mara moja tu** na kinaisha baada ya **saa 24**; kutengeneza kipya kunabatilisha cha awali.
+- Token inahifadhiwa kwa hash (si wazi) kwenye jedwali `password_resets`; kila kutengeneza kunaandikwa kwenye Kumbukumbu.
+- Haiwezekani kwa akaunti za admin (wanabadilisha nenosiri kupitia Mipangilio), ili admin mmoja asiweze kuteka akaunti ya mwingine.
+- Nenosiri likiwekwa, vikao vyote vya zamani vya akaunti vinafungwa na mtumiaji anapata arifa. Kubahatisha token kunazuiwa (majaribio 5 yasiyo sahihi kwa dakika 10 kwa kila anwani).

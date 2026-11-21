@@ -1247,3 +1247,54 @@ def admin_support_close(admin_id, ticket_id):
         if cur.fetchone() is None:
             raise AdminError("Ombi limeshafungwa au halipo.")
         log_admin(cur, admin_id, "support_close", f"#{ticket_id}")
+
+
+# ---------- Kiungo cha kuweka nenosiri jipya ----------
+RESET_HOURS = 24
+
+
+def _token_hash(token):
+    import hashlib
+    return hashlib.sha256(token.encode()).hexdigest()
+
+
+def admin_make_reset_link(admin_id, target_id):
+    """Inatengeneza kiungo cha mara moja (kinaisha baada ya saa 24). Kinarudisha (token, jina la mtumiaji).
+    Kiungo cha awali ambacho hakijatumika kinafutwa. Haiwezekani kwa wasimamizi wengine."""
+    import secrets
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("SELECT username, is_admin, password_hash FROM users WHERE id = %s", (target_id,))
+        u = cur.fetchone()
+        if not u:
+            raise AdminError("Mtumiaji hayupo.")
+        if target_id == admin_id or u["is_admin"]:
+            raise AdminError("Msimamizi anabadilisha nenosiri lake kupitia Mipangilio.")
+        token = secrets.token_urlsafe(32)
+        cur.execute("DELETE FROM password_resets WHERE user_id = %s", (target_id,))
+        cur.execute("INSERT INTO password_resets (token_hash, user_id, created_by, expires_at) VALUES (%s, %s, %s, %s)",
+                    (_token_hash(token), target_id, admin_id,
+                     datetime.now(timezone.utc) + timedelta(hours=RESET_HOURS)))
+        log_admin(cur, admin_id, "reset_link", f"@{u['username']}")
+        return token, u["username"]
+
+
+def reset_user_for_token(token):
+    """Mtumiaji anayemiliki kiungo kilicho hai, au None."""
+    if not token or len(token) > 100:
+        return None
+    return db.query(
+        "SELECT u.id, u.username, u.display_name FROM password_resets r JOIN users u ON u.id = r.user_id "
+        "WHERE r.token_hash = %s AND r.expires_at > %s", (_token_hash(token), datetime.now(timezone.utc)), one=True)
+
+
+def consume_reset(token, password_hash):
+    """Inaweka nenosiri jipya na kuteketeza kiungo (mara moja tu). Inarudisha user_id au None."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM password_resets WHERE token_hash = %s AND expires_at > %s RETURNING user_id",
+                    (_token_hash(token), datetime.now(timezone.utc)))
+        r = cur.fetchone()
+        if not r:
+            return None
+        cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, r["user_id"]))
+        notify(cur, r["user_id"], "account", "Nenosiri la akaunti yako limebadilishwa kwa kiungo cha msaada.", "/wasifu/mipangilio")
+        return r["user_id"]

@@ -265,6 +265,36 @@ def login():
     return render_template("auth_login.html", form=form, errors=errors, next=next_url, active="wasifu"), (400 if errors else 200)
 
 
+@bp.route("/weka-nenosiri/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    """Ukurasa wa kiungo alichotengeneza admin: mtumiaji anaweka nenosiri jipya mara moja."""
+    key = _fail_key("reset")
+    if len(_recent_fails(key)) >= MAX_FAILS:
+        return render_template("auth_reset.html", state="limit", token=token, errors=[], active="wasifu"), 429
+    user = models.reset_user_for_token(token)
+    if not user:
+        _add_fail(key)
+        return render_template("auth_reset.html", state="invalid", token=token, errors=[], active="wasifu"), 404
+    errors = []
+    if request.method == "POST":
+        pw, pw2 = request.form.get("password", ""), request.form.get("password2", "")
+        if len(pw) < 8:
+            errors.append("Nenosiri liwe na herufi 8 au zaidi.")
+        elif len(pw) > 128:
+            errors.append("Nenosiri ni refu mno.")
+        elif pw != pw2:
+            errors.append("Manenosiri hayafanani.")
+        else:
+            if models.consume_reset(token, generate_password_hash(pw)):
+                _clear_fails(key)
+                session.clear()
+                flash("Nenosiri jipya limewekwa. Ingia sasa.", "ok")
+                return redirect(url_for("auth.login"))
+            return render_template("auth_reset.html", state="invalid", token=token, errors=[], active="wasifu"), 404
+    return render_template("auth_reset.html", state="form", token=token, user=user, errors=errors,
+                           active="wasifu"), (400 if errors else 200)
+
+
 def password_stamp(user):
     """Alama inayobadilika nenosiri likibadilika: vikao vya vifaa vingine vinaisha."""
     import hashlib

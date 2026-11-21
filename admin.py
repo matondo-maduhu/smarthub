@@ -44,6 +44,18 @@ def users():
     return render_template("admin_users.html", active="admin", rows=models.admin_users(q or None), q=q)
 
 
+@bp.route("/watumiaji/<int:uid>/kiungo-nenosiri", methods=["POST"])
+@admin_required
+def user_reset_link(uid):
+    try:
+        token, uname = models.admin_make_reset_link(g.user["id"], uid)
+    except models.AdminError as e:
+        flash(str(e), "error")
+        return redirect(url_for("admin.users"))
+    link = url_for("auth.reset_password", token=token, _external=True)
+    return render_template("admin_kiungo.html", active="admin", link=link, uname=uname, hours=models.RESET_HOURS)
+
+
 @bp.route("/watumiaji/<int:uid>/<action>", methods=["POST"])
 @admin_required
 def user_action(uid, action):

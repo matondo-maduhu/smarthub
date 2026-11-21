@@ -292,3 +292,13 @@ CREATE TABLE IF NOT EXISTS support_tickets (
 );
 CREATE INDEX IF NOT EXISTS idx_support_status ON support_tickets(status, id DESC);
 CREATE INDEX IF NOT EXISTS idx_support_user ON support_tickets(user_id, id DESC);
+
+-- Viungo vya mara moja vya kuweka nenosiri jipya (admin anamtengenezea aliyesahau)
+CREATE TABLE IF NOT EXISTS password_resets (
+    token_hash TEXT PRIMARY KEY,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_by BIGINT REFERENCES users(id),
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_pwreset_user ON password_resets(user_id);
