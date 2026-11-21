@@ -723,3 +723,6 @@ input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
 .faq summary::after { content: "+"; color: var(--muted); font-weight: 400; }
 .faq[open] summary::after { content: "−"; }
 .faq p { margin: 0; padding: 0 14px 14px; color: var(--muted); line-height: 1.5; }
+
+.inline-form { display: inline; }
+.center-row { justify-content: center; }
