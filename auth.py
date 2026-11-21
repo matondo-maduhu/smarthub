@@ -59,6 +59,7 @@ def safe_next(target):
 def login_user(uid):
     session.clear()
     session["uid"] = uid
+    session.pop("pv", None)  # alama ya nenosiri itawekwa kwenye ombi lijalo
     session.permanent = True
 
 
@@ -235,6 +236,12 @@ def login():
     return render_template("auth_login.html", form=form, errors=errors, next=next_url, active="wasifu"), (400 if errors else 200)
 
 
+def password_stamp(user):
+    """Alama inayobadilika nenosiri likibadilika: vikao vya vifaa vingine vinaisha."""
+    import hashlib
+    return hashlib.sha256((user["password_hash"] or "-").encode()).hexdigest()[:20]
+
+
 @bp.route("/wasifu/nenosiri", methods=["POST"])
 @login_required
 def change_password():
@@ -262,8 +269,9 @@ def change_password():
     else:
         _FAILS.pop(key, None)
         models.set_password(g.user["id"], generate_password_hash(new))
-        flash("Nenosiri limebadilishwa.", "ok")
-    return redirect(url_for("wasifu"))
+        session["pv"] = password_stamp(models.get_user(g.user["id"]))  # kifaa hiki kinabaki ndani
+        flash("Nenosiri limebadilishwa. Vifaa vingine vimetolewa kwenye akaunti.", "ok")
+    return redirect(url_for("mipangilio"))
 
 
 @bp.route("/toka", methods=["POST"])

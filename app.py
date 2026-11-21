@@ -82,6 +82,12 @@ def create_app():
                         user = models.get_user(uid)
                     except Exception as e:
                         print(f"ONYO: imeshindwa kumfanya msimamizi: {e}", file=sys.stderr)
+                stamp, have = auth.password_stamp(user), session.get("pv")
+                if have is None:
+                    session["pv"] = stamp
+                elif have != stamp:  # nenosiri limebadilishwa kwenye kifaa kingine
+                    session.clear()
+                    return
                 g.user = user
             else:
                 session.clear()

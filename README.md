@@ -399,3 +399,6 @@ Tabo tisa za admin zilisogezwa kando kwenye simu. Sasa kuna kitufe kimoja kinach
 - **Mipangilio** (`/wasifu/mipangilio`): **Mwonekano** (Mfumo / Mwanga / Giza, unahifadhiwa kwenye kifaa), **Faragha** (kuruhusu au kuzima ujumbe mpya), **Waliozuiwa** (orodha na kuondoa kizuizi), kubadilisha **nenosiri**, viungo vya Masharti na Faragha, na kutoka kwenye akaunti.
 - Safu mpya kwenye `users`: `bio`, `location`, `allow_messages` (zinatengenezwa lenyewe baada ya Redeploy).
 - Bado hakuna: kufuta akaunti, kubadilisha barua pepe/simu (zinahitaji uthibitisho, ulioahirishwa).
+
+## Nenosiri likibadilika, vifaa vingine vinatolewa
+Ukibadilisha nenosiri kwenye Mipangilio, vikao vya vifaa vingine vyote vinafungwa mara moja (mtu mwingine akiwa ameingia kwa akaunti yako atatakiwa kuingia upya). Kifaa ulichotumia kubadilisha kinabaki ndani. Ndani yake kuna alama (`pv`) inayotokana na nenosiri la sasa; `load_user` inailinganisha kila ombi.
