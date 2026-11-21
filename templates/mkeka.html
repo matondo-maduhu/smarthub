@@ -52,12 +52,18 @@
 {% else %}
 <section class="card pad buy-box">
   <h2>{{ icon('lock', 20) }} Mkeka huu umefungwa</h2>
-  {% if not t.started %}<p class="muted">Muda wa kununua: unafungwa baada ya {{ t.closes_in|closes }} (mchezo ukianza).</p>{% endif %}
-  <p class="muted">{% if t.started %}Muda wa kununua umeisha.{% else %}Nunua kuuona.{% endif %}{% if not t.started %} Mtabiri anapokea coin {{ t.price - (t.price * fee // 100) }} (ada ya jukwaa {{ fee }}%).{% endif %}</p>
+  {% if not t.locked %}
+    {% if t.counting %}
+    <p class="countdown-box" data-left="{{ t.closes_in }}" role="timer">Mkeka unajifunga baada ya <b>{{ '%02d:%02d'|format(t.closes_in // 60, t.closes_in % 60) }}</b></p>
+    {% else %}
+    <p class="muted">Muda wa kununua: unafungwa baada ya {{ t.closes_in|closes }}.</p>
+    {% endif %}
+    <p class="muted">Nunua kuuona. Mtabiri anapokea coin {{ t.price - (t.price * fee // 100) }} (ada ya jukwaa {{ fee }}%).</p>
+  {% endif %}
   {% if not user %}
     <a class="btn primary block" href="{{ url_for('auth.login', next=request.path) }}">Ingia ili ununue</a>
-  {% elif t.started %}
-    <p class="notice warn">Mchezo umeshaanza, ununuzi umefungwa. Mkeka utafunguka kwa wote matokeo yakiwekwa.</p>
+  {% elif t.locked %}
+    <p class="notice warn">Mkeka umefungwa kwa ununuzi (dakika {{ lock_min }} kabla ya mechi ya kwanza kuanza). Hii inazuia kununua mkeka uliopitwa na wakati. Utafunguka kwa wote matokeo yakiwekwa.</p>
   {% else %}
     <form method="post" action="{{ url_for('tips.buy', tip_id=t.id) }}">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
