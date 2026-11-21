@@ -176,3 +176,26 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") set(false); });
   });
 })();
+
+// Mipangilio: kuchagua mandhari (Mfumo / Mwanga / Giza)
+(function () {
+  var box = document.querySelector("[data-theme-choice]");
+  if (!box) return;
+  var cur = "system";
+  try { cur = localStorage.getItem("theme") || "dark"; } catch (e) {}
+  function apply(choice) {
+    var real = choice === "system" ? ((window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark") : choice;
+    document.documentElement.setAttribute("data-theme", real);
+    try { localStorage.setItem("theme", choice); } catch (e) {}
+    var meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", real === "dark" ? "#0d1117" : "#ffffff");
+    box.querySelectorAll("button").forEach(function (b) {
+      var on = b.getAttribute("data-choice") === choice;
+      b.classList.toggle("on", on); b.setAttribute("aria-checked", on ? "true" : "false");
+    });
+  }
+  box.querySelectorAll("button").forEach(function (b) {
+    b.addEventListener("click", function () { apply(b.getAttribute("data-choice")); });
+  });
+  apply(cur);
+})();
