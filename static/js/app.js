@@ -145,3 +145,23 @@
     go((cur() + 1) % slides.length);
   }, 5000);
 })();
+
+// Kaunta ya kufungwa kwa mkeka: inahesabu kwa sekunde kutoka muda uliobaki wa seva (si saa ya simu)
+(function () {
+  var els = document.querySelectorAll("[data-left]:not([data-ads])");
+  if (!els.length) return;
+  var t0 = Date.now(), done = false;
+  function fmt(s) { var m = Math.floor(s / 60), r = s % 60; return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
+  function tick() {
+    var gone = Math.floor((Date.now() - t0) / 1000), expired = false;
+    for (var i = 0; i < els.length; i++) {
+      var left = parseInt(els[i].getAttribute("data-left"), 10) - gone;
+      if (isNaN(left)) continue;
+      var b = els[i].querySelector("b");
+      if (left <= 0) { expired = true; if (b) b.textContent = "00:00"; els[i].classList.add("expired"); }
+      else if (b) { b.textContent = fmt(left); els[i].classList.toggle("urgent", left <= 120); }
+    }
+    if (expired && !done) { done = true; setTimeout(function () { location.reload(); }, 1500); }
+  }
+  setInterval(tick, 1000);
+})();
