@@ -1,0 +1,52 @@
+<a class="muted back" href="{{ url_for('tips.new') }}">← Ongeza au ondoa mechi</a>
+{% if svc_error %}<p class="notice warn">{{ icon('shield', 16) }} {{ svc_error }}</p>{% endif %}
+{% include "_errors.html" %}
+<section class="box slip">
+  <div class="box-header">Mechi {{ slip|length }} kwenye mkeka</div>
+  {% for v in view %}
+  <div class="box-row">
+    <span class="row-main"><strong>{{ v.fx.home }} vs {{ v.fx.away }}</strong>
+      <span class="leg-pick">{{ v.opt.label }} · {{ v.fx.kickoff|eat }}</span></span>
+    <form method="post" action="{{ url_for('tips.slip_remove') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="mechi" value="{{ v.fx.id }}">
+      <input type="hidden" name="rudi" value="1">
+      <button class="link-btn danger" type="submit">Ondoa</button>
+    </form>
+  </div>
+  {% endfor %}
+</section>
+
+{% if view and not combos %}
+<section class="box"><div class="box-empty">Hakuna kampuni moja yenye odds za mechi zote. Ondoa mechi moja au zaidi.</div></section>
+{% elif combos %}
+<form method="post" class="form box" action="{{ url_for('tips.new') }}">
+  <div class="box-header">Kampuni na bei</div>
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="kamilisha" value="1">
+  <div class="pad form">
+    <fieldset class="radio-list">
+      <legend class="muted">{% if view|length > 1 %}Odds jumla (zimezidishwa) kwa kila kampuni{% else %}Odds za kampuni{% endif %}</legend>
+      {% for b in combos %}
+      <label class="radio-row">
+        <input type="radio" name="bookmaker" value="{{ b.id }}" {{ 'checked' if form.bookmaker == b.id or (not form.bookmaker and loop.first) }}>
+        <span class="row-main"><strong>{{ b.name }}</strong>{% if view|length > 1 %}<span class="muted">{{ b.per|map('round', 2)|join(' × ') }}</span>{% endif %}</span>
+        <span class="counter">{{ '%.2f'|format(b.total) }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    <label class="field">
+      <span>Bei (coin)</span>
+      <input type="number" name="price" value="{{ form.price }}" min="0" max="{{ max_price }}" step="1" inputmode="numeric">
+      <small class="muted">0 = bure. Mkeka wa kulipia: coin 5 hadi {{ max_price }}. Jukwaa linakata ada ya {{ fee }}%.</small>
+    </label>
+    <label class="field">
+      <span>Maelezo ya ziada (hiari)</span>
+      <textarea name="body" rows="3" maxlength="500" placeholder="Sababu za mkeka wako">{{ form.body }}</textarea>
+      <small class="muted">Yanafichwa pamoja na mkeka kwa asiyenunua.</small>
+    </label>
+    <p class="notice">{{ icon('shield', 16) }} Odds hubadilika. Zitakazorekodiwa ni za kampuni uliyochagua wakati unaposhinikiza "Weka mkeka".{% if view|length > 1 %} Mkeka unashinda mechi zote zikishinda; mechi moja ikipoteza, mkeka unapoteza. Mechi iliyoahirishwa inahesabiwa kama odds 1.{% endif %} Matokeo yatahukumiwa kiotomatiki.</p>
+    <button class="btn primary block" type="submit">Weka mkeka</button>
+  </div>
+</form>
+{% endif %}

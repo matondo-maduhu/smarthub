@@ -19,6 +19,7 @@
   </header>
 
   <a class="tip-link" href="{{ url_for('tips.detail', tip_id=t.id) }}"><h3 class="tip-match">{{ t.title }}</h3></a>
+  {% if t.legs > 1 %}<span class="badge legs">Mkeka wa mechi {{ t.legs }}</span>{% endif %}
 
   <div class="tip-pick">
     {% if t.pick_visible %}

@@ -24,6 +24,24 @@
 </section>
 {% endif %}
 
+{% if legs %}
+<section class="box">
+  <div class="box-header">Mechi {{ legs|length }} <span class="badge ok">Odds jumla {{ '%.2f'|format(t.odds) }}</span></div>
+  {% for l in legs %}
+  <div class="box-row">
+    <span class="row-main">
+      <strong>{{ l.title }}</strong>
+      <span class="muted">{{ l.kickoff|eat }}{% if l.fx_status in ('FT','AET','PEN') and l.home_goals is not none %} · {{ l.home_goals }} - {{ l.away_goals }}{% endif %}</span>
+      {% if t.pick_visible %}<span class="leg-pick">{{ l.pick }}</span>{% else %}<span class="leg-pick">{{ icon('lock', 14) }} Chaguo limefichwa</span>{% endif %}
+    </span>
+    {% if t.pick_visible %}<span class="counter">{{ '%.2f'|format(l.odds) }}</span>{% endif %}
+    {% if l.result == 'won' %}<span class="badge ok">Imeshinda</span>{% elif l.result == 'lost' %}<span class="badge bad">Imepoteza</span>{% elif l.result == 'void' %}<span class="badge warn">Imebatilishwa</span>{% endif %}
+  </div>
+  {% endfor %}
+  {% if t.status == 'open' %}<div class="box-row muted">Mkeka unashinda mechi zote zikishinda. Matokeo yatahukumiwa kiotomatiki.</div>{% endif %}
+</section>
+{% endif %}
+
 {% if t.pick_visible %}
   {% if t.body %}
   <section class="card pad">
