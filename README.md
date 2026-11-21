@@ -382,3 +382,6 @@ Ukurasa wa mechi sasa unaonyesha odds kama vitufe vya kugusa, si orodha ndefu:
 
 ## Mechi ikihamishwa saa
 Usasishaji wa mechi ukigundua saa ya mechi imebadilika, mikeka iliyo wazi yenye mechi hiyo inafuata saa mpya (saa ya kufunga inabadilika, na kwa mkeka wa mechi nyingi inafuata mechi ya mapema zaidi). Mtabiri anapata arifa.
+
+## Menyu ya Usimamizi (badala ya tabo 9)
+Tabo tisa za admin zilisogezwa kando kwenye simu. Sasa kuna kitufe kimoja kinachoonyesha sehemu uliyopo (mfano "Matangazo ▾"); ukibonyeza kinafunguka kisanduku cha menyu chenye ikoni na jina la kila sehemu (Muhtasari, Watumiaji, Mikeka, Bidhaa, Maagizo, Mechi, Matangazo, Ripoti, Kumbukumbu). Sehemu ya sasa imeangaziwa; kubonyeza nje au Esc kunafunga.
