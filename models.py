@@ -201,15 +201,30 @@ def get_tip(tip_id, viewer_id):
 
 
 def create_tip(uid, *, title, league, pick, body, odds, price, starts_at,
-               fixture_id=None, market=None, selection=None, bookmaker=None):
-    row = db.query(
-        "INSERT INTO tips (user_id, title, league, pick, body, odds, price, starts_at, "
-        "fixture_id, market, selection, bookmaker) "
-        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-        (uid, title, league, pick, body or None, odds, price, starts_at, fixture_id, market, selection, bookmaker),
-        one=True,
-    )
-    return row["id"]
+               fixture_id=None, market=None, selection=None, bookmaker=None, legs=None):
+    """legs: orodha ya mechi (>= 2) kwa mkeka wa mechi nyingi; mkeka na mechi zake vinaandikwa pamoja."""
+    n = len(legs) if legs else 1
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO tips (user_id, title, league, pick, body, odds, price, starts_at, "
+            "fixture_id, market, selection, bookmaker, legs) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+            (uid, title, league, pick, body or None, odds, price, starts_at, fixture_id, market, selection,
+             bookmaker, n))
+        tip_id = cur.fetchone()["id"]
+        for lg in (legs or []):
+            cur.execute(
+                "INSERT INTO tip_legs (tip_id, fixture_id, title, league, market, selection, pick, odds, kickoff) "
+                "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                (tip_id, lg["fixture_id"], lg["title"], lg["league"][:40], lg["market"], lg["selection"],
+                 lg["pick"], lg["odds"], lg["kickoff"]))
+        return tip_id
+
+
+def get_legs(tip_id):
+    return db.query("SELECT l.*, f.status AS fx_status, f.home_goals, f.away_goals FROM tip_legs l "
+                    "LEFT JOIN fixtures f ON f.id = l.fixture_id WHERE l.tip_id = %s ORDER BY l.kickoff, l.id",
+                    (tip_id,))
 
 
 _TIP_RESULT = {"won": "umeshinda", "lost": "umepoteza", "void": "umebatilishwa"}

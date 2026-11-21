@@ -39,6 +39,7 @@ class Config:
 
     # Jamvi la mikeka
     TIP_FEE_PCT = int(os.getenv("TIP_FEE_PCT", "10"))              # ada ya jukwaa kwa kila mauzo (%)
+    MAX_SLIP_LEGS = int(os.getenv("MAX_SLIP_LEGS", "10"))          # mechi nyingi zaidi ndani ya mkeka mmoja
     TIP_MAX_PRICE = int(os.getenv("TIP_MAX_PRICE", "1000"))        # bei ya juu ya mkeka (coin)
     MAX_TIPS_PER_DAY = int(os.getenv("MAX_TIPS_PER_DAY", "10"))    # mikeka kwa mtumiaji kwa siku
     MIN_SETTLED_FOR_RANK = int(os.getenv("MIN_SETTLED_FOR_RANK", "5"))  # mikeka iliyokwisha ili aingie viwango

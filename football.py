@@ -327,6 +327,11 @@ def settle_due(force=False):
             return 0
     kv_set("settle_ran", 1)
     now = datetime.now(timezone.utc)
+    return _settle_singles(now) + _settle_slips(now)
+
+
+def _settle_singles(now):
+    import models
     tips = db.query(
         "SELECT t.id, t.user_id, t.title, t.fixture_id, t.market, t.selection, f.kickoff, f.status, "
         "f.home_goals, f.away_goals FROM tips t JOIN fixtures f ON f.id = t.fixture_id "
@@ -397,3 +402,77 @@ def search_leagues(q):
         lg, c = item.get("league", {}), item.get("country", {})
         out.append({"id": lg.get("id"), "name": lg.get("name"), "type": lg.get("type"), "country": c.get("name")})
     return out[:40]
+
+
+def _leg_result(status, hg, ag, market, selection, kickoff, now):
+    """'won' | 'lost' | 'void' au None (bado). Sheria ileile kwa mkeka wa mechi moja na wa mechi nyingi."""
+    import models
+    age_days = (now - models.to_dt(kickoff)).total_seconds() / 86400
+    if status in FINISHED and hg is not None and ag is not None:
+        return evaluate(market, selection, int(hg), int(ag))
+    if status in VOID or (status == "PST" and age_days > 5) or age_days > 7:
+        return "void"
+    return None
+
+
+_SLIP_SQL = ("SELECT l.id AS leg_id, l.tip_id, l.fixture_id, l.market, l.selection, l.odds, l.kickoff, l.result, "
+             "f.status, f.home_goals, f.away_goals, t.user_id, t.title AS tip_title "
+             "FROM tip_legs l JOIN tips t ON t.id = l.tip_id LEFT JOIN fixtures f ON f.id = l.fixture_id "
+             "WHERE t.status = 'open' AND t.legs > 1")
+
+
+def _settle_slips(now):
+    """Mkeka wa mechi nyingi: ukipoteza mechi moja umepoteza; zote zikishinda umeshinda.
+    Mechi iliyobatilishwa huhesabiwa kama odds 1 (haiathiri); zote zikibatilishwa mkeka unabatilishwa."""
+    import models
+    rows = db.query(_SLIP_SQL)
+    if not rows:
+        return 0
+    cutoff = now - timedelta(minutes=105)
+    need = sorted({r["fixture_id"] for r in rows if r["result"] is None and (r["status"] or "NS") not in FINISHED | VOID
+                   and models.to_dt(r["kickoff"]) <= cutoff})[:20]
+    if need:
+        try:
+            for item in _get("/fixtures", {"ids": "-".join(str(i) for i in need)}, force=True):
+                _upsert_fixture(item)
+        except FootballError:
+            pass
+        rows = db.query(_SLIP_SQL)
+    for r in rows:
+        if r["result"] is not None or models.to_dt(r["kickoff"]) > cutoff:
+            continue
+        res = _leg_result(r["status"], r["home_goals"], r["away_goals"], r["market"], r["selection"], r["kickoff"], now)
+        if res:
+            db.execute("UPDATE tip_legs SET result = %s WHERE id = %s AND result IS NULL", (res, r["leg_id"]))
+            r["result"] = res
+    done = 0
+    by_tip = {}
+    for r in rows:
+        by_tip.setdefault(r["tip_id"], []).append(r)
+    for tip_id, legs in by_tip.items():
+        results = [l["result"] for l in legs]
+        try:
+            if "lost" in results:
+                models.set_tip_status(tip_id, "lost")
+                final = "lost"
+            elif None in results:
+                continue
+            elif all(x == "void" for x in results):
+                models.void_tip_system(tip_id)
+                done += 1
+                continue
+            else:
+                odds = 1.0
+                for l in legs:
+                    if l["result"] == "won":
+                        odds *= float(l["odds"])
+                db.execute("UPDATE tips SET odds = %s WHERE id = %s", (round(min(odds, 1000), 2), tip_id))
+                models.set_tip_status(tip_id, "won")
+                final = "won"
+            models.notify_safe(legs[0]["user_id"], "tip",
+                               f"Mkeka wako umehukumiwa ({'umeshinda' if final == 'won' else 'umepoteza'}): {legs[0]['tip_title']}",
+                               f"/jamvi/{tip_id}")
+            done += 1
+        except Exception:
+            continue
+    return done

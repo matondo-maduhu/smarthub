@@ -59,12 +59,14 @@ CREATE TABLE IF NOT EXISTS tips (
     market      TEXT,                            -- h2h | dc | btts | ou
     selection   TEXT,                            -- mfano home, 1x, yes, over_2.5
     bookmaker   TEXT,                            -- kampuni ambayo odds zilichukuliwa
+    legs        INT NOT NULL DEFAULT 1,          -- idadi ya mechi (zaidi ya 1 = mkeka wa mechi nyingi)
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS fixture_id BIGINT;
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS market TEXT;
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS selection TEXT;
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS bookmaker TEXT;
+ALTER TABLE tips ADD COLUMN IF NOT EXISTS legs INT NOT NULL DEFAULT 1;
 -- Kwa database iliyotengenezwa kabla ya hatua ya 4
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS league TEXT NOT NULL DEFAULT '';
 ALTER TABLE tips ADD COLUMN IF NOT EXISTS pick TEXT NOT NULL DEFAULT '';
@@ -248,3 +250,20 @@ CREATE TABLE IF NOT EXISTS banners (
     clicks     INT NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- Mechi za mkeka wa mechi nyingi (kila mstari ni mechi moja ndani ya mkeka)
+CREATE TABLE IF NOT EXISTS tip_legs (
+    id         BIGSERIAL PRIMARY KEY,
+    tip_id     BIGINT NOT NULL REFERENCES tips(id) ON DELETE CASCADE,
+    fixture_id BIGINT NOT NULL,
+    title      TEXT NOT NULL,                  -- "Simba vs Yanga"
+    league     TEXT NOT NULL DEFAULT '',
+    market     TEXT NOT NULL,
+    selection  TEXT NOT NULL,
+    pick       TEXT NOT NULL,                  -- maandishi ya chaguo, mfano "Simba kushinda"
+    odds       NUMERIC(8,2) NOT NULL,
+    kickoff    TIMESTAMPTZ NOT NULL,
+    result     TEXT,                           -- NULL | won | lost | void
+    UNIQUE (tip_id, fixture_id)
+);
+CREATE INDEX IF NOT EXISTS idx_tip_legs_tip ON tip_legs(tip_id);

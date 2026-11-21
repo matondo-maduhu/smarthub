@@ -339,3 +339,19 @@ Kwenye fomu ya tangazo, orodha ya "Kinapeleka wapi" sasa ina makundi: **Kurasa**
 
 ### Ukurasa wa nyumbani: umesafishwa
 Kadi ya "Karibu Jamvi" na vigae vya Jamvi/Market/Pochi/Wasifu vimeondolewa (vipo kwenye menyu ya chini). Juu kunabaki matangazo, kisha mikeka ya hivi karibuni na bidhaa za market. Mgeni asiyeingia anaona vitufe vya "Jisajili" na "Ingia" tu. Maandishi ya matangazo yamepewa kivuli na giza la chini ili yasomeke hata kwenye picha nyeupe.
+
+## Mkeka wa mechi nyingi (kapu la mechi)
+Mtabiri sasa anaweza kuunda mkeka wenye mechi zaidi ya moja (hadi 10, `MAX_SLIP_LEGS`).
+
+**Jinsi ya kuweka:** Jamvi → Weka mkeka → chagua mechi → chagua chaguo → **Ongeza kwenye mkeka** → rudia kwa mechi nyingine → **Kamilisha mkeka**. Kwenye kukamilisha unachagua kampuni ya kubashiri: zinaonyeshwa kampuni zenye mechi ZOTE tu, kila moja na odds jumla (odds za mechi zimezidishwa). Kisha unaweka bei na maelezo. Mkeka wa mechi moja unafanya kazi vilevile (kapu lenye mechi 1).
+
+**Sheria:**
+- Mechi moja kwa kila mechi halisi kwenye mkeka (kuchagua tena kunabadilisha chaguo la zamani).
+- Mechi iliyoanza au isiyo na odds tena inaondolewa kwenye kapu wakati wa kukamilisha.
+- Mkeka unafungwa kwa wanunuzi mechi ya KWANZA ikianza; chaguo zinafichwa kwa asiyenunua (mechi zinaonekana).
+- Hukumu ni ya kiotomatiki: mechi moja ikipoteza, mkeka umepoteza; zote zikishinda, umeshinda. Mechi iliyoahirishwa/kufutwa inahesabiwa kama odds 1 (odds jumla zinarekebishwa); zote zikibatilishwa, mkeka unabatilishwa na wanunuzi wanarudishiwa coin.
+- Mtabiri hawezi kuweka matokeo ya mkeka huu kwa mkono (admin tu).
+- Majedwali: `tip_legs` (jipya) na safu `tips.legs`; vinatengenezwa lenyewe baada ya Redeploy.
+
+### Marekebisho ya mpangilio
+- Ukurasa haupanuki tena nje ya skrini (kijachini cha kadi ya mkeka kinashuka mstari, gridi za bidhaa zimezuiwa kupanuka na picha pana).
