@@ -1298,3 +1298,14 @@ def consume_reset(token, password_hash):
         cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (password_hash, r["user_id"]))
         notify(cur, r["user_id"], "account", "Nenosiri la akaunti yako limebadilishwa kwa kiungo cha msaada.", "/wasifu/mipangilio")
         return r["user_id"]
+
+
+def search_chat_users(q, me, limit=8):
+    """Watu wa kuanza nao mazungumzo: jina la mtumiaji au jina la kuonyesha linaloanza/lina maneno uliyotafuta."""
+    q = (q or "").strip().lstrip("@").lower()[:40]
+    if len(q) < 2:
+        return []
+    like = "%" + q.replace("%", "").replace("_", "") + "%"
+    return db.query("SELECT id, username, display_name, avatar_url FROM users WHERE id <> %s AND is_banned = FALSE "
+                    "AND (LOWER(username) LIKE %s OR LOWER(display_name) LIKE %s) ORDER BY username LIMIT %s",
+                    (me, like, like, limit))

@@ -431,3 +431,6 @@ Kurejesha nenosiri kwa barua pepe/SMS bado hakujawashwa (kunahitaji uthibitisho 
 - Token inahifadhiwa kwa hash (si wazi) kwenye jedwali `password_resets`; kila kutengeneza kunaandikwa kwenye Kumbukumbu.
 - Haiwezekani kwa akaunti za admin (wanabadilisha nenosiri kupitia Mipangilio), ili admin mmoja asiweze kuteka akaunti ya mwingine.
 - Nenosiri likiwekwa, vikao vyote vya zamani vya akaunti vinafungwa na mtumiaji anapata arifa. Kubahatisha token kunazuiwa (majaribio 5 yasiyo sahihi kwa dakika 10 kwa kila anwani).
+
+## Kutafuta kwenye Ujumbe
+Ukurasa wa Ujumbe una kisanduku cha kutafuta: unaweza kutafuta mazungumzo yaliyopo kwa jina, `@jina` au maneno ya ujumbe wa mwisho, na pia kupata mtu mpya (jina la mtumiaji au jina la kuonyesha, herufi 2+) kisha kubonyeza "Anza mazungumzo na". Hautaonekana wewe mwenyewe, wala watumiaji waliosimamishwa, wala wale ambao tayari una mazungumzo nao.

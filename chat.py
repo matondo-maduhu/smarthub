@@ -22,7 +22,16 @@ def _other(username):
 @bp.route("")
 @auth.login_required
 def inbox():
-    return render_template("mazungumzo.html", active="ujumbe", convs=models.inbox(g.user["id"]))
+    q = request.args.get("q", "").strip()[:40]
+    convs = models.inbox(g.user["id"])
+    people = []
+    if q:
+        ql = q.lstrip("@").lower()
+        convs = [c for c in convs if ql in c["user"]["username"].lower() or ql in c["user"]["display_name"].lower()
+                 or ql in c["last"]["body"].lower()]
+        have = {c["user"]["username"] for c in models.inbox(g.user["id"])}
+        people = [p for p in models.search_chat_users(q, g.user["id"]) if p["username"] not in have]
+    return render_template("mazungumzo.html", active="ujumbe", convs=convs, q=q, people=people)
 
 
 @bp.route("/<username>", methods=["GET", "POST"])
