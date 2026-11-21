@@ -3,8 +3,6 @@
 {% block title %}Wasifu · {{ app_name }}{% endblock %}
 
 {% block content %}
-<h1>{{ icon('user', 24) }} Wasifu</h1>
-
 {% if user %}
 <section class="card profile">
   {% if user.avatar_url %}
@@ -14,65 +12,48 @@
   {% endif %}
   <h2>{{ user.display_name }}</h2>
   <p class="muted">@{{ user.username }}</p>
-  <p>
+  {% if user.bio %}<p class="bio">{{ user.bio }}</p>{% endif %}
+  <p class="profile-meta">
+    {% if user.location %}<span class="muted">{{ icon('globe', 14) }} {{ user.location }}</span>{% endif %}
     {% if user.is_verified %}<span class="badge ok">Imethibitishwa</span>{% endif %}
     <span class="badge">Miaka 18+</span>
   </p>
+  <div class="profile-actions">
+    <a class="btn primary" href="{{ url_for('wasifu_hariri') }}">{{ icon('edit', 16) }} Hariri wasifu</a>
+    <a class="btn" href="{{ url_for('mipangilio') }}">{{ icon('settings', 16) }} Mipangilio</a>
+  </div>
+  <div class="stat-grid">
+    <div><strong>{{ coin_balance }}</strong><span class="muted">Coin</span></div>
+    <div><strong>{{ stats.total }}</strong><span class="muted">Mikeka</span></div>
+    <div><strong>{{ stats.won }}</strong><span class="muted">Imeshinda</span></div>
+    <div><strong>{{ (stats.win_rate ~ '%') if stats.win_rate is not none else '—' }}</strong><span class="muted">Ushindi</span></div>
+  </div>
 </section>
 
-<section class="card list">
-  {% if user.email %}
-  <div class="row"><span class="row-icon">{{ icon('mail', 18) }}</span><div class="row-main"><strong>Barua pepe</strong><span class="muted">{{ user.email }}</span></div></div>
-  {% endif %}
-  {% if user.phone %}
-  <div class="row"><span class="row-icon">{{ icon('phone', 18) }}</span><div class="row-main"><strong>Namba ya simu</strong><span class="muted">{{ user.phone }}</span></div></div>
-  {% endif %}
-  <div class="row"><span class="row-icon">{{ icon('coin', 18) }}</span><div class="row-main"><strong>Salio la coin</strong><span class="muted">{{ coin_balance }}</span></div></div>
+<section class="box">
+  <div class="box-header">Njia za mkato</div>
+  <a class="box-row" href="{{ url_for('pochi') }}"><span class="row-icon">{{ icon('wallet', 18) }}</span><span class="row-main"><strong>Pochi</strong><span class="muted">Salio na miamala</span></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('tips.tipster', username=user.username) }}"><span class="row-icon">{{ icon('ticket', 18) }}</span><span class="row-main"><strong>Mikeka yangu</strong><span class="muted">Wasifu wangu kwa umma</span></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('market.orders') }}"><span class="row-icon">{{ icon('store', 18) }}</span><span class="row-main"><strong>Maagizo yangu</strong><span class="muted">Ninunuacho na ninachouza</span></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('chat.inbox') }}"><span class="row-icon">{{ icon('chat', 18) }}</span><span class="row-main"><strong>Ujumbe</strong></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('notifications.index') }}"><span class="row-icon">{{ icon('bell', 18) }}</span><span class="row-main"><strong>Arifa</strong></span><span class="muted">›</span></a>
+  {% if user.is_admin %}<a class="box-row" href="{{ url_for('admin.dashboard') }}"><span class="row-icon">{{ icon('shield', 18) }}</span><span class="row-main"><strong>Usimamizi</strong></span><span class="muted">›</span></a>{% endif %}
 </section>
 
-<section class="card auth">
-  <h2>Badilisha jina</h2>
-  <form method="post" action="{{ url_for('wasifu_jina') }}" class="form">
-    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    <label class="field">
-      <span>Jina la kuonyesha</span>
-      <input name="display_name" value="{{ user.display_name }}" required maxlength="40">
-    </label>
-    <button class="btn" type="submit">Hifadhi jina</button>
-  </form>
-</section>
-
-<section class="card auth">
-  <h2>Picha ya wasifu</h2>
-  <form method="post" action="{{ url_for('wasifu_picha') }}" enctype="multipart/form-data" class="form">
-    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    <label class="field">
-      <span>Chagua picha (jpg, png, webp, gif; hadi MB 5)</span>
-      <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" required>
-    </label>
-    <button class="btn" type="submit">Pakia picha</button>
-  </form>
-</section>
-
-<section class="card auth">
-  <h2>{{ 'Badilisha nenosiri' if user.password_hash else 'Weka nenosiri' }}</h2>
-  <form method="post" action="{{ url_for('auth.change_password') }}" class="form">
-    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    {% if user.password_hash %}
-    <label class="field"><span>Nenosiri la sasa</span><input type="password" name="current" autocomplete="current-password" required></label>
-    {% endif %}
-    <label class="field"><span>Nenosiri jipya</span><input type="password" name="new" minlength="8" maxlength="128" autocomplete="new-password" required></label>
-    <label class="field"><span>Rudia nenosiri jipya</span><input type="password" name="new2" minlength="8" maxlength="128" autocomplete="new-password" required></label>
-    <button class="btn" type="submit">Hifadhi</button>
-  </form>
+<section class="box">
+  <div class="box-header">Akaunti</div>
+  {% if user.email %}<div class="box-row"><span class="row-icon">{{ icon('mail', 18) }}</span><span class="row-main"><strong>Barua pepe</strong><span class="muted">{{ user.email }}</span></span></div>{% endif %}
+  {% if user.phone %}<div class="box-row"><span class="row-icon">{{ icon('phone', 18) }}</span><span class="row-main"><strong>Namba ya simu</strong><span class="muted">{{ user.phone }}</span></span></div>{% endif %}
+  <div class="box-row"><span class="row-icon">{{ icon('user', 18) }}</span><span class="row-main"><strong>Jina la mtumiaji</strong><span class="muted">@{{ user.username }} (halibadiliki)</span></span></div>
 </section>
 
 <form method="post" action="{{ url_for('auth.logout') }}">
   <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-  <button class="btn block danger" type="submit">Toka kwenye akaunti</button>
+  <button class="btn block danger" type="submit">{{ icon('logout', 16) }} Toka kwenye akaunti</button>
 </form>
 
 {% else %}
+<h1>{{ icon('user', 24) }} Wasifu</h1>
 <section class="card guest">
   <div class="avatar big">{{ icon('user', 32) }}</div>
   <h2>Ingia au jisajili</h2>
@@ -86,5 +67,6 @@
     {% endif %}
   </div>
 </section>
+<p class="center"><a class="muted" href="{{ url_for('mipangilio') }}">{{ icon('settings', 14) }} Mwonekano</a></p>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Mipangilio · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('wasifu') }}">← Wasifu</a>
+<div class="page-title"><h1>{{ icon('settings', 24) }} Mipangilio</h1></div>
+
+<section class="box">
+  <div class="box-header">Mwonekano</div>
+  <div class="pad">
+    <div class="seg" role="radiogroup" aria-label="Mandhari" data-theme-choice>
+      <button type="button" role="radio" data-choice="system">{{ icon('globe', 16) }} Mfumo</button>
+      <button type="button" role="radio" data-choice="light">{{ icon('sun', 16) }} Mwanga</button>
+      <button type="button" role="radio" data-choice="dark">{{ icon('moon', 16) }} Giza</button>
+    </div>
+    <p class="muted small">"Mfumo" hufuata mpangilio wa simu yako. Chaguo hili linahifadhiwa kwenye kifaa hiki.</p>
+  </div>
+</section>
+
+{% if user %}
+<section class="box">
+  <div class="box-header">Faragha</div>
+  <form method="post" action="{{ url_for('mipangilio_faragha') }}" class="pad form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <label class="check switch"><input type="checkbox" name="allow_messages" value="1" {{ 'checked' if user.allow_messages }}>
+      <span><strong>Ruhusu ujumbe</strong><br><span class="muted small">Ukizima, hakuna anayeweza kukutumia ujumbe mpya.</span></span></label>
+    <button class="btn" type="submit">Hifadhi</button>
+  </form>
+</section>
+
+<section class="box">
+  <div class="box-header">Waliozuiwa <span class="counter">{{ blocked|length }}</span></div>
+  {% for b in blocked %}
+  <div class="box-row">
+    <span class="row-main"><strong>{{ b.display_name }}</strong><span class="muted">@{{ b.username }}</span></span>
+    <form method="post" action="{{ url_for('mipangilio_ruhusu') }}">
+      <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+      <input type="hidden" name="user_id" value="{{ b.id }}">
+      <button class="btn small" type="submit">Ondoa kizuizi</button>
+    </form>
+  </div>
+  {% else %}<div class="box-empty">Hujamzuia mtu yeyote.</div>{% endfor %}
+</section>
+
+<section class="box">
+  <div class="box-header">{{ 'Badilisha nenosiri' if user.password_hash else 'Weka nenosiri' }}</div>
+  <form method="post" action="{{ url_for('auth.change_password') }}" class="pad form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    {% if user.password_hash %}
+    <label class="field"><span>Nenosiri la sasa</span><input type="password" name="current" autocomplete="current-password" required></label>
+    {% endif %}
+    <label class="field"><span>Nenosiri jipya</span><input type="password" name="new" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+    <label class="field"><span>Rudia nenosiri jipya</span><input type="password" name="new2" minlength="8" maxlength="128" autocomplete="new-password" required></label>
+    <button class="btn" type="submit">Hifadhi nenosiri</button>
+  </form>
+</section>
+
+<section class="box">
+  <div class="box-header">Taarifa</div>
+  <a class="box-row" href="{{ url_for('masharti') }}"><span class="row-main"><strong>Masharti</strong></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('faragha') }}"><span class="row-main"><strong>Faragha</strong></span><span class="muted">›</span></a>
+</section>
+
+<form method="post" action="{{ url_for('auth.logout') }}">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <button class="btn block danger" type="submit">{{ icon('logout', 16) }} Toka kwenye akaunti</button>
+</form>
+{% endif %}
+{% endblock %}

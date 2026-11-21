@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% block title %}Hariri wasifu · {{ app_name }}{% endblock %}
+
+{% block content %}
+<a class="muted back" href="{{ url_for('wasifu') }}">← Wasifu</a>
+<div class="page-title"><h1>{{ icon('edit', 24) }} Hariri wasifu</h1></div>
+
+<form method="post" enctype="multipart/form-data" class="form box" action="{{ url_for('wasifu_hariri') }}">
+  <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+  <div class="box-header">Picha na maelezo</div>
+  <div class="pad form">
+    <div class="avatar-edit">
+      {% if user.avatar_url %}<img class="avatar big avatar-img" src="{{ user.avatar_url }}" alt="" referrerpolicy="no-referrer">
+      {% else %}<div class="avatar big">{{ user.display_name[:1]|upper }}</div>{% endif %}
+      <div class="grow">
+        <label class="field"><span>Picha ya wasifu (jpg, png, webp, gif; hadi MB 5)</span>
+          <input type="file" name="avatar" accept="image/jpeg,image/png,image/webp,image/gif" {{ 'disabled' if not r2_ready }}></label>
+        {% if not r2_ready %}<small class="muted">Upakiaji wa picha haujawashwa bado (R2).</small>{% endif %}
+        {% if user.avatar_url %}<label class="check"><input type="checkbox" name="drop_avatar" value="1"> Ondoa picha ya sasa</label>{% endif %}
+      </div>
+    </div>
+    <label class="field"><span>Jina la kuonyesha</span>
+      <input name="display_name" required minlength="2" maxlength="40" value="{{ form.display_name if form else user.display_name }}"></label>
+    <label class="field"><span>Kuhusu mimi (hiari)</span>
+      <textarea name="bio" rows="3" maxlength="160" placeholder="Maneno mafupi kukuhusu">{{ form.bio if form else user.bio }}</textarea>
+      <small class="muted">Herufi 160 kwa kiwango cha juu. Inaonekana kwenye wasifu wako wa umma.</small></label>
+    <label class="field"><span>Mahali (hiari)</span>
+      <input name="location" maxlength="40" value="{{ form.location if form else user.location }}" placeholder="mfano Dar es Salaam"></label>
+    <label class="field"><span>Jina la mtumiaji</span>
+      <input value="@{{ user.username }}" disabled>
+      <small class="muted">Halibadiliki, kwa sababu linatumika kwenye viungo vya wasifu wako.</small></label>
+    <button class="btn primary block" type="submit">Hifadhi mabadiliko</button>
+    <a class="btn block" href="{{ url_for('wasifu') }}">Ghairi</a>
+  </div>
+</form>
+{% endblock %}
