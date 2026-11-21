@@ -78,32 +78,41 @@
 {% if not markets %}
 <section class="box"><div class="box-empty">Kampuni bado hazijaweka odds za mechi hii. Jaribu tena baadaye.</div></section>
 {% else %}
-<section class="box">
-  <div class="box-header">1. Chagua mkeka wako</div>
-  {% for mk in markets %}
-  <div class="box-subhead">{{ mk.title }}</div>
-  {% for o in mk.options %}
-  <a class="box-row {{ 'selected' if chosen and chosen.key == o.key }}" href="{{ url_for('tips.new', mechi=fixture.id, chaguo=o.key) }}">
-    <span class="row-main"><strong>{{ o.label }}</strong><span class="muted">kampuni {{ o.n }}</span></span>
-    <span class="counter ok">{{ '%.2f'|format(o.best) }}</span>
-  </a>
-  {% endfor %}
-  {% endfor %}
-</section>
-
-{% if chosen %}
-<form method="post" class="form box" action="{{ url_for('tips.slip_add') }}">
-  <div class="box-header">2. Ongeza kwenye mkeka</div>
+<form method="post" action="{{ url_for('tips.slip_add') }}" class="odds-form">
   <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
   <input type="hidden" name="mechi" value="{{ fixture.id }}">
-  <input type="hidden" name="chaguo" value="{{ chosen.key }}">
-  <div class="pad form">
-    <p><strong>{{ chosen.label }}</strong> <span class="counter ok">{{ '%.2f'|format(chosen.best) }}</span></p>
-    {% if in_slip and in_slip != chosen.key %}<p class="notice warn">Mechi hii tayari ipo kwenye mkeka wako. Ukiongeza, chaguo la zamani litabadilishwa.</p>{% endif %}
-    <button class="btn primary block" type="submit">Ongeza kwenye mkeka</button>
-    <p class="muted">Kisha unaweza kuchagua mechi nyingine kuunda mkeka wa mechi nyingi, au kukamilisha na mechi hii tu.</p>
-  </div>
+  <p class="muted small">Gusa odds unayochagua ili kuiongeza kwenye mkeka. Odds bora kati ya kampuni zinaonyeshwa; kampuni utaichagua mwishoni.</p>
+  {% for mk in markets %}
+  <section class="box">
+    <div class="box-header">{{ mk.title }}</div>
+    {% if mk.market == 'ou' %}
+    {% set ns = namespace(lines=[]) %}
+    {% for o in mk.options %}{% set line = o.selection.split('_')[1] %}{% if line not in ns.lines %}{% set ns.lines = ns.lines + [line] %}{% endif %}{% endfor %}
+    <div class="odds-ou">
+      <div class="ou-head"><span></span><span>Zaidi</span><span>Chini</span></div>
+      {% for line in ns.lines %}
+      <div class="ou-row">
+        <span class="ou-line">{{ line }}</span>
+        {% for side in ['over', 'under'] %}
+        {% set key = 'ou:' ~ side ~ '_' ~ line %}
+        {% set o = (mk.options|selectattr('key', 'equalto', key)|list|first) %}
+        {% if o %}<button class="odd-btn {{ 'on' if in_slip == key }}" name="chaguo" value="{{ key }}" type="submit" title="{{ o.label }}"><b>{{ '%.2f'|format(o.best) }}</b></button>{% else %}<span class="odd-btn off">–</span>{% endif %}
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="odds-grid" style="--n: {{ mk.options|length }}">
+      {% for o in mk.options %}
+      {% set nm = {'home': fixture.home, 'draw': 'Sare', 'away': fixture.away, '1x': '1X', '12': '12', 'x2': 'X2', 'yes': 'Ndiyo', 'no': 'Hapana'}[o.selection] %}
+      <button class="odd-btn {{ 'on' if in_slip == o.key }}" name="chaguo" value="{{ o.key }}" type="submit" title="{{ o.label }}">
+        <span class="odd-name">{{ nm }}</span><b>{{ '%.2f'|format(o.best) }}</b>
+      </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </section>
+  {% endfor %}
 </form>
-{% endif %}
 {% endif %}
 {% endif %}
