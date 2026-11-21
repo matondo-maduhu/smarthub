@@ -443,3 +443,6 @@ Kwenye ukurasa wa mazungumzo kuna kitufe cha **Ondoa**. Kinaficha mazungumzo na 
 - Mtabiri akiweka mkeka mpya (wa mechi moja, mechi nyingi au wa mkono), kila mfuasi anapata arifa "X ameweka mkeka mpya: …" inayopeleka kwenye mkeka. Arifa inaandikwa ndani ya muamala uleule wa kuweka mkeka, kwa hiyo haipotei wala haiwezi kuwa ya mkeka usiopo.
 - **Ninaowafuata** (`/jamvi/ninaowafuata`, kutoka Wasifu → Njia za mkato): orodha ya watabiri unaowafuata (na idadi ya mikeka yao) na mikeka yao mipya.
 - Jedwali jipya `follows` linatengenezwa lenyewe baada ya Redeploy.
+
+## Kurasa za orodha ndefu ("Mapya zaidi" / "Za zamani zaidi")
+Jamvi na Market zilikuwa na kurasa tayari. Sasa orodha zote za Usimamizi (Watumiaji, Mikeka, Bidhaa, Maagizo, Ripoti, Msaada, Kumbukumbu; vitu 50 kwa ukurasa) na wasifu wa mtabiri (mikeka 20 kwa ukurasa) zina vitufe vya kurasa, kwa hiyo vitu vya zamani vinafikiwa. Vichujio vya sasa (hali, utafutaji) vinabaki ukihama ukurasa. Kimeundwa kama kifaa kimoja: `templates/_pager.html` na `page_url()` ya `app.py`; ukurasa usio sahihi (`?ukurasa=abc`) unachukuliwa kama wa kwanza.

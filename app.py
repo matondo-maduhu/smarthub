@@ -133,6 +133,15 @@ def create_app():
     def num(value):
         return f"{int(value):,}"
 
+    @app.template_global("page_url")
+    def page_url(page):
+        """Kiungo cha ukurasa mwingine wa orodha ile ile, kikibakiza vichujio vya sasa."""
+        from urllib.parse import urlencode
+        args = {k: v for k, v in request.args.items() if k != "ukurasa" and v != ""}
+        if page > 1:
+            args["ukurasa"] = page
+        return request.path + (("?" + urlencode(args)) if args else "")
+
     @app.template_filter("eat")
     def eat(value):
         if value is None:

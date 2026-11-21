@@ -21,6 +21,22 @@ def admin_required(view):
     return wrapped
 
 
+PER_PAGE = 50
+
+
+def _paging():
+    """(ukurasa, kiasi, offset) kutoka ?ukurasa=; tunaomba kimoja zaidi ili kujua kama kuna kurasa inayofuata."""
+    try:
+        page = max(1, min(int(request.args.get("ukurasa", "1")), 10000))
+    except ValueError:
+        page = 1
+    return page, PER_PAGE, (page - 1) * PER_PAGE
+
+
+def _cut(rows, per):
+    return rows[:per], len(rows) > per
+
+
 def _do(fn, ok_msg, *args):
     try:
         fn(*args)
@@ -41,7 +57,9 @@ def dashboard():
 @admin_required
 def users():
     q = request.args.get("q", "").strip()[:60]
-    return render_template("admin_users.html", active="admin", rows=models.admin_users(q or None), q=q)
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_users(q or None, per + 1, off), per)
+    return render_template("admin_users.html", active="admin", rows=rows, q=q, page=page, has_next=more)
 
 
 @bp.route("/watumiaji/<int:uid>/kiungo-nenosiri", methods=["POST"])
@@ -76,7 +94,9 @@ def user_action(uid, action):
 @bp.route("/mikeka")
 @admin_required
 def tips():
-    return render_template("admin_tips.html", active="admin", rows=models.admin_tips(), fee=Config.TIP_FEE_PCT)
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_tips(per + 1, off), per)
+    return render_template("admin_tips.html", active="admin", rows=rows, fee=Config.TIP_FEE_PCT, page=page, has_next=more)
 
 
 @bp.route("/mikeka/<int:tip_id>/<action>", methods=["POST"])
@@ -99,7 +119,9 @@ def tip_action(tip_id, action):
 @bp.route("/bidhaa")
 @admin_required
 def products():
-    return render_template("admin_products.html", active="admin", rows=models.admin_products())
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_products(per + 1, off), per)
+    return render_template("admin_products.html", active="admin", rows=rows, page=page, has_next=more)
 
 
 @bp.route("/bidhaa/<int:pid>/<action>", methods=["POST"])
@@ -120,8 +142,9 @@ def orders():
     hali = request.args.get("hali", "disputed")
     if hali not in ("disputed", "paid", "delivered", "completed", "cancelled", "zote"):
         hali = "disputed"
-    return render_template("admin_orders.html", active="admin", rows=models.admin_orders(None if hali == "zote" else hali),
-                           hali=hali)
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_orders(None if hali == "zote" else hali, per + 1, off), per)
+    return render_template("admin_orders.html", active="admin", rows=rows, hali=hali, page=page, has_next=more)
 
 
 @bp.route("/ripoti")
@@ -130,7 +153,9 @@ def reports():
     hali = request.args.get("hali", "open")
     if hali not in ("open", "resolved", "dismissed"):
         hali = "open"
-    return render_template("admin_reports.html", active="admin", rows=models.admin_reports(hali), hali=hali)
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_reports(hali, per + 1, off), per)
+    return render_template("admin_reports.html", active="admin", rows=rows, hali=hali, page=page, has_next=more)
 
 
 @bp.route("/ripoti/<int:rid>/<action>", methods=["POST"])
@@ -149,7 +174,9 @@ def support():
     hali = request.args.get("hali", "open")
     if hali not in ("open", "answered", "closed", "zote"):
         hali = "open"
-    return render_template("admin_msaada.html", active="admin", rows=models.admin_support(hali), hali=hali)
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_support(hali, per + 1, off), per)
+    return render_template("admin_msaada.html", active="admin", rows=rows, hali=hali, page=page, has_next=more)
 
 
 @bp.route("/msaada/<int:tid>")
@@ -221,7 +248,9 @@ def fixtures_action(action):
 @bp.route("/kumbukumbu")
 @admin_required
 def log():
-    return render_template("admin_log.html", active="admin", rows=models.admin_log_list())
+    page, per, off = _paging()
+    rows, more = _cut(models.admin_log_list(per + 1, off), per)
+    return render_template("admin_log.html", active="admin", rows=rows, page=page, has_next=more)
 
 
 # ---------- Matangazo ----------

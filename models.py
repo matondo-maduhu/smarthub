@@ -898,11 +898,11 @@ def admin_set_verified(admin_id, target_id, verified):
         log_admin(cur, admin_id, "verify" if verified else "unverify", f"@{u['username']}")
 
 
-def admin_tips(limit=100):
+def admin_tips(limit=100, offset=0):
     return db.query(
         "SELECT t.id, t.title, t.status, t.price, t.created_at, u.username, "
         "(SELECT COUNT(*) FROM tip_purchases p WHERE p.tip_id = t.id) AS buyers "
-        "FROM tips t JOIN users u ON u.id = t.user_id ORDER BY t.id DESC LIMIT %s", (limit,))
+        "FROM tips t JOIN users u ON u.id = t.user_id ORDER BY t.id DESC LIMIT %s OFFSET %s", (limit, offset))
 
 
 def _void_tip(cur, tip_id):
@@ -976,10 +976,10 @@ def admin_delete_tip(admin_id, tip_id):
         log_admin(cur, admin_id, "delete_tip", f"#{tip_id}")
 
 
-def admin_products(limit=100):
+def admin_products(limit=100, offset=0):
     return db.query(
         "SELECT p.id, p.title, p.status, p.price, u.username FROM products p "
-        "JOIN users u ON u.id = p.seller_id ORDER BY p.id DESC LIMIT %s", (limit,))
+        "JOIN users u ON u.id = p.seller_id ORDER BY p.id DESC LIMIT %s OFFSET %s", (limit, offset))
 
 
 def admin_hide_product(admin_id, product_id, hide=True):
@@ -993,13 +993,13 @@ def admin_hide_product(admin_id, product_id, hide=True):
         log_admin(cur, admin_id, "hide_product" if hide else "show_product", f"#{product_id}")
 
 
-def admin_orders(status=None, limit=100):
+def admin_orders(status=None, limit=100, offset=0):
     sql = _ORDER_SELECT
     params = []
     if status:
         sql += " WHERE o.status = %s"
         params.append(status)
-    return db.query(sql + " ORDER BY o.id DESC LIMIT %s", tuple(params + [limit]))
+    return db.query(sql + " ORDER BY o.id DESC LIMIT %s OFFSET %s", tuple(params + [limit, offset]))
 
 
 def log_order_action(admin_id, action, order_id):
@@ -1030,10 +1030,10 @@ def create_report(reporter_id, target_type, target_id, reason):
         return True
 
 
-def admin_reports(status="open", limit=100):
+def admin_reports(status="open", limit=100, offset=0):
     return db.query(
         "SELECT r.*, u.username AS reporter FROM reports r JOIN users u ON u.id = r.reporter_id "
-        "WHERE r.status = %s ORDER BY r.id DESC LIMIT %s", (status, limit))
+        "WHERE r.status = %s ORDER BY r.id DESC LIMIT %s OFFSET %s", (status, limit, offset))
 
 
 def admin_resolve_report(admin_id, report_id, status):
@@ -1046,9 +1046,9 @@ def admin_resolve_report(admin_id, report_id, status):
         log_admin(cur, admin_id, f"report_{status}", f"#{report_id}")
 
 
-def admin_log_list(limit=100):
+def admin_log_list(limit=100, offset=0):
     return db.query("SELECT l.*, u.username FROM admin_log l JOIN users u ON u.id = l.admin_id "
-                    "ORDER BY l.id DESC LIMIT %s", (limit,))
+                    "ORDER BY l.id DESC LIMIT %s OFFSET %s", (limit, offset))
 
 
 def make_admin(user_id):
@@ -1239,11 +1239,11 @@ def support_get(ticket_id):
                     "WHERE t.id = %s", (ticket_id,), one=True)
 
 
-def admin_support(status="open", limit=100):
+def admin_support(status="open", limit=100, offset=0):
     sql = ("SELECT t.*, u.username FROM support_tickets t LEFT JOIN users u ON u.id = t.user_id ")
     if status == "zote":
-        return db.query(sql + "ORDER BY t.id DESC LIMIT %s", (limit,))
-    return db.query(sql + "WHERE t.status = %s ORDER BY t.id DESC LIMIT %s", (status, limit))
+        return db.query(sql + "ORDER BY t.id DESC LIMIT %s OFFSET %s", (limit, offset))
+    return db.query(sql + "WHERE t.status = %s ORDER BY t.id DESC LIMIT %s OFFSET %s", (status, limit, offset))
 
 
 def admin_support_reply(admin_id, ticket_id, reply, close=True):

@@ -77,8 +77,12 @@ def tipster(username):
     person = models.get_user_by_username(username.lower())
     if not person:
         abort(404)
-    rows = models.list_tips(g.user["id"] if g.user else None, user_id=person["id"], limit=30)
-    return render_template("mtabiri.html", active="jamvi", person=person, tips=rows,
+    page = max(1, _int(request.args.get("ukurasa")) or 1)
+    per = 20
+    rows = models.list_tips(g.user["id"] if g.user else None, user_id=person["id"], limit=per + 1,
+                            offset=(page - 1) * per)
+    return render_template("mtabiri.html", active="jamvi", person=person, tips=rows[:per], page=page,
+                           has_next=len(rows) > per,
                            stats=models.tipster_stats(person["id"]),
                            following=models.is_following(g.user["id"] if g.user else None, person["id"]),
                            followers=models.follower_count(person["id"]))
