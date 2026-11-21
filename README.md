@@ -405,3 +405,6 @@ Ukibadilisha nenosiri kwenye Mipangilio, vikao vya vifaa vingine vyote vinafungw
 
 ## Orodha ya mikeka iliyochelewa kuhukumiwa (Usimamizi → Mechi)
 Orodha ya "Mikeka inayosubiri hukumu" sasa inaonyesha mikeka yote iliyo wazi ambayo saa yake ya kuanza imepita: ya mechi halisi, ya mechi nyingi (inaonyesha "Mechi N") na ya mkono yenye saa ("Wa mkono"). Mikeka ya mkono haihukumiwi kiotomatiki; fungua mkeka na mtabiri aweke matokeo, au usimamizi uamue.
+
+## Kusimamisha akaunti ya muuzaji
+Admin akimsimamisha mtumiaji, maagizo yote ya market yaliyo wazi ya muuzaji huyo (yaliyolipwa, yaliyowasilishwa au yenye mgogoro) yanafutwa na wanunuzi wanarudishiwa coin zao zote mara moja (wanapata arifa), na bidhaa zake zilizo hewani zinafichwa. Kumwasha tena hakurudishi bidhaa; ziweke tena mwenyewe. Maagizo ambapo aliyesimamishwa ni mnunuzi hayaguswi: muuzaji anaweza kukamilisha, au admin aamue.

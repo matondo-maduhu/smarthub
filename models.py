@@ -853,6 +853,16 @@ def admin_set_banned(admin_id, target_id, banned):
             raise AdminError("Huwezi kumsimamisha msimamizi mwingine.")
         cur.execute("UPDATE users SET is_banned = %s WHERE id = %s", (bool(banned), target_id))
         log_admin(cur, admin_id, "ban" if banned else "unban", f"@{u['username']}")
+        if banned:
+            # Maagizo wazi ya muuzaji huyu yanafutwa na wanunuzi wanarudishiwa coin; bidhaa zake zinafichwa.
+            cur.execute("SELECT id FROM orders WHERE seller_id = %s AND status IN ('paid', 'delivered', 'disputed')",
+                        (target_id,))
+            for r in cur.fetchall():
+                o = _finish(cur, r["id"], "cancelled", _OPEN, "seller_id", target_id)
+                if o:
+                    _refund_buyer(cur, o, "admin")
+            cur.execute("UPDATE products SET status = 'hidden' WHERE seller_id = %s AND status IN ('active', 'reserved')",
+                        (target_id,))
         return u["username"]
 
 
