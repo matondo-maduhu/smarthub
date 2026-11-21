@@ -79,7 +79,36 @@ def tipster(username):
         abort(404)
     rows = models.list_tips(g.user["id"] if g.user else None, user_id=person["id"], limit=30)
     return render_template("mtabiri.html", active="jamvi", person=person, tips=rows,
-                           stats=models.tipster_stats(person["id"]))
+                           stats=models.tipster_stats(person["id"]),
+                           following=models.is_following(g.user["id"] if g.user else None, person["id"]),
+                           followers=models.follower_count(person["id"]))
+
+
+@bp.route("/mtabiri/<username>/<action>", methods=["POST"])
+@auth.login_required
+def follow_action(username, action):
+    if action not in ("fuata", "acha"):
+        abort(404)
+    person = models.get_user_by_username(username.lower())
+    if not person:
+        abort(404)
+    try:
+        if action == "fuata":
+            models.follow(g.user["id"], person["id"])
+            flash(f"Unamfuata {person['display_name']}. Utapata arifa akiweka mkeka mpya.", "ok")
+        else:
+            models.unfollow(g.user["id"], person["id"])
+            flash(f"Umeacha kumfuata {person['display_name']}.", "ok")
+    except models.FollowError as e:
+        flash(str(e), "error")
+    return redirect(auth.safe_next(request.form.get("next")) or url_for("tips.tipster", username=person["username"]))
+
+
+@bp.route("/ninaowafuata")
+@auth.login_required
+def following():
+    return render_template("ninaowafuata.html", active="jamvi", people=models.following_list(g.user["id"]),
+                           tips=models.following_tips(g.user["id"]))
 
 
 # ---------- Kuweka mkeka ----------

@@ -253,6 +253,11 @@ def create_tip(uid, *, title, league, pick, body, odds, price, starts_at,
             (uid, title, league, pick, body or None, odds, price, starts_at, fixture_id, market, selection,
              bookmaker, n))
         tip_id = cur.fetchone()["id"]
+        cur.execute("SELECT display_name FROM users WHERE id = %s", (uid,))
+        who = (cur.fetchone() or {}).get("display_name", "Mtabiri")
+        cur.execute("INSERT INTO notifications (user_id, kind, text, url) "
+                    "SELECT follower_id, 'tip', %s, %s FROM follows WHERE tipster_id = %s",
+                    (f"{who} ameweka mkeka mpya: {title}"[:200], f"/jamvi/{tip_id}", uid))
         for lg in (legs or []):
             cur.execute(
                 "INSERT INTO tip_legs (tip_id, fixture_id, title, league, market, selection, pick, odds, kickoff) "
@@ -1326,3 +1331,43 @@ def search_chat_users(q, me, limit=8):
     return db.query("SELECT id, username, display_name, avatar_url FROM users WHERE id <> %s AND is_banned = FALSE "
                     "AND (LOWER(username) LIKE %s OR LOWER(display_name) LIKE %s) ORDER BY username LIMIT %s",
                     (me, like, like, limit))
+
+
+# ---------- Kufuata watabiri ----------
+class FollowError(Exception):
+    pass
+
+
+def follow(uid, tipster_id):
+    if uid == tipster_id:
+        raise FollowError("Huwezi kujifuata mwenyewe.")
+    t = db.query("SELECT is_banned FROM users WHERE id = %s", (tipster_id,), one=True)
+    if not t or t["is_banned"]:
+        raise FollowError("Mtabiri hayupo.")
+    db.execute("INSERT INTO follows (follower_id, tipster_id) VALUES (%s, %s) ON CONFLICT DO NOTHING",
+               (uid, tipster_id))
+
+
+def unfollow(uid, tipster_id):
+    db.execute("DELETE FROM follows WHERE follower_id = %s AND tipster_id = %s", (uid, tipster_id))
+
+
+def is_following(uid, tipster_id):
+    return bool(uid) and db.query("SELECT 1 AS x FROM follows WHERE follower_id = %s AND tipster_id = %s",
+                                  (uid, tipster_id), one=True) is not None
+
+
+def follower_count(tipster_id):
+    return int(db.query("SELECT COUNT(*) AS n FROM follows WHERE tipster_id = %s", (tipster_id,), one=True)["n"])
+
+
+def following_list(uid, limit=100):
+    return db.query(
+        "SELECT u.id, u.username, u.display_name, u.avatar_url, "
+        "(SELECT COUNT(*) FROM tips t WHERE t.user_id = u.id) AS tips "
+        "FROM follows f JOIN users u ON u.id = f.tipster_id WHERE f.follower_id = %s AND u.is_banned = FALSE "
+        "ORDER BY f.created_at DESC LIMIT %s", (uid, limit))
+
+
+def following_tips(uid, limit=20):
+    return _tips("t.user_id IN (SELECT tipster_id FROM follows WHERE follower_id = %s)", (uid,), uid, limit, 0)

@@ -437,3 +437,9 @@ Ukurasa wa Ujumbe una kisanduku cha kutafuta: unaweza kutafuta mazungumzo yaliyo
 
 ## Kuondoa mazungumzo kwenye orodha yako
 Kwenye ukurasa wa mazungumzo kuna kitufe cha **Ondoa**. Kinaficha mazungumzo na historia yake kwako tu; mwenzako anabaki na nakala yake kamili. Akitumia ujumbe mpya, mazungumzo yanarudi kwenye orodha yako yakiwa na ujumbe mpya tu (ya zamani hayarudi). Ujumbe ambao haujasomwa kwenye mazungumzo hayo unahesabiwa kama umesomwa unapoondoa. Hii ni kuficha, si kufuta: ujumbe unabaki kwenye database kwa ajili ya ripoti na usimamizi. Jedwali jipya: `conv_hides`.
+
+## Kufuata watabiri
+- Kwenye wasifu wa mtabiri (`/jamvi/mtabiri/<jina>`) kuna kitufe cha **Fuata** / **Unamfuata** (bonyeza tena kuacha) na idadi ya wafuasi. Huwezi kujifuata, wala kumfuata aliyesimamishwa.
+- Mtabiri akiweka mkeka mpya (wa mechi moja, mechi nyingi au wa mkono), kila mfuasi anapata arifa "X ameweka mkeka mpya: …" inayopeleka kwenye mkeka. Arifa inaandikwa ndani ya muamala uleule wa kuweka mkeka, kwa hiyo haipotei wala haiwezi kuwa ya mkeka usiopo.
+- **Ninaowafuata** (`/jamvi/ninaowafuata`, kutoka Wasifu → Njia za mkato): orodha ya watabiri unaowafuata (na idadi ya mikeka yao) na mikeka yao mipya.
+- Jedwali jipya `follows` linatengenezwa lenyewe baada ya Redeploy.

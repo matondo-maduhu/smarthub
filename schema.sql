@@ -310,3 +310,12 @@ CREATE TABLE IF NOT EXISTS conv_hides (
     up_to_id BIGINT NOT NULL,
     PRIMARY KEY (user_id, other_id)
 );
+
+-- Kufuata watabiri: wafuasi wanapata arifa mtabiri akiweka mkeka mpya
+CREATE TABLE IF NOT EXISTS follows (
+    follower_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tipster_id  BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (follower_id, tipster_id)
+);
+CREATE INDEX IF NOT EXISTS idx_follows_tipster ON follows(tipster_id);
