@@ -24,7 +24,7 @@
 <section class="box">
   <div class="box-header">Mikeka inayosubiri hukumu <span class="counter">{{ waiting|length }}</span></div>
   {% for w in waiting %}
-  <a class="box-row" href="{{ url_for('tips.detail', tip_id=w.id) }}"><span class="row-main"><strong>{{ w.title }}</strong><span class="muted">{{ w.market }}:{{ w.selection }} · {{ w.kickoff|eat }}</span></span><span class="badge">{{ w.status }}</span></a>
+  <a class="box-row" href="{{ url_for('tips.detail', tip_id=w.id) }}"><span class="row-main"><strong>{{ w.title }}</strong><span class="muted">{% if w.legs and w.legs > 1 %}Mechi {{ w.legs }}{% elif w.fixture_id %}{{ w.market }}:{{ w.selection }}{% else %}Wa mkono{% endif %} · {{ w.kickoff|eat }}</span></span><span class="badge">{{ w.status or ('inasubiri' if w.fixture_id or (w.legs and w.legs > 1) else 'mkono') }}</span></a>
   {% else %}<div class="box-empty">Hakuna.</div>{% endfor %}
 </section>
 
