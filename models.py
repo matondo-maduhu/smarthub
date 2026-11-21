@@ -1015,11 +1015,12 @@ def set_password(user_id, password_hash):
 
 
 def admin_waiting_tips(limit=30):
-    """Mikeka ya mechi halisi iliyoanza lakini bado haijahukumiwa."""
+    """Mikeka wazi iliyoanza (mechi halisi, ya mkono yenye saa, au ya mechi nyingi) lakini haijahukumiwa."""
     return db.query(
-        "SELECT t.id, t.title, t.market, t.selection, f.status, f.kickoff FROM tips t "
-        "JOIN fixtures f ON f.id = t.fixture_id WHERE t.status = 'open' AND t.fixture_id IS NOT NULL "
-        "ORDER BY f.kickoff ASC LIMIT %s", (limit,))
+        "SELECT t.id, t.title, t.market, t.selection, t.fixture_id, t.legs, t.starts_at AS kickoff, "
+        "f.status FROM tips t LEFT JOIN fixtures f ON f.id = t.fixture_id "
+        "WHERE t.status = 'open' AND t.starts_at IS NOT NULL AND t.starts_at <= %s "
+        "ORDER BY t.starts_at ASC LIMIT %s", (datetime.now(timezone.utc), limit))
 
 
 # ---------- Matangazo (banners) ----------

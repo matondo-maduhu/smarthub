@@ -402,3 +402,6 @@ Tabo tisa za admin zilisogezwa kando kwenye simu. Sasa kuna kitufe kimoja kinach
 
 ## Nenosiri likibadilika, vifaa vingine vinatolewa
 Ukibadilisha nenosiri kwenye Mipangilio, vikao vya vifaa vingine vyote vinafungwa mara moja (mtu mwingine akiwa ameingia kwa akaunti yako atatakiwa kuingia upya). Kifaa ulichotumia kubadilisha kinabaki ndani. Ndani yake kuna alama (`pv`) inayotokana na nenosiri la sasa; `load_user` inailinganisha kila ombi.
+
+## Orodha ya mikeka iliyochelewa kuhukumiwa (Usimamizi → Mechi)
+Orodha ya "Mikeka inayosubiri hukumu" sasa inaonyesha mikeka yote iliyo wazi ambayo saa yake ya kuanza imepita: ya mechi halisi, ya mechi nyingi (inaonyesha "Mechi N") na ya mkono yenye saa ("Wa mkono"). Mikeka ya mkono haihukumiwi kiotomatiki; fungua mkeka na mtabiri aweke matokeo, au usimamizi uamue.
