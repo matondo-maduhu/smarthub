@@ -1,11 +1,23 @@
-<nav class="chips wrap" aria-label="Usimamizi">
-  <a class="chip {{ 'on' if sec == 'dash' }}" href="{{ url_for('admin.dashboard') }}">Muhtasari</a>
-  <a class="chip {{ 'on' if sec == 'users' }}" href="{{ url_for('admin.users') }}">Watumiaji</a>
-  <a class="chip {{ 'on' if sec == 'tips' }}" href="{{ url_for('admin.tips') }}">Mikeka</a>
-  <a class="chip {{ 'on' if sec == 'products' }}" href="{{ url_for('admin.products') }}">Bidhaa</a>
-  <a class="chip {{ 'on' if sec == 'orders' }}" href="{{ url_for('admin.orders') }}">Maagizo</a>
-  <a class="chip {{ 'on' if sec == 'fixtures' }}" href="{{ url_for('admin.fixtures') }}">Mechi</a>
-  <a class="chip {{ 'on' if sec == 'banners' }}" href="{{ url_for('admin.banners') }}">Matangazo</a>
-  <a class="chip {{ 'on' if sec == 'reports' }}" href="{{ url_for('admin.reports') }}">Ripoti</a>
-  <a class="chip {{ 'on' if sec == 'log' }}" href="{{ url_for('admin.log') }}">Kumbukumbu</a>
+{% from "_icons.html" import icon %}
+{% set items = [
+  ('dash', 'Muhtasari', 'grid', 'admin.dashboard'),
+  ('users', 'Watumiaji', 'users', 'admin.users'),
+  ('tips', 'Mikeka', 'ticket', 'admin.tips'),
+  ('products', 'Bidhaa', 'store', 'admin.products'),
+  ('orders', 'Maagizo', 'cart', 'admin.orders'),
+  ('fixtures', 'Mechi', 'ball', 'admin.fixtures'),
+  ('banners', 'Matangazo', 'image', 'admin.banners'),
+  ('reports', 'Ripoti', 'flag', 'admin.reports'),
+  ('log', 'Kumbukumbu', 'list', 'admin.log'),
+] %}
+{% set cur = items|selectattr(0, 'equalto', sec)|first %}
+<nav class="menu" data-menu aria-label="Usimamizi">
+  <button class="menu-btn" type="button" aria-haspopup="true" aria-expanded="false">
+    {{ icon(cur[2], 18) }}<span>{{ cur[1] }}</span>{{ icon('chevron-down', 16) }}
+  </button>
+  <div class="menu-pop" role="menu" hidden>
+    {% for key, name, ic, ep in items %}
+    <a class="menu-item {{ 'on' if key == sec }}" role="menuitem" href="{{ url_for(ep) }}">{{ icon(ic, 20) }}<span>{{ name }}</span></a>
+    {% endfor %}
+  </div>
 </nav>
