@@ -39,6 +39,8 @@ class Config:
 
     # Jamvi la mikeka
     TIP_FEE_PCT = int(os.getenv("TIP_FEE_PCT", "10"))              # ada ya jukwaa kwa kila mauzo (%)
+    LOCK_MINUTES_BEFORE = int(os.getenv("LOCK_MINUTES_BEFORE", "10"))   # mkeka unafungwa dakika hizi kabla ya mechi ya kwanza
+    COUNTDOWN_MINUTES = int(os.getenv("COUNTDOWN_MINUTES", "30"))      # kaunta ya kuhesabu inaanza dakika hizi kabla ya kufungwa
     MAX_SLIP_LEGS = int(os.getenv("MAX_SLIP_LEGS", "10"))          # mechi nyingi zaidi ndani ya mkeka mmoja
     TIP_MAX_PRICE = int(os.getenv("TIP_MAX_PRICE", "1000"))        # bei ya juu ya mkeka (coin)
     MAX_TIPS_PER_DAY = int(os.getenv("MAX_TIPS_PER_DAY", "10"))    # mikeka kwa mtumiaji kwa siku

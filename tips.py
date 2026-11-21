@@ -115,8 +115,8 @@ def new():
             errors.append(f"Bei iwe 0 (bure) au kati ya coin 5 na {Config.TIP_MAX_PRICE}.")
         if starts is None:
             errors.append("Weka tarehe na saa sahihi ya mchezo.")
-        elif starts <= now + timedelta(minutes=5):
-            errors.append("Mchezo lazima uanze angalau dakika 5 kutoka sasa.")
+        elif starts <= now + timedelta(minutes=Config.LOCK_MINUTES_BEFORE + 5):
+            errors.append(f"Mchezo lazima uanze angalau dakika {Config.LOCK_MINUTES_BEFORE + 5} kutoka sasa (mkeka unafungwa dakika {Config.LOCK_MINUTES_BEFORE} kabla).")
         elif starts > now + timedelta(days=30):
             errors.append("Mchezo usizidi siku 30 mbele.")
 
@@ -153,7 +153,8 @@ def _save_slip(items):
 
 
 def _fixture_ok(fx, now):
-    return bool(fx and fx["status"] == "NS" and fx["kickoff"] > now + timedelta(minutes=5))
+    return bool(fx and fx["status"] == "NS"
+                and fx["kickoff"] > now + timedelta(minutes=Config.LOCK_MINUTES_BEFORE + 5))
 
 
 @bp.route("/weka/ongeza", methods=["POST"])
@@ -399,7 +400,7 @@ def detail(tip_id):
         legs=models.get_legs(tip_id) if tip["legs"] > 1 else [],
         can_settle=is_admin or (not auto and tip["is_owner"] and tip["status"] == "open" and tip["started"]),
         can_delete=tip["is_owner"] and tip["buyers"] == 0,
-        is_admin=is_admin, fee=Config.TIP_FEE_PCT,
+        is_admin=is_admin, fee=Config.TIP_FEE_PCT, lock_min=Config.LOCK_MINUTES_BEFORE,
     )
 
 

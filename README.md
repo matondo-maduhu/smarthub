@@ -365,3 +365,10 @@ Ukurasa wa "Weka mkeka" sasa umepangwa:
 - **Tabo za ligi** za siku hiyo (Ligi Kuu Tanzania na ligi ulizoweka kwenye `FOOTBALL_LEAGUES` zinakuja kwanza, kwa mpangilio huo huo), ukibonyeza moja unaona ligi hiyo tu.
 - Mechi zimekundikwa chini ya kila ligi, saa ya kuanza kushoto na timu mbili chini ya nyingine; mechi uliyoichagua kwenye mkeka inaonyesha "Imechaguliwa".
 - **Kutafuta** (timu au ligi) kunatafuta siku zote.
+
+## Mkeka kujifunga kiotomatiki + kaunta
+Ili mtu asinunue mkeka uliopitwa na wakati:
+- Mkeka **unajifunga dakika 10 kabla ya mechi ya kwanza kuanza** (`LOCK_MINUTES_BEFORE`, chaguo-msingi 10). Baada ya hapo kitufe cha kununua kinatoweka, na seva inakataa ununuzi hata ukijaribu kwa nguvu. Mkeka wa mechi nyingi unafuata mechi ya KWANZA.
+- **Dakika 30 kabla ya kufungwa** (`COUNTDOWN_MINUTES`) kaunta ya kuhesabu inaanza (mfano 20:00 → 00:00), kwenye kadi ya mkeka na kwenye ukurasa wa mkeka; ndani ya dakika 2 inabadilika rangi nyekundu. Kaunta ikifika sifuri ukurasa unajisasisha na kuonyesha "umefungwa". Kaunta inatumia muda uliobaki uliotumwa na seva, si saa ya simu, kwa hiyo saa isiyo sahihi ya simu haidanganyi.
+- Mkeka mpya lazima uwe wa mechi inayoanza angalau dakika 15 mbele (10 za kufunga + 5), vinginevyo ungejifunga mara moja.
+- Hali ya "Inasubiri matokeo" sasa inaanza wakati wa kufungwa (si mechi ikianza).

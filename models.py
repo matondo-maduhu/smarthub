@@ -171,9 +171,13 @@ def _decorate(t, viewer_id):
     start = to_dt(t["starts_at"])
     now = datetime.now(timezone.utc)
     t["started"] = bool(start and start <= now)
-    # Hatua ya mkeka: wazi (bado unaweza kununuliwa), imefungwa (mchezo umeanza, inasubiri matokeo), au imekwisha
-    t["phase"] = ("pending" if t["started"] else "open") if t["status"] == "open" else t["status"]
-    t["closes_in"] = int((start - now).total_seconds()) if start and not t["started"] else None
+    # Mkeka unafungwa kiotomatiki dakika chache kabla ya mechi ya kwanza ili usinunuliwe ukiwa umepitwa na wakati
+    lock_at = start - timedelta(minutes=Config.LOCK_MINUTES_BEFORE) if start else None
+    t["locked"] = bool(lock_at and lock_at <= now)
+    # Hatua ya mkeka: wazi (bado unaweza kununuliwa), imefungwa (inasubiri matokeo), au imekwisha
+    t["phase"] = ("pending" if t["locked"] else "open") if t["status"] == "open" else t["status"]
+    t["closes_in"] = int((lock_at - now).total_seconds()) if lock_at and not t["locked"] else None
+    t["counting"] = t["closes_in"] is not None and t["closes_in"] <= Config.COUNTDOWN_MINUTES * 60
     return t
 
 
@@ -302,8 +306,8 @@ def purchase_tip(tip_id, buyer_id, fee_pct):
         if tip["status"] != "open":
             raise TipError("Mkeka huu umeshakwisha.")
         start = to_dt(tip["starts_at"])
-        if start and start <= datetime.now(timezone.utc):
-            raise TipError("Mchezo umeshaanza, huwezi kununua tena.")
+        if start and start - timedelta(minutes=Config.LOCK_MINUTES_BEFORE) <= datetime.now(timezone.utc):
+            raise TipError(f"Mkeka umefungwa: unafungwa dakika {Config.LOCK_MINUTES_BEFORE} kabla ya mechi ya kwanza kuanza.")
 
         price = tip["price"]
         fee = price * fee_pct // 100
