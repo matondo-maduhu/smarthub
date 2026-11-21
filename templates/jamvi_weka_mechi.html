@@ -37,22 +37,32 @@
   <button class="btn" type="submit">Tafuta</button>
 </form>
 {% if svc_error %}<p class="notice warn">{{ icon('shield', 16) }} {{ svc_error }}</p>{% endif %}
-{% set ns = namespace(day='') %}
-{% if fixtures %}
+{% if days %}
+<div class="chips" aria-label="Siku">
+  {% for d in days %}<a class="chip {{ 'on' if siku == d.key }}" href="{{ url_for('tips.new', siku=d.key) }}">{{ (d.kickoff|eat_date).split(',')[0] }} <span class="counter">{{ d.n }}</span></a>{% endfor %}
+</div>
+{% endif %}
+{% if league_list|length > 1 %}
+<div class="chips" aria-label="Ligi">
+  <a class="chip {{ 'on' if not ligi }}" href="{{ url_for('tips.new', siku=siku, q=q or None) }}">Ligi zote</a>
+  {% for l in league_list %}<a class="chip {{ 'on' if ligi == l.id }}" href="{{ url_for('tips.new', siku=siku, ligi=l.id, q=q or None) }}">{{ l.name }} <span class="counter">{{ l.n }}</span></a>{% endfor %}
+</div>
+{% endif %}
+{% for g in groups %}
 <section class="box">
-  <div class="box-header">Mechi zijazo <span class="counter">{{ fixtures|length }}</span></div>
-  {% for f in fixtures %}
-  {% set d = f.kickoff|eat_date %}
-  {% if d != ns.day %}{% set ns.day = d %}<div class="box-subhead">{{ d }}</div>{% endif %}
-  <a class="box-row" href="{{ url_for('tips.new', mechi=f.id) }}">
-    <span class="row-main"><strong>{{ f.home }} vs {{ f.away }}</strong><span class="muted">{{ f.league_name }}{% if f.country %} · {{ f.country }}{% endif %} · {{ f.kickoff|eat_time }}</span></span>
+  <div class="box-header">{{ g.league.name }}{% if g.league.country %} <span class="muted">· {{ g.league.country }}</span>{% endif %} <span class="counter">{{ g['items']|length }}</span></div>
+  {% for f in g['items'] %}
+  <a class="box-row match-row" href="{{ url_for('tips.new', mechi=f.id) }}">
+    <span class="match-time">{% if siku == 'yote' %}<small>{{ (f.kickoff|eat_date).split(',')[0] }}</small>{% endif %}{{ f.kickoff|eat_time }}</span>
+    <span class="row-main"><strong>{{ f.home }}</strong><strong>{{ f.away }}</strong></span>
+    {% if f.id in slip_ids %}<span class="badge ok">Imechaguliwa</span>{% endif %}
     <span class="muted">›</span>
   </a>
   {% endfor %}
 </section>
 {% else %}
 <section class="box"><div class="box-empty">Hakuna mechi zilizopatikana{% if q %} kwa "{{ q }}"{% endif %}. Mechi zinasasishwa kila baada ya saa chache; msimamizi anaweza kuzisasisha mara moja.</div></section>
-{% endif %}
+{% endfor %}
 <a class="btn block" href="{{ url_for('tips.index') }}">Ghairi</a>
 
 {% else %}
