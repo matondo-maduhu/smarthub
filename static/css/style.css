@@ -640,3 +640,11 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .leg-pick { color: var(--muted); font-size: 13px; }
 .badge.legs { background: var(--counter-bg); }
 .link-btn.danger { color: var(--danger, #cf222e); }
+
+/* ===== Orodha ya mechi: muda kushoto, timu mbili chini ya nyingine ===== */
+.match-row { gap: 12px; }
+.match-time { flex: none; width: 52px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); display: flex; flex-direction: column; }
+.match-time small { font-weight: 400; font-size: 11px; }
+.match-row .row-main strong { font-weight: 500; overflow-wrap: anywhere; }
+.match-row .row-main strong:first-child { font-weight: 600; }
+.chips + .chips, .chips + .box, .box + .box { margin-top: 10px; }
