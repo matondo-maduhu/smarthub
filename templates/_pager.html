@@ -1,0 +1,9 @@
+{% macro pager(page, has_next) %}
+{% if page > 1 or has_next %}
+<nav class="pager" aria-label="Kurasa">
+  {% if page > 1 %}<a class="btn small" href="{{ page_url(page - 1) }}">Mapya zaidi</a>{% else %}<span></span>{% endif %}
+  <span class="muted">Ukurasa {{ page }}</span>
+  {% if has_next %}<a class="btn small" href="{{ page_url(page + 1) }}">Za zamani zaidi</a>{% else %}<span></span>{% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

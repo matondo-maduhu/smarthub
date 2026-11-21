@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Kumbukumbu · Usimamizi{% endblock %}
 {% block content %}
@@ -11,4 +12,5 @@
     <span class="muted">@{{ l.username }} · {{ l.created_at|eat }}</span></div></div>
   {% else %}<div class="box-empty">Hakuna kumbukumbu bado.</div>{% endfor %}
 </section>
+{{ pager(page, has_next) }}
 {% endblock %}

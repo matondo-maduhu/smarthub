@@ -2,6 +2,7 @@
 {% from "_icons.html" import icon %}
 {% from "_report.html" import report_box with context %}
 {% from "_cards.html" import tip_card with context %}
+{% from "_pager.html" import pager %}
 {% block title %}{{ person.display_name }} · {{ app_name }}{% endblock %}
 
 {% block content %}
@@ -37,6 +38,7 @@
 <div class="section-head"><h2>Mikeka yake</h2></div>
 {% if tips %}
 <div class="stack">{% for t in tips %}{{ tip_card(t) }}{% endfor %}</div>
+{{ pager(page, has_next) }}
 {% else %}
 <section class="box"><div class="box-empty">Hajaweka mkeka bado.</div></section>
 {% endif %}

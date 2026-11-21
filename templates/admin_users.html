@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Watumiaji · Usimamizi{% endblock %}
 {% block content %}
@@ -41,4 +42,5 @@
   </div>
   {% else %}<div class="box-empty">Hakuna aliyepatikana.</div>{% endfor %}
 </section>
+{{ pager(page, has_next) }}
 {% endblock %}
