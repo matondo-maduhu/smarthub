@@ -17,8 +17,13 @@
   <p class="muted">@{{ person.username }}</p>
   {% if person.bio %}<p class="bio">{{ person.bio }}</p>{% endif %}
   {% if person.location %}<p class="muted">{{ icon('globe', 14) }} {{ person.location }}</p>{% endif %}
+  <p class="muted">{{ followers }} {{ 'mfuasi' if followers == 1 else 'wafuasi' }}</p>
   {% if user and user.id != person.id %}
-  <a class="btn small" href="{{ url_for('chat.conversation', username=person.username) }}">{{ icon('chat', 16) }} Tuma ujumbe</a>
+  <div class="actions-row center-row"><form method="post" action="{{ url_for('tips.follow_action', username=person.username, action='acha' if following else 'fuata') }}" class="inline-form">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn small {{ '' if following else 'primary' }}" type="submit">{{ icon('check' if following else 'plus', 16) }} {{ 'Unamfuata' if following else 'Fuata' }}</button>
+  </form>
+  <a class="btn small" href="{{ url_for('chat.conversation', username=person.username) }}">{{ icon('chat', 16) }} Tuma ujumbe</a></div>
   {{ report_box("user", person.id) }}
   {% endif %}
   <div class="stat-grid">

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card with context %}
+{% block title %}Ninaowafuata · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('heart', 24) }} Ninaowafuata</h1><p>Watabiri unaowafuata na mikeka yao mipya.</p></div>
+<section class="box">
+  <div class="box-header">Watabiri <span class="counter">{{ people|length }}</span></div>
+  {% for p in people %}
+  <a class="box-row" href="{{ url_for('tips.tipster', username=p.username) }}">
+    <span class="row-main"><strong>{{ p.display_name }}</strong><span class="muted">@{{ p.username }} · mikeka {{ p.tips }}</span></span><span class="muted">›</span>
+  </a>
+  {% else %}<div class="box-empty">Bado humfuati mtabiri yeyote. Fungua wasifu wa mtabiri kisha bonyeza "Fuata", au tazama <a href="{{ url_for('tips.leaderboard') }}">viwango vya watabiri</a>.</div>{% endfor %}
+</section>
+{% if tips %}
+<div class="section-head"><h2>Mikeka mipya</h2></div>
+<div class="stack">{% for t in tips %}{{ tip_card(t) }}{% endfor %}</div>
+{% endif %}
+{% endblock %}

@@ -34,6 +34,7 @@
   <div class="box-header">Njia za mkato</div>
   <a class="box-row" href="{{ url_for('pochi') }}"><span class="row-icon">{{ icon('wallet', 18) }}</span><span class="row-main"><strong>Pochi</strong><span class="muted">Salio na miamala</span></span><span class="muted">›</span></a>
   <a class="box-row" href="{{ url_for('tips.tipster', username=user.username) }}"><span class="row-icon">{{ icon('ticket', 18) }}</span><span class="row-main"><strong>Mikeka yangu</strong><span class="muted">Wasifu wangu kwa umma</span></span><span class="muted">›</span></a>
+  <a class="box-row" href="{{ url_for('tips.following') }}"><span class="row-icon">{{ icon('heart', 18) }}</span><span class="row-main"><strong>Ninaowafuata</strong><span class="muted">Watabiri na mikeka yao mipya</span></span><span class="muted">›</span></a>
   <a class="box-row" href="{{ url_for('market.orders') }}"><span class="row-icon">{{ icon('store', 18) }}</span><span class="row-main"><strong>Maagizo yangu</strong><span class="muted">Ninunuacho na ninachouza</span></span><span class="muted">›</span></a>
   <a class="box-row" href="{{ url_for('chat.inbox') }}"><span class="row-icon">{{ icon('chat', 18) }}</span><span class="row-main"><strong>Ujumbe</strong></span><span class="muted">›</span></a>
   <a class="box-row" href="{{ url_for('notifications.index') }}"><span class="row-icon">{{ icon('bell', 18) }}</span><span class="row-main"><strong>Arifa</strong></span><span class="muted">›</span></a>
