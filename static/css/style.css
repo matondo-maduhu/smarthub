@@ -670,3 +670,15 @@ html, body { max-width: 100%; overflow-x: hidden; }
 .ou-line { font-weight: 600; color: var(--muted); text-align: center; }
 .odds-form .box + .box { margin-top: 10px; }
 .odds-form > p { margin-bottom: 10px; }
+
+/* ===== Menyu ya kuchagua (admin) ===== */
+.menu { position: relative; display: inline-block; margin: 4px 0 12px; }
+.menu-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--btn-border); border-radius: 8px; background: var(--btn-bg); color: var(--text); font: inherit; font-weight: 600; cursor: pointer; }
+.menu-btn:hover { background: var(--btn-hover); }
+.menu-btn .icon:last-child { color: var(--muted); }
+.menu-pop { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; min-width: 230px; padding: 6px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface, var(--bg)); box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.menu-pop[hidden] { display: none; }
+.menu-item { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 10px; color: var(--text); text-decoration: none; font-size: 16px; }
+.menu-item:hover { background: var(--btn-hover); text-decoration: none; color: var(--text); }
+.menu-item.on { background: var(--counter-bg); font-weight: 600; }
+.menu-item .icon { flex: none; }
