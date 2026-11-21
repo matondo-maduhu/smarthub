@@ -355,3 +355,6 @@ Mtabiri sasa anaweza kuunda mkeka wenye mechi zaidi ya moja (hadi 10, `MAX_SLIP_
 
 ### Marekebisho ya mpangilio
 - Ukurasa haupanuki tena nje ya skrini (kijachini cha kadi ya mkeka kinashuka mstari, gridi za bidhaa zimezuiwa kupanuka na picha pana).
+
+### Kosa la "internal error" kwenye baadhi ya mechi (limerekebishwa)
+Odds halisi za API zina masoko mengine yenye thamani za namba au tupu; msimbo ulijaribu kuzisoma kama maandishi na kuvunja ukurasa wa mechi zenye odds (mechi zisizo na odds, kama za Tanzania, zilifunguka). Sasa thamani zisizotarajiwa zinarukwa, na hitilafu yoyote ya kusoma odds inaonyesha ujumbe badala ya ukurasa wa kosa.

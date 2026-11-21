@@ -192,7 +192,7 @@ _OU_LINES = {"0.5", "1.5", "2.5", "3.5", "4.5"}
 
 def _map(bet_name, value):
     """(jina la soko la API, thamani) -> (market, selection) yetu, au None kama hatuitumii."""
-    v = (value or "").strip()
+    v = str(value if value is not None else "").strip()  # API huweka namba (si maandishi) kwenye baadhi ya masoko
     if bet_name == "Match Winner":
         return ("h2h", {"Home": "home", "Draw": "draw", "Away": "away"}[v]) if v in ("Home", "Draw", "Away") else None
     if bet_name == "Double Chance":
@@ -211,18 +211,18 @@ def _normalize_odds(response):
     """Orodha ya [market, selection, bookmaker_id, bookmaker_name, odd]."""
     rows = []
     for item in response:
-        for bk in item.get("bookmakers", []):
-            for bet in bk.get("bets", []):
-                for val in bet.get("values", []):
-                    key = _map(bet.get("name"), val.get("value"))
-                    if not key:
-                        continue
-                    try:
+        for bk in item.get("bookmakers") or []:
+            for bet in bk.get("bets") or []:
+                for val in bet.get("values") or []:
+                    try:  # thamani moja yenye umbo lisilotarajiwa isivunje ukurasa mzima
+                        key = _map(bet.get("name"), val.get("value"))
+                        if not key:
+                            continue
                         odd = float(val.get("odd"))
-                    except (TypeError, ValueError):
+                        if 1.01 <= odd <= 1000:
+                            rows.append([key[0], key[1], int(bk["id"]), str(bk["name"]), odd])
+                    except (TypeError, ValueError, KeyError, AttributeError):
                         continue
-                    if 1.01 <= odd <= 1000:
-                        rows.append([key[0], key[1], int(bk["id"]), bk["name"], odd])
     return rows
 
 

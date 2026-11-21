@@ -3,7 +3,7 @@ import re
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from flask import (Blueprint, abort, flash, g, redirect, render_template,
+from flask import (Blueprint, abort, current_app, flash, g, redirect, render_template,
                    request, session, url_for)
 
 import auth
@@ -267,6 +267,9 @@ def _new_api():
         rows = football.get_odds(fid)
     except football.FootballError as e:
         ctx["svc_error"] = str(e)
+    except Exception:
+        current_app.logger.exception("odds za mechi %s zimeshindwa kusomwa", fid)
+        ctx["svc_error"] = "Odds za mechi hii hazikuweza kusomwa sasa. Jaribu mechi nyingine au baadaye."
     ctx["markets"] = football.options(rows, fx["home"], fx["away"])
     valid = {o["key"]: o for mk in ctx["markets"] for o in mk["options"]}
     chosen = request.values.get("chaguo", "")
