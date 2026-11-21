@@ -372,3 +372,13 @@ Ili mtu asinunue mkeka uliopitwa na wakati:
 - **Dakika 30 kabla ya kufungwa** (`COUNTDOWN_MINUTES`) kaunta ya kuhesabu inaanza (mfano 20:00 → 00:00), kwenye kadi ya mkeka na kwenye ukurasa wa mkeka; ndani ya dakika 2 inabadilika rangi nyekundu. Kaunta ikifika sifuri ukurasa unajisasisha na kuonyesha "umefungwa". Kaunta inatumia muda uliobaki uliotumwa na seva, si saa ya simu, kwa hiyo saa isiyo sahihi ya simu haidanganyi.
 - Mkeka mpya lazima uwe wa mechi inayoanza angalau dakika 15 mbele (10 za kufunga + 5), vinginevyo ungejifunga mara moja.
 - Hali ya "Inasubiri matokeo" sasa inaanza wakati wa kufungwa (si mechi ikianza).
+
+## Odds zilizopangwa kama kampuni za kubashiri
+Ukurasa wa mechi sasa unaonyesha odds kama vitufe vya kugusa, si orodha ndefu:
+- **Matokeo ya mchezo:** vitufe vitatu vya mstari mmoja (Nyumbani, Sare, Ugenini).
+- **Nafasi mbili:** 1X, 12, X2. **Timu zote kufunga:** Ndiyo / Hapana.
+- **Jumla ya magoli:** jedwali la mistari (0.5, 1.5, 2.5 …) lenye Zaidi na Chini kando kwa kando.
+- Kugusa odds kunaiongeza moja kwa moja kwenye mkeka (hatua moja, si mbili); chaguo lililochaguliwa linaonekana kwa rangi. Odds bora zinaonyeshwa; kampuni unaichagua mwishoni kwenye "Kamilisha mkeka".
+
+## Mechi ikihamishwa saa
+Usasishaji wa mechi ukigundua saa ya mechi imebadilika, mikeka iliyo wazi yenye mechi hiyo inafuata saa mpya (saa ya kufunga inabadilika, na kwa mkeka wa mechi nyingi inafuata mechi ya mapema zaidi). Mtabiri anapata arifa.

@@ -98,6 +98,7 @@ def _upsert_fixture(item):
     ag = ft.get("away") if ft.get("away") is not None else goals.get("away")
     kickoff = datetime.fromtimestamp(int(fx["timestamp"]), timezone.utc).isoformat()
     status = (fx.get("status") or {}).get("short") or "NS"
+    prev = db.query("SELECT kickoff FROM fixtures WHERE id = %s", (fx["id"],), one=True)
     db.execute(
         "INSERT INTO fixtures (id, league_id, league_name, country, home, away, home_logo, away_logo, "
         "kickoff, status, home_goals, away_goals, updated_at) "
@@ -107,6 +108,13 @@ def _upsert_fixture(item):
         "home_goals = EXCLUDED.home_goals, away_goals = EXCLUDED.away_goals, updated_at = CURRENT_TIMESTAMP",
         (fx["id"], lg["id"], lg.get("name") or "", lg.get("country") or "", tm["home"]["name"], tm["away"]["name"],
          tm["home"].get("logo"), tm["away"].get("logo"), kickoff, status, hg, ag))
+    if prev is not None:
+        import models
+        try:
+            if abs((models.to_dt(prev["kickoff"]) - models.to_dt(kickoff)).total_seconds()) >= 60:
+                _reschedule_tips(fx["id"], kickoff, f"{tm['home']['name']} vs {tm['away']['name']}")
+        except Exception:
+            pass  # kusasisha mechi kusikwamishwe na tatizo la mikeka
 
 
 def sync_fixtures(days=None, force=False):
@@ -476,3 +484,20 @@ def _settle_slips(now):
         except Exception:
             continue
     return done
+
+
+def _reschedule_tips(fixture_id, kickoff, title):
+    """Mechi imehamishwa saa: mikeka iliyo wazi inafuata saa mpya, ili kufungwa kuwe sahihi."""
+    import models
+    singles = db.query("SELECT id, user_id FROM tips WHERE fixture_id = %s AND status = 'open'", (fixture_id,))
+    for t in singles:
+        db.execute("UPDATE tips SET starts_at = %s WHERE id = %s", (kickoff, t["id"]))
+    multi = db.query("SELECT DISTINCT t.id, t.user_id FROM tip_legs l JOIN tips t ON t.id = l.tip_id "
+                     "WHERE l.fixture_id = %s AND t.status = 'open'", (fixture_id,))
+    for t in multi:
+        db.execute("UPDATE tip_legs SET kickoff = %s WHERE tip_id = %s AND fixture_id = %s", (kickoff, t["id"], fixture_id))
+        earliest = min(models.to_dt(r["kickoff"]) for r in db.query("SELECT kickoff FROM tip_legs WHERE tip_id = %s", (t["id"],)))
+        db.execute("UPDATE tips SET starts_at = %s WHERE id = %s", (earliest.isoformat(), t["id"]))
+    for t in singles + multi:
+        models.notify_safe(t["user_id"], "tip", f"Mechi ya mkeka wako imehamishwa saa: {title}. Mkeka utafungwa kwa saa mpya.",
+                           f"/jamvi/{t['id']}")
