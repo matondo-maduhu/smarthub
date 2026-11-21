@@ -165,3 +165,14 @@
   }
   setInterval(tick, 1000);
 })();
+
+// Menyu ya kuchagua: kubonyeza kitufe kunafungua, kubonyeza nje au Esc kunafunga
+(function () {
+  document.querySelectorAll("[data-menu]").forEach(function (m) {
+    var btn = m.querySelector(".menu-btn"), pop = m.querySelector(".menu-pop");
+    function set(open) { pop.hidden = !open; btn.setAttribute("aria-expanded", open ? "true" : "false"); }
+    btn.addEventListener("click", function (e) { e.stopPropagation(); set(pop.hidden); });
+    document.addEventListener("click", function (e) { if (!m.contains(e.target)) set(false); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") set(false); });
+  });
+})();
