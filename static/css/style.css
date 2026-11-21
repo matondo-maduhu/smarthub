@@ -714,3 +714,12 @@ input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
 .box-row .row-icon { flex: none; color: var(--muted); display: inline-flex; margin-right: 12px; }
 .stack + .box, .box + form { margin-top: 12px; }
 @media (max-width: 480px) { .avatar-edit { flex-direction: column; align-items: stretch; text-align: center; } .avatar-edit .avatar { align-self: center; } .avatar-edit .field { text-align: left; } }
+
+/* Msaada: maswali ya mara kwa mara */
+.faq { border-top: 1px solid var(--border, #d0d7de); }
+.faq:first-of-type { border-top: 0; }
+.faq summary { cursor: pointer; padding: 12px 14px; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 8px; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--muted); font-weight: 400; }
+.faq[open] summary::after { content: "−"; }
+.faq p { margin: 0; padding: 0 14px 14px; color: var(--muted); line-height: 1.5; }
