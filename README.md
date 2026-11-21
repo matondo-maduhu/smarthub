@@ -385,3 +385,10 @@ Usasishaji wa mechi ukigundua saa ya mechi imebadilika, mikeka iliyo wazi yenye 
 
 ## Menyu ya Usimamizi (badala ya tabo 9)
 Tabo tisa za admin zilisogezwa kando kwenye simu. Sasa kuna kitufe kimoja kinachoonyesha sehemu uliyopo (mfano "Matangazo ▾"); ukibonyeza kinafunguka kisanduku cha menyu chenye ikoni na jina la kila sehemu (Muhtasari, Watumiaji, Mikeka, Bidhaa, Maagizo, Mechi, Matangazo, Ripoti, Kumbukumbu). Sehemu ya sasa imeangaziwa; kubonyeza nje au Esc kunafunga.
+
+## Marekebisho ya mpangilio wa app nzima
+- **Menyu ya kuchagua** (`templates/_menu.html`) imetumika popote palipokuwa na tabo nyingi: Usimamizi (sehemu 9), Market (kundi la bidhaa, lenye ikoni za kila kundi), Jamvi (Zote / Zinazosubiri / Zilizoshinda / Zilizopoteza) na Weka mkeka (ligi za siku). Kila moja inaonyesha chaguo la sasa kwenye kitufe, na ikifunguka inaonyesha orodha yenye ikoni (na idadi pale inapofaa).
+- Kitufe cha "Tafuta" kinakaa katikati ya kisanduku cha kutafuta; maandishi ya Market hayakatwi tena.
+- Kurasa za Ujumbe na Arifa zina ikoni kwenye kichwa kama kurasa nyingine; hali tupu za Viwango na Mtabiri zimepangwa kwa kisanduku kimoja.
+- Kitufe cha "Choose File" kinafuata rangi za mandhari (mwanga na giza).
+- Nimekagua kurasa kuu kwa picha za simu (mwanga na giza), ikiwemo admin.
