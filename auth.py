@@ -132,23 +132,52 @@ def check_common(display_name, username, birth_raw, age_ok):
 
 
 # ---------- Kuzuia kujaribu nenosiri mara nyingi ----------
-_FAILS = {}
+_FAILS = {}  # akiba ya kumbukumbu ikiwa database haipatikani
 MAX_FAILS = 5
 WINDOW = 600  # sekunde
 
 
 def _fail_key(identifier):
-    return f"{request.remote_addr}|{identifier.lower()}"
+    import hashlib
+    raw = f"{request.remote_addr}|{identifier.lower()}"
+    return "fail|" + hashlib.sha256(raw.encode()).hexdigest()[:32]
+
+
+def _load_fails(key):
+    """Majaribio yanahifadhiwa kwenye database (jedwali kv) ili yafanye kazi hata Vercel ikianzisha
+    nakala nyingi za app; yasipopatikana tunatumia kumbukumbu."""
+    now = time.time()
+    try:
+        row = db.query("SELECT value FROM kv WHERE key = %s", (key,), one=True)
+        ts = [float(x) for x in (row["value"].split(",") if row and row["value"] else []) if x]
+    except Exception:
+        ts = list(_FAILS.get(key, []))
+    return [t for t in ts if now - t < WINDOW]
+
+
+def _store_fails(key, ts):
+    try:
+        if ts:
+            db.execute("INSERT INTO kv (key, value, updated_at) VALUES (%s, %s, CURRENT_TIMESTAMP) "
+                       "ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP",
+                       (key, ",".join(f"{t:.0f}" for t in ts[-MAX_FAILS * 2:])))
+        else:
+            db.execute("DELETE FROM kv WHERE key = %s", (key,))
+    except Exception:
+        if ts: _FAILS[key] = ts
+        else: _clear_fails(key)
 
 
 def _recent_fails(key):
-    now = time.time()
-    recent = [t for t in _FAILS.get(key, []) if now - t < WINDOW]
-    if recent:
-        _FAILS[key] = recent
-    else:
-        _FAILS.pop(key, None)
-    return recent
+    return _load_fails(key)
+
+
+def _add_fail(key):
+    _store_fails(key, _load_fails(key) + [time.time()])
+
+
+def _clear_fails(key):
+    _store_fails(key, [])
 
 
 # ---------- Njia (routes) ----------
@@ -225,12 +254,12 @@ def login():
             ok = bool(user and user["password_hash"]
                       and check_password_hash(user["password_hash"], password))
             if not ok:
-                _FAILS.setdefault(key, []).append(time.time())
+                _add_fail(key)
                 errors.append("Taarifa ulizoweka si sahihi.")
             elif user["is_banned"]:
                 errors.append("Akaunti hii imesimamishwa.")
             else:
-                _FAILS.pop(key, None)
+                _clear_fails(key)
                 login_user(user["id"])
                 return redirect(next_url or url_for("home"))
     return render_template("auth_login.html", form=form, errors=errors, next=next_url, active="wasifu"), (400 if errors else 200)
@@ -254,7 +283,7 @@ def change_password():
     if len(_recent_fails(key)) >= MAX_FAILS:
         msg = "Umejaribu mara nyingi mno. Subiri dakika chache kisha ujaribu tena."
     elif has_pw and not check_password_hash(g.user["password_hash"], current):
-        _FAILS.setdefault(key, []).append(time.time())
+        _add_fail(key)
         msg = "Nenosiri la sasa si sahihi."
     elif len(new) < 8:
         msg = "Nenosiri jipya liwe na herufi 8 au zaidi."
@@ -267,7 +296,7 @@ def change_password():
     if msg:
         flash(msg, "error")
     else:
-        _FAILS.pop(key, None)
+        _clear_fails(key)
         models.set_password(g.user["id"], generate_password_hash(new))
         session["pv"] = password_stamp(models.get_user(g.user["id"]))  # kifaa hiki kinabaki ndani
         flash("Nenosiri limebadilishwa. Vifaa vingine vimetolewa kwenye akaunti.", "ok")

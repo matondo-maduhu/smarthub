@@ -411,3 +411,6 @@ Admin akimsimamisha mtumiaji, maagizo yote ya market yaliyo wazi ya muuzaji huyo
 
 ## Mikeka ya mkono iliyosahaulika
 Mkeka wa mkono wenye saa, ambao mtabiri hakuweka matokeo kwa siku 14 baada ya saa hiyo, unabatilishwa na cron ya kila siku (`/cron/release`), na wanunuzi wanarudishiwa coin zote (muuzaji anakatwa alichopokea kadiri salio lake linavyoruhusu). Mikeka ya mechi halisi na ya mechi nyingi tayari ilikuwa inabatilishwa kiotomatiki baada ya siku 7 bila matokeo.
+
+## Kuzuia kubahatisha nenosiri (sasa kwenye database)
+Majaribio 5 yasiyo sahihi ndani ya dakika 10 (kwa kila kifaa/anwani na jina la kuingia, na pia kwa kubadilisha nenosiri) yanafunga kuingia kwa muda. Awali hesabu ilikaa kwenye kumbukumbu ya app, jambo ambalo kwenye Vercel halifanyi kazi vizuri kwa sababu kila nakala ya app ina kumbukumbu yake; sasa inahifadhiwa kwenye jedwali `kv` (ufunguo unaoanza na `fail|`, anwani ikiwa imefichwa kwa hash), kwa hiyo kikomo kinashikilia kila nakala. Database ikishindwa, inarudi kwenye kumbukumbu ili kuingia kusisimame.
