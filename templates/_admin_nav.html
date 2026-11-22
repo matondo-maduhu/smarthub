@@ -1,17 +1,25 @@
-{% from "_menu.html" import select_menu %}
+{# Menyu ya Usimamizi: kwenye kompyuta ni safu ya pembeni, kwenye simu ni tabo zinazoteleza.
+   Tumia: {% import "_admin_nav.html" as nav %}{{ nav.render(sec, counts) }} #}
+{% from "_icons.html" import icon %}
 {% set items = [
-  ('dash', 'Muhtasari', 'grid', 'admin.dashboard'),
-  ('users', 'Watumiaji', 'users', 'admin.users'),
-  ('tips', 'Mikeka', 'ticket', 'admin.tips'),
-  ('products', 'Bidhaa', 'store', 'admin.products'),
-  ('orders', 'Maagizo', 'cart', 'admin.orders'),
-  ('fixtures', 'Mechi', 'ball', 'admin.fixtures'),
-  ('banners', 'Matangazo', 'image', 'admin.banners'),
-  ('reports', 'Ripoti', 'flag', 'admin.reports'),
-  ('support', 'Msaada', 'mail', 'admin.support'),
-  ('log', 'Kumbukumbu', 'list', 'admin.log'),
+  ('dash', 'Muhtasari', 'grid', 'admin.dashboard', none),
+  ('orders', 'Maagizo', 'cart', 'admin.orders', 'disputed'),
+  ('reports', 'Ripoti', 'flag', 'admin.reports', 'reports'),
+  ('support', 'Msaada', 'mail', 'admin.support', 'support'),
+  ('users', 'Watumiaji', 'users', 'admin.users', none),
+  ('tips', 'Mikeka', 'ticket', 'admin.tips', none),
+  ('products', 'Bidhaa', 'store', 'admin.products', none),
+  ('fixtures', 'Mechi', 'ball', 'admin.fixtures', none),
+  ('banners', 'Matangazo', 'image', 'admin.banners', none),
+  ('log', 'Kumbukumbu', 'list', 'admin.log', none),
 ] %}
-{% set cur = items|selectattr(0, 'equalto', sec)|first %}
-{% set menu_items = [] %}
-{% for key, name, ic, ep in items %}{% set _ = menu_items.append((url_for(ep), name, ic, key == sec, none)) %}{% endfor %}
-{{ select_menu(menu_items, cur[1], cur[2], "Usimamizi") }}
+{% macro render(sec, counts) -%}
+<nav class="admin-nav" aria-label="Usimamizi">
+  {% for key, name, ic, ep, ck in items %}
+  <a class="admin-link {{ 'on' if key == sec }}" href="{{ url_for(ep) }}" {% if key == sec %}aria-current="page"{% endif %}>
+    {{ icon(ic, 18) }}<span>{{ name }}</span>
+    {% if ck and counts and counts.get(ck) %}<span class="admin-badge">{{ counts.get(ck) }}</span>{% endif %}
+  </a>
+  {% endfor %}
+</nav>
+{%- endmacro %}

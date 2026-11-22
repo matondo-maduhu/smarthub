@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Kumbukumbu · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Hatua zote za wasimamizi. Hazifutwi.</p></div>
-{% set sec = 'log' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}log{% endblock %}
+{% block admin_sub %}Hatua zote za wasimamizi. Hazifutwi.{% endblock %}
+{% block admin %}
 <section class="box">
   <div class="box-header">Kumbukumbu <span class="counter">{{ rows|length }}</span></div>
   {% for l in rows %}

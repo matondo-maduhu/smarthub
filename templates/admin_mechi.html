@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_icons.html" import icon %}
 {% block title %}Mechi · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Mechi halisi, odds na hukumu ya kiotomatiki ya mikeka.</p></div>
-{% set sec = 'fixtures' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}fixtures{% endblock %}
+{% block admin_sub %}Mechi halisi, odds na hukumu ya kiotomatiki ya mikeka.{% endblock %}
+{% block admin %}
 
 {% if not configured %}
 <p class="notice warn">{{ icon('shield', 16) }} <code>APIFOOTBALL_KEY</code> haijawekwa. Mikeka inawekwa kwa mkono hadi ufunguo uwekwe kwenye Vercel.</p>

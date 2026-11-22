@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Maagizo · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Maagizo yote kwa hali. Fungua agizo kuachilia au kurudisha coin.</p></div>
-{% set sec = 'orders' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}orders{% endblock %}
+{% block admin_sub %}Maagizo yote kwa hali. Fungua agizo kuachilia au kurudisha coin.{% endblock %}
+{% block admin %}
 <div class="chips wrap">
   {% for k, label in [('disputed','Mapingamizi'),('paid','Yamelipwa'),('delivered','Yamekabidhiwa'),('completed','Yamekamilika'),('cancelled','Yameghairiwa'),('zote','Yote')] %}
   <a class="chip {{ 'on' if hali == k }}" href="{{ url_for('admin.orders', hali=k) }}">{{ label }}</a>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% import "_admin_nav.html" as nav %}
+{% block page_class %} admin-page{% endblock %}
+{% block content %}
+{% set sec = self.admin_sec()|trim %}
+{% set cur = nav.items|selectattr(0, 'equalto', sec)|first %}
+<div class="admin-shell">
+  {{ nav.render(sec, admin_counts) }}
+  <div class="admin-main">
+    <div class="page-title">
+      <h1>{{ icon(cur[2] if cur else 'shield', 24) }} {% block admin_title scoped %}{{ cur[1] if cur else "Usimamizi" }}{% endblock %}</h1>
+      <p>{% block admin_sub %}{% endblock %}</p>
+    </div>
+    {% block admin %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

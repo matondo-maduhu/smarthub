@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Msaada · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Maombi ya msaada kutoka kwa watumiaji.</p></div>
-{% set sec = 'support' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}support{% endblock %}
+{% block admin_sub %}Maombi ya msaada kutoka kwa watumiaji.{% endblock %}
+{% block admin %}
 <div class="chips wrap">
   <a class="chip {{ 'on' if hali == 'open' }}" href="{{ url_for('admin.support') }}">Yanayosubiri</a>
   <a class="chip {{ 'on' if hali == 'answered' }}" href="{{ url_for('admin.support', hali='answered') }}">Yaliyojibiwa</a>

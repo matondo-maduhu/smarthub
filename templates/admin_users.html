@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Watumiaji · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Tafuta, simamisha au thibitisha akaunti.</p></div>
-{% set sec = 'users' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}users{% endblock %}
+{% block admin_sub %}Tafuta, simamisha au thibitisha akaunti.{% endblock %}
+{% block admin %}
 
 <form method="get" class="search-form">
   <label class="field"><span>Tafuta (jina, barua pepe, simu)</span><input name="q" value="{{ q }}" maxlength="60"></label>

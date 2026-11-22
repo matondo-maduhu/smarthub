@@ -1,9 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_icons.html" import icon %}
 {% block title %}Kiungo cha nenosiri · Usimamizi{% endblock %}
-{% block page_class %} narrow{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Kiungo cha nenosiri</h1><p>Kwa @{{ uname }}</p></div>
+{% block admin_sec %}users{% endblock %}
+{% block admin_title %}Kiungo cha nenosiri{% endblock %}
+{% block admin_sub %}Kwa @{{ uname }}{% endblock %}
+{% block admin %}
 <section class="box">
   <div class="box-header">Mtumie mtumiaji kiungo hiki</div>
   <div class="pad form">

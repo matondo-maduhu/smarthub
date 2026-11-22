@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_icons.html" import icon %}
 {% from "_matangazo.html" import slider %}
 {% block title %}Matangazo · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Matangazo yanayoonekana juu ya ukurasa wa nyumbani.</p></div>
-{% set sec = 'banners' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}banners{% endblock %}
+{% block admin_sub %}Matangazo yanayoonekana juu ya ukurasa wa nyumbani.{% endblock %}
+{% block admin %}
 
 <section class="box">
   <div class="box-header">{{ 'Hariri tangazo #' ~ edit.id if edit else 'Tangazo jipya' }}</div>

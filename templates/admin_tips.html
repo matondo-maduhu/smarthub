@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 {% from "_pager.html" import pager %}
 {% from "_icons.html" import icon %}
 {% block title %}Mikeka · Usimamizi{% endblock %}
-{% block content %}
-<div class="page-title"><h1>{{ icon('shield', 24) }} Usimamizi</h1><p>Batilisha mikeka yenye shida au futa isiyo na wanunuzi.</p></div>
-{% set sec = 'tips' %}{% include "_admin_nav.html" %}
+{% block admin_sec %}tips{% endblock %}
+{% block admin_sub %}Batilisha mikeka yenye shida au futa isiyo na wanunuzi.{% endblock %}
+{% block admin %}
 <p class="muted small-text">"Batilisha" huwarudishia wanunuzi coin zote; muuzaji anakatwa alichopokea kadiri salio lake linavyoruhusu, upungufu unabebwa na jukwaa. Kuweka matokeo: fungua mkeka.</p>
 <section class="box">
   <div class="box-header">Mikeka <span class="counter">{{ rows|length }}</span></div>
