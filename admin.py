@@ -54,11 +54,25 @@ def _do(fn, ok_msg, *args):
         flash(ok_msg, "ok")
 
 
+@bp.app_context_processor
+def _admin_counts():
+    """Idadi ya vitu vinavyosubiri, kwa vitone vyekundu kwenye menyu ya Usimamizi (kurasa za /admin tu)."""
+    if not request.path.startswith("/admin") or not (g.get("user") and g.user["is_admin"]):
+        return {}
+    try:
+        s = models.admin_stats()
+        return {"admin_counts": {"disputed": s["disputed"], "reports": s["reports_open"], "support": s["support_open"]}}
+    except Exception:
+        return {}
+
+
 @bp.route("")
 @admin_required
 def dashboard():
     return render_template("admin_dash.html", active="admin", s=models.admin_stats(),
-                           disputed=models.admin_orders("disputed", 10))
+                           disputed=models.admin_orders("disputed", 10),
+                           new_users=models.admin_users(None, 5, 0),
+                           recent=models.admin_log_list(8), log_labels=LOG_LABELS)
 
 
 @bp.route("/watumiaji")

@@ -463,3 +463,9 @@ Nimepitia kurasa zote 34 (mtumiaji, mgeni na admin) kwa picha za simu na kurekeb
 
 ## Ukaguzi wa hali ya mwanga na skrini ya kompyuta
 Nimekagua kurasa kuu kwa hali ya **mwanga** (simu) na kwa **skrini ya kompyuta** (giza na mwanga, upana 1280). Hali ya mwanga ilikuwa sawa. Kwenye kompyuta, kurasa za maudhui membamba (Wasifu, Mipangilio, Pochi, Ujumbe, Arifa, Msaada, mkeka mmoja, bidhaa moja, fomu za kuweka, n.k.) sasa zinakaa katikati kwa upana wa juu 700px (darasa `narrow` kupitia `{% block page_class %}` ya `base.html`) badala ya kunyooka ukingo hadi ukingo; orodha za kadi (Jamvi, Market, Admin) zinabaki pana. Kadi ya mkeka inaonyesha ligi na tarehe kwenye mistari miwili safi.
+
+## Usimamizi: muundo mpya (admin)
+- **Menyu:** kwenye kompyuta ni **safu ya pembeni** (inabaki juu unaposogeza); kwenye simu ni **tabo zinazoteleza** zenye ikoni. Sehemu zimepangwa kwa umuhimu: Muhtasari, Maagizo, Ripoti, Msaada, kisha Watumiaji, Mikeka, Bidhaa, Mechi, Matangazo, Kumbukumbu. Maagizo yenye mapingamizi, Ripoti wazi na Msaada unaosubiri vina **kitone chekundu chenye idadi**.
+- **Muhtasari:** kadi tatu za tahadhari (nyekundu kukiwa na kinachosubiri, kijani kukiwa hakuna), vigae vinne (watumiaji, mikeka, bidhaa, maagizo wazi), coin (kwenye pochi, zinazoshikiliwa, jumla), watumiaji wapya 5, mapingamizi na shughuli 8 za mwisho.
+- **Kichwa cha kila ukurasa** sasa ni jina la sehemu ("Watumiaji", "Maagizo"...) na maelezo mafupi chini yake, si "Usimamizi" kila mahali.
+- **Msingi mmoja:** kurasa zote za admin zinarithi `templates/admin_base.html` (menyu ni `_admin_nav.html`, orodha ya sehemu iko hapo mara moja tu). Ukurasa mpya wa admin: `{% extends "admin_base.html" %}` na `{% block admin_sec %}jina{% endblock %}`, `{% block admin_sub %}…{% endblock %}`, `{% block admin %}…{% endblock %}`. Idadi za vitone zinatoka `admin.py` (`_admin_counts`).
