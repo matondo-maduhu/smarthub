@@ -460,3 +460,6 @@ Nimepitia kurasa zote 34 (mtumiaji, mgeni na admin) kwa picha za simu na kurekeb
 - Kadi ya mkeka: ligi na tarehe zinapangwa vizuri bila kukatika katikati.
 - Kumbukumbu za admin zinaonyesha vitendo kwa Kiswahili ("Alibatilisha mkeka") badala ya majina ya ndani; hali ya bidhaa kwenye admin inasomeka "Hewani".
 - Kila kisanduku cha nenosiri kina kitufe cha **Onyesha/Ficha**.
+
+## Ukaguzi wa hali ya mwanga na skrini ya kompyuta
+Nimekagua kurasa kuu kwa hali ya **mwanga** (simu) na kwa **skrini ya kompyuta** (giza na mwanga, upana 1280). Hali ya mwanga ilikuwa sawa. Kwenye kompyuta, kurasa za maudhui membamba (Wasifu, Mipangilio, Pochi, Ujumbe, Arifa, Msaada, mkeka mmoja, bidhaa moja, fomu za kuweka, n.k.) sasa zinakaa katikati kwa upana wa juu 700px (darasa `narrow` kupitia `{% block page_class %}` ya `base.html`) badala ya kunyooka ukingo hadi ukingo; orodha za kadi (Jamvi, Market, Admin) zinabaki pana. Kadi ya mkeka inaonyesha ligi na tarehe kwenye mistari miwili safi.
