@@ -740,10 +740,13 @@ input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
 /* Tabo zinazoteleza: kivuli kinaonyesha kuna zaidi kulia */
 .chips.more { -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent); mask-image: linear-gradient(90deg, #000 86%, transparent); }
 /* Mkeka: tarehe/ligi zisikatike vibaya */
-.tip-who .muted { display: flex; flex-wrap: wrap; column-gap: 6px; }
+.tip-who .muted { display: flex; flex-direction: column; font-size: 12.5px; line-height: 1.35; }
 .tip-who .muted span { white-space: nowrap; }
 /* Onyesha/ficha nenosiri */
 .pw-wrap { position: relative; display: block; }
 .pw-wrap input { width: 100%; padding-right: 74px; }
 .pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 13px; padding: 6px 8px; cursor: pointer; border-radius: 6px; }
 .pw-toggle:hover { color: var(--text); background: var(--btn-hover); }
+
+/* Kurasa za maudhui membamba (fomu, orodha, wasifu): kwenye skrini kubwa zikae katikati, zisinyooke ukingo hadi ukingo */
+@media (min-width: 760px) { .page.narrow { max-width: 700px; } }
