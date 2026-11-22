@@ -750,3 +750,49 @@ input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
 
 /* Kurasa za maudhui membamba (fomu, orodha, wasifu): kwenye skrini kubwa zikae katikati, zisinyooke ukingo hadi ukingo */
 @media (min-width: 760px) { .page.narrow { max-width: 700px; } }
+
+/* ===== Usimamizi: muundo mpya (safu ya pembeni kwenye kompyuta, tabo kwenye simu) ===== */
+.admin-shell { display: flex; flex-direction: column; gap: 16px; }
+.admin-main { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.admin-nav { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px 0 6px; margin: 0 -16px; padding-left: 16px; padding-right: 16px; scroll-snap-type: x proximity; }
+.admin-nav::-webkit-scrollbar { display: none; }
+.admin-link { flex: none; display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--btn-border); border-radius: 999px; background: var(--btn-bg); color: var(--text); font-size: 14px; text-decoration: none; white-space: nowrap; scroll-snap-align: start; }
+.admin-link:hover { text-decoration: none; background: var(--btn-hover); }
+.admin-link.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.admin-badge { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: #fff; font-size: 11px; font-weight: 700; display: inline-grid; place-items: center; line-height: 1; }
+.admin-link.on .admin-badge { background: #fff; color: var(--accent); }
+
+@media (min-width: 900px) {
+  .page.admin-page { max-width: 1200px; }
+  .admin-shell { display: grid; grid-template-columns: 214px minmax(0, 1fr); gap: 24px; align-items: start; }
+  .admin-nav { position: sticky; top: 72px; flex-direction: column; overflow: visible; margin: 0; padding: 8px; gap: 2px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  .admin-link { border: 0; border-radius: 8px; background: transparent; padding: 9px 10px; font-size: 14.5px; }
+  .admin-link span:nth-child(2) { flex: 1; }
+  .admin-link.on { background: var(--accent-soft, rgba(56,139,253,.15)); color: var(--accent); }
+  .admin-link.on .admin-badge { background: var(--red); color: #fff; }
+}
+
+/* Kadi za tahadhari (kinachosubiri hatua) */
+.kpi-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.kpi { display: grid; grid-template-areas: "ic num" "lab lab" "sub sub"; grid-template-columns: auto 1fr; align-items: center; gap: 2px 10px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--text); text-decoration: none; min-width: 0; }
+.kpi:hover { text-decoration: none; border-color: var(--accent); }
+.kpi-ic { grid-area: ic; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--surface-2, var(--btn-bg)); color: var(--muted); }
+.kpi-num { grid-area: num; justify-self: end; font-size: 26px; font-weight: 700; line-height: 1; }
+.kpi-lab { grid-area: lab; margin-top: 8px; font-size: 13px; font-weight: 600; overflow-wrap: anywhere; }
+.kpi-sub { grid-area: sub; font-size: 12px; color: var(--muted); }
+.kpi.alert { border-color: var(--red); }
+.kpi.alert .kpi-ic { background: var(--red-soft); color: var(--red); }
+.kpi.alert .kpi-num { color: var(--red); }
+.kpi.calm .kpi-ic { background: var(--green-soft); color: var(--green); }
+@media (max-width: 520px) { .kpi-row { grid-template-columns: 1fr; } .kpi { grid-template-areas: "ic lab num" "ic sub num"; grid-template-columns: auto 1fr auto; } .kpi-lab { margin-top: 0; } }
+
+.tiles-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 900px) { .tiles-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+a.tile { color: var(--text); text-decoration: none; }
+a.tile:hover { text-decoration: none; border-color: var(--accent); }
+.box-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.box-link { margin-left: auto; font-size: 13px; font-weight: 400; }
+.admin-main .search-form { margin: 0; }
+.admin-nav { scroll-padding: 0 16px; }
+@media (min-width: 900px) { .admin-nav { scroll-padding: 0; } }
+.admin-cols > .box, .admin-main > .box, .admin-main > .chips + .box { margin-top: 0; }
