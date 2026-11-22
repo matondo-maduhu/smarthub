@@ -8,7 +8,7 @@
 <section class="box">
   <div class="box-header">Kumbukumbu <span class="counter">{{ rows|length }}</span></div>
   {% for l in rows %}
-  <div class="row"><div class="row-main"><strong>{{ l.action }} <span class="muted">{{ l.detail }}</span></strong>
+  <div class="row"><div class="row-main"><strong>{{ log_labels.get(l.action, l.action) }} <span class="muted">{{ l.detail }}</span></strong>
     <span class="muted">@{{ l.username }} · {{ l.created_at|eat }}</span></div></div>
   {% else %}<div class="box-empty">Hakuna kumbukumbu bado.</div>{% endfor %}
 </section>

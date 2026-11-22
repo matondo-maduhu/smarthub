@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "_icons.html" import icon %}
+{% from "_cards.html" import tip_card, product_card with context %}
+{% from "_pager.html" import pager %}
+{% block title %}Vipendwa · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="page-title"><h1>{{ icon('thumb', 24) }} Vipendwa</h1><p>Mikeka na bidhaa ulizopenda.</p></div>
+<div class="seg two" role="tablist">
+  <a class="{{ 'on' if aina == 'mikeka' }}" href="{{ url_for('vipendwa') }}">Mikeka</a>
+  <a class="{{ 'on' if aina == 'bidhaa' }}" href="{{ url_for('vipendwa', aina='bidhaa') }}">Bidhaa</a>
+</div>
+{% if rows %}
+  {% if aina == 'mikeka' %}<div class="stack">{% for t in rows %}<div>{{ tip_card(t) }}</div>{% endfor %}</div>
+  {% else %}<div class="grid">{% for p in rows %}{{ product_card(p) }}{% endfor %}</div>{% endif %}
+{{ pager(page, has_next) }}
+{% else %}
+<section class="card pad center"><p class="muted">Bado hujapenda {{ 'mkeka' if aina == 'mikeka' else 'bidhaa' }} yoyote. Bonyeza <b>Penda</b> kwenye ukurasa wake ili uipate hapa baadaye.</p></section>
+{% endif %}
+{% endblock %}

@@ -13,7 +13,7 @@
     {{ avatar(t) }}
     <div class="tip-who">
       <a href="{{ url_for('tips.tipster', username=t.username) }}"><strong>{{ t.display_name }}</strong></a>
-      <span class="muted">{{ t.league or 'Mchezo' }} · {{ t.starts_at|eat }}</span>
+      <span class="muted"><span>{{ t.league or 'Mchezo' }}</span><span>· {{ t.starts_at|eat }}</span></span>
     </div>
     <span class="badge {{ st[1] }}">{{ st[0] }}</span>
   </header>
@@ -31,7 +31,7 @@
   </div>
 
   <footer class="tip-foot">
-    <span class="stat">{{ icon('heart', 16) }} {{ t.likes }}</span>
+    <span class="stat {{ 'on' if t.liked }}">{{ icon('thumb-on' if t.liked else 'thumb', 16) }} {{ t.likes }}</span>
     <span class="stat">{{ icon('chat', 16) }} {{ t.comments }}</span>
     {% if t.phase == 'open' and t.closes_in is not none %}{% if t.counting %}<span class="stat countdown" data-left="{{ t.closes_in }}" title="Muda uliobaki mkeka ujifunge">{{ icon('lock', 16) }} Inafungwa <b>{{ '%02d:%02d'|format(t.closes_in // 60, t.closes_in % 60) }}</b></span>{% else %}<span class="stat" title="Muda uliobaki mkeka ujifunge">{{ icon('lock', 16) }} Inafungwa baada ya {{ t.closes_in|closes }}</span>{% endif %}{% endif %}
     <span class="stat" title="Asilimia ya mikeka iliyoshinda">{{ icon('trend', 16) }} {{ (t.win_rate ~ '%') if t.win_rate is not none else '—' }}</span>
@@ -55,7 +55,7 @@
   <div class="product-body">
     <h3>{{ p.title }}</h3>
     <p class="muted">{{ p.location or meta.label }}</p>
-    <div class="product-price">{{ icon('coin', 16) }} {{ p.price|num }}</div>
+    <div class="product-price">{{ icon('coin', 16) }} {{ p.price|num }}{% if p.likes %}<span class="stat prod-likes">{{ icon('thumb', 14) }} {{ p.likes }}</span>{% endif %}</div>
   </div>
 </a>
 {%- endmacro %}

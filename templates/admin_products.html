@@ -13,7 +13,7 @@
       <a href="{{ url_for('market.detail', product_id=p.id) }}"><strong>{{ p.title }}</strong></a>
       <span class="muted">#{{ p.id }} · @{{ p.username }} · coin {{ p.price|num }}</span>
     </div>
-    <span class="badge {{ product_status[p.status][1] if p.status in product_status else 'mute' }}">{{ product_status[p.status][0] if p.status in product_status else p.status }}</span>
+    <span class="badge {{ product_status[p.status][1] if p.status in product_status else 'mute' }}">{{ product_status[p.status][0] if p.status in product_status else ('Hewani' if p.status == 'active' else p.status) }}</span>
     {% if p.status in ('active', 'hidden') %}
     <form method="post" action="{{ url_for('admin.product_action', pid=p.id, action='onyesha' if p.status == 'hidden' else 'ficha') }}">
       <input type="hidden" name="_csrf" value="{{ csrf_token() }}">

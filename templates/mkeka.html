@@ -78,7 +78,7 @@
 <div class="actions-row">
   <form method="post" action="{{ url_for('tips.like', tip_id=t.id) }}">
     <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
-    <button class="btn {{ 'liked' if t.liked }}" type="submit">{{ icon('heart', 18) }} {{ 'Umependa' if t.liked else 'Penda' }} ({{ t.likes }})</button>
+    <button class="btn {{ 'liked' if t.liked }}" type="submit">{{ icon('thumb-on' if t.liked else 'thumb', 18) }} {{ 'Umependa' if t.liked else 'Penda' }} ({{ t.likes }})</button>
   </form>
 </div>
 {% endif %}

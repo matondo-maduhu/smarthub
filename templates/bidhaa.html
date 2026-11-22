@@ -32,6 +32,15 @@
   </div>
 </section>
 
+{% if user %}
+<div class="actions-row">
+  <form method="post" action="{{ url_for('market.like', product_id=p.id) }}">
+    <input type="hidden" name="_csrf" value="{{ csrf_token() }}">
+    <button class="btn {{ 'liked' if liked }}" type="submit">{{ icon('thumb-on' if liked else 'thumb', 18) }} {{ 'Umependa' if liked else 'Penda' }} ({{ p.likes }})</button>
+  </form>
+</div>
+{% elif p.likes %}<p class="muted">{{ icon('thumb', 16) }} {{ p.likes }} wamependa</p>{% endif %}
+
 {% if is_owner %}
 <section class="card pad">
   <h2>Bidhaa yako</h2>
