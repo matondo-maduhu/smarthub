@@ -319,3 +319,13 @@ CREATE TABLE IF NOT EXISTS follows (
     PRIMARY KEY (follower_id, tipster_id)
 );
 CREATE INDEX IF NOT EXISTS idx_follows_tipster ON follows(tipster_id);
+
+-- Kupenda bidhaa za market
+CREATE TABLE IF NOT EXISTS product_likes (
+    product_id BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (product_id, user_id)
+);
+CREATE INDEX IF NOT EXISTS idx_product_likes_user ON product_likes(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_tip_likes_user ON tip_likes(user_id, created_at DESC);

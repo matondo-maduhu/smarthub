@@ -296,6 +296,22 @@ def create_app():
             return redirect(url_for("wasifu"))
         return render_template("wasifu_hariri.html", active="wasifu", r2_ready=Config.R2_READY, form=None)
 
+    @app.route("/wasifu/vipendwa")
+    @auth.login_required
+    def vipendwa():
+        aina = request.args.get("aina", "mikeka")
+        if aina not in ("mikeka", "bidhaa"):
+            aina = "mikeka"
+        try:
+            page = max(1, min(int(request.args.get("ukurasa", "1")), 10000))
+        except ValueError:
+            page = 1
+        per = 20
+        fn = models.liked_tips if aina == "mikeka" else models.liked_products
+        rows = fn(g.user["id"], per + 1, (page - 1) * per)
+        return render_template("vipendwa.html", active="wasifu", aina=aina, rows=rows[:per], page=page,
+                               has_next=len(rows) > per)
+
     @app.route("/wasifu/mipangilio")
     def mipangilio():
         blocked = models.list_blocked(g.user["id"]) if g.user else []

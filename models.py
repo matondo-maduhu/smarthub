@@ -428,7 +428,8 @@ class MarketError(Exception):
 
 _PRODUCT_SELECT = (
     "SELECT p.*, u.username, u.display_name, "
-    "(SELECT url FROM product_images i WHERE i.product_id = p.id ORDER BY i.position, i.id LIMIT 1) AS image "
+    "(SELECT url FROM product_images i WHERE i.product_id = p.id ORDER BY i.position, i.id LIMIT 1) AS image, "
+    "(SELECT COUNT(*) FROM product_likes l WHERE l.product_id = p.id) AS likes "
     "FROM products p JOIN users u ON u.id = p.seller_id"
 )
 
@@ -1371,3 +1372,29 @@ def following_list(uid, limit=100):
 
 def following_tips(uid, limit=20):
     return _tips("t.user_id IN (SELECT tipster_id FROM follows WHERE follower_id = %s)", (uid,), uid, limit, 0)
+
+
+# ---------- Vipendwa (kupenda mikeka na bidhaa) ----------
+def toggle_product_like(product_id, uid):
+    """True kama sasa umependa, False kama umeondoa."""
+    with db.get_conn() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM product_likes WHERE product_id = %s AND user_id = %s", (product_id, uid))
+        if cur.rowcount > 0:
+            return False
+        cur.execute("INSERT INTO product_likes (product_id, user_id) VALUES (%s, %s)", (product_id, uid))
+        return True
+
+
+def product_liked(product_id, uid):
+    return bool(uid) and db.query("SELECT 1 AS x FROM product_likes WHERE product_id = %s AND user_id = %s",
+                                  (product_id, uid), one=True) is not None
+
+
+def liked_tips(uid, limit=20, offset=0):
+    return _tips("t.id IN (SELECT tip_id FROM tip_likes WHERE user_id = %s)", (uid,), uid, limit, offset)
+
+
+def liked_products(uid, limit=20, offset=0):
+    return db.query(_PRODUCT_SELECT + " WHERE p.status <> 'hidden' AND p.id IN "
+                    "(SELECT product_id FROM product_likes WHERE user_id = %s) "
+                    "ORDER BY p.created_at DESC, p.id DESC LIMIT %s OFFSET %s", (uid, limit, offset))

@@ -157,7 +157,21 @@ def detail(product_id):
     order = models.open_order_for_product(product_id)
     my_order_id = order["id"] if order and uid in (order["buyer_id"], order["seller_id"]) else None
     return render_template("bidhaa.html", active="market", p=p, is_owner=is_owner, my_order_id=my_order_id,
+                           liked=models.product_liked(product_id, uid),
                            fee=Config.MARKET_FEE_PCT, days=Config.ORDER_AUTO_RELEASE_DAYS)
+
+
+@bp.route("/<int:product_id>/penda", methods=["POST"])
+@auth.login_required
+def like(product_id):
+    p = models.get_product(product_id)
+    if not p or (p["status"] == "hidden" and p["seller_id"] != g.user["id"] and not g.user["is_admin"]):
+        abort(404)
+    try:
+        models.toggle_product_like(product_id, g.user["id"])
+    except db.IntegrityError:
+        pass  # mibofyo miwili kwa wakati mmoja
+    return redirect(url_for("market.detail", product_id=product_id))
 
 
 @bp.route("/<int:product_id>/ficha", methods=["POST"])

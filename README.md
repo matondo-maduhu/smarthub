@@ -446,3 +446,17 @@ Kwenye ukurasa wa mazungumzo kuna kitufe cha **Ondoa**. Kinaficha mazungumzo na 
 
 ## Kurasa za orodha ndefu ("Mapya zaidi" / "Za zamani zaidi")
 Jamvi na Market zilikuwa na kurasa tayari. Sasa orodha zote za Usimamizi (Watumiaji, Mikeka, Bidhaa, Maagizo, Ripoti, Msaada, Kumbukumbu; vitu 50 kwa ukurasa) na wasifu wa mtabiri (mikeka 20 kwa ukurasa) zina vitufe vya kurasa, kwa hiyo vitu vya zamani vinafikiwa. Vichujio vya sasa (hali, utafutaji) vinabaki ukihama ukurasa. Kimeundwa kama kifaa kimoja: `templates/_pager.html` na `page_url()` ya `app.py`; ukurasa usio sahihi (`?ukurasa=abc`) unachukuliwa kama wa kwanza.
+
+## Kupenda (kidole gumba) na Vipendwa
+- Alama ya kupenda sasa ni **kidole gumba** (SVG mpya `thumb` na `thumb-on` kwenye `_icons.html`), si moyo. Ukipenda, kinajaa rangi ya kuu ya app. Moyo haupo tena popote.
+- Unaweza kupenda **mikeka** na pia **bidhaa za market** (bonyeza tena kuondoa). Kadi ya bidhaa inaonyesha idadi ya waliopenda.
+- **Vipendwa** (`/wasifu/vipendwa`, kutoka Wasifu → Njia za mkato): tabo mbili, Mikeka na Bidhaa, zenye kurasa. Bidhaa zilizofichwa haziorodheshwi.
+- Majedwali mapya: `product_likes` (na faharasa ya `tip_likes` kwa mtumiaji); yanatengenezwa yenyewe baada ya Redeploy.
+
+## Marekebisho ya mpangilio wa app nzima
+Nimepitia kurasa zote 34 (mtumiaji, mgeni na admin) kwa picha za simu na kurekebisha:
+- Fomu za kutafuta (Ujumbe, Watumiaji, Ligi): kitufe sasa kinalingana na kisanduku, si na kichwa juu yake.
+- Tabo ndefu za admin (Maagizo, Ripoti, Msaada) zina kivuli kulia kuonyesha kuna zaidi ya kuteleza.
+- Kadi ya mkeka: ligi na tarehe zinapangwa vizuri bila kukatika katikati.
+- Kumbukumbu za admin zinaonyesha vitendo kwa Kiswahili ("Alibatilisha mkeka") badala ya majina ya ndani; hali ya bidhaa kwenye admin inasomeka "Hewani".
+- Kila kisanduku cha nenosiri kina kitufe cha **Onyesha/Ficha**.

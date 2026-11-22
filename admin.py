@@ -22,6 +22,14 @@ def admin_required(view):
 
 
 PER_PAGE = 50
+LOG_LABELS = {
+    "ban": "Alisimamisha akaunti", "unban": "Aliwasha akaunti", "verify": "Alithibitisha akaunti", "unverify": "Aliondoa uthibitisho",
+    "delete_tip": "Alifuta mkeka", "void_tip": "Alibatilisha mkeka", "hide_product": "Alificha bidhaa", "show_product": "Alionyesha bidhaa",
+    "banner_add": "Aliongeza tangazo", "banner_edit": "Alihariri tangazo", "banner_delete": "Alifuta tangazo",
+    "banner_on": "Aliwasha tangazo", "banner_off": "Alizima tangazo", "env_admin": "Msimamizi (environment)",
+    "support_reply": "Alijibu ombi la msaada", "support_close": "Alifunga ombi la msaada", "reset_link": "Alitengeneza kiungo cha nenosiri",
+    "report_resolved": "Alishughulikia ripoti", "report_dismissed": "Alipuuza ripoti",
+}
 
 
 def _paging():
@@ -250,7 +258,7 @@ def fixtures_action(action):
 def log():
     page, per, off = _paging()
     rows, more = _cut(models.admin_log_list(per + 1, off), per)
-    return render_template("admin_log.html", active="admin", rows=rows, page=page, has_next=more)
+    return render_template("admin_log.html", active="admin", rows=rows, page=page, has_next=more, log_labels=LOG_LABELS)
 
 
 # ---------- Matangazo ----------
