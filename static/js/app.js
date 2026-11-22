@@ -199,3 +199,31 @@
   });
   apply(cur);
 })();
+
+
+/* Tabo zinazoteleza: onyesha kivuli kulia pale kuna zaidi ya kuona */
+(function () {
+  function upd(el) {
+    var more = el.scrollWidth > el.clientWidth + 4 && el.scrollLeft + el.clientWidth < el.scrollWidth - 4;
+    el.classList.toggle('more', more);
+  }
+  document.querySelectorAll('.chips').forEach(function (el) {
+    upd(el); el.addEventListener('scroll', function () { upd(el); }, { passive: true });
+    window.addEventListener('resize', function () { upd(el); });
+  });
+})();
+
+/* Onyesha/ficha nenosiri kwenye kila kisanduku cha nenosiri */
+(function () {
+  document.querySelectorAll('input[type="password"]').forEach(function (inp) {
+    if (inp.closest('.pw-wrap')) return;
+    var wrap = document.createElement('span'); wrap.className = 'pw-wrap';
+    inp.parentNode.insertBefore(wrap, inp); wrap.appendChild(inp);
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'pw-toggle';
+    b.textContent = 'Onyesha'; b.setAttribute('aria-label', 'Onyesha au ficha nenosiri');
+    b.addEventListener('click', function () {
+      var show = inp.type === 'password'; inp.type = show ? 'text' : 'password'; b.textContent = show ? 'Ficha' : 'Onyesha';
+    });
+    wrap.appendChild(b);
+  });
+})();
