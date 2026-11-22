@@ -360,7 +360,8 @@ a.chip { text-decoration: none; display: inline-flex; align-items: center; gap: 
 .buy-box { border-color: var(--orange); }
 .actions-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .actions-row form { margin: 0; }
-.btn.liked { color: var(--red); border-color: var(--red); }
+.btn.liked { color: var(--accent); border-color: var(--accent); }
+.stat.on { color: var(--accent); }
 .pager { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .field textarea, .field select {
   width: 100%; padding: 10px 12px; border-radius: 8px; resize: vertical;
@@ -726,3 +727,23 @@ input[type="file"]::file-selector-button:hover { background: var(--btn-hover); }
 
 .inline-form { display: inline; }
 .center-row { justify-content: center; }
+.prod-likes { margin-left: auto; font-size: 12px; display: inline-flex; align-items: center; gap: 3px; }
+.product-price { display: flex; align-items: center; gap: 4px; }
+.seg.two { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 14px; }
+.seg a { display: inline-flex; align-items: center; justify-content: center; padding: 10px 6px; border-right: 1px solid var(--btn-border); background: var(--btn-bg); color: var(--text); text-decoration: none; }
+.seg a:last-child { border-right: 0; }
+.seg a.on { background: var(--accent); color: #fff; font-weight: 600; }
+
+/* Fomu za kutafuta zenye kichwa juu ya kisanduku: kitufe kipangwe na kisanduku, si na kichwa */
+.search-form:has(> .field) { align-items: flex-end; }
+.search-form:has(> .field) .btn { align-self: flex-end; height: 40px; }
+/* Tabo zinazoteleza: kivuli kinaonyesha kuna zaidi kulia */
+.chips.more { -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent); mask-image: linear-gradient(90deg, #000 86%, transparent); }
+/* Mkeka: tarehe/ligi zisikatike vibaya */
+.tip-who .muted { display: flex; flex-wrap: wrap; column-gap: 6px; }
+.tip-who .muted span { white-space: nowrap; }
+/* Onyesha/ficha nenosiri */
+.pw-wrap { position: relative; display: block; }
+.pw-wrap input { width: 100%; padding-right: 74px; }
+.pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 13px; padding: 6px 8px; cursor: pointer; border-radius: 6px; }
+.pw-toggle:hover { color: var(--text); background: var(--btn-hover); }
