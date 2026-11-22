@@ -3,6 +3,7 @@
 {% set st = order_status[o.status] %}
 {% block title %}Agizo #{{ o.id }} · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('market.orders', kama='muuzaji' if is_seller and not is_buyer else None) }}">← Maagizo yangu</a>
 

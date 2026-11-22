@@ -3,6 +3,7 @@
 {% from "_report.html" import report_box with context %}
 {% block title %}{{ other.display_name }} · Ujumbe · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('chat.inbox') }}">← Ujumbe wote</a>
 

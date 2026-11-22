@@ -13,7 +13,7 @@
     {{ avatar(t) }}
     <div class="tip-who">
       <a href="{{ url_for('tips.tipster', username=t.username) }}"><strong>{{ t.display_name }}</strong></a>
-      <span class="muted"><span>{{ t.league or 'Mchezo' }}</span><span>· {{ t.starts_at|eat }}</span></span>
+      <span class="muted"><span>{{ t.league or 'Mchezo' }}</span><span>{{ t.starts_at|eat }}</span></span>
     </div>
     <span class="badge {{ st[1] }}">{{ st[0] }}</span>
   </header>

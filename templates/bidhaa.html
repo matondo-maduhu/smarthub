@@ -4,6 +4,7 @@
 {% set meta = category_meta.get(p.category, category_meta['mengineyo']) %}
 {% block title %}{{ p.title }} · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('market.index') }}">← Rudi kwenye market</a>
 

@@ -2,6 +2,7 @@
 {% from "_icons.html" import icon %}
 {% block title %}Hariri wasifu · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('wasifu') }}">← Wasifu</a>
 <div class="page-title"><h1>{{ icon('edit', 24) }} Hariri wasifu</h1></div>

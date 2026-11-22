@@ -4,6 +4,7 @@
 {% from "_cards.html" import tip_card with context %}
 {% block title %}{{ t.title }} · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
 

@@ -5,6 +5,7 @@
 {% from "_pager.html" import pager %}
 {% block title %}{{ person.display_name }} · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
 

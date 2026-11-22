@@ -2,6 +2,7 @@
 {% from "_icons.html" import icon %}
 {% block title %}Viwango vya watabiri · {{ app_name }}{% endblock %}
 
+{% block page_class %} narrow{% endblock %}
 {% block content %}
 <a class="muted back" href="{{ url_for('tips.index') }}">← Rudi kwenye jamvi</a>
 <h1>{{ icon('trend', 24) }} Viwango vya watabiri</h1>
